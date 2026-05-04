@@ -6,14 +6,14 @@ import ProductCard from "../product/ProductCard";
 const tabs = ["KIDS TOYS", "STEM PROJECTS", "DIY KITS", "ART & CRAFT"];
 
 const products = [
-  { id: 1, name: "Mechanical Dinosaur", category: "KIDS TOYS", price: 35, image: "https://placehold.co/400x400/png?text=Dino", rating: 4 },
-  { id: 2, name: "Solar Windmill", category: "STEM", price: 20, image: "https://placehold.co/400x400/png?text=Windmill", rating: 5 },
-  { id: 3, name: "Crystal Growing Kit", category: "DIY", price: 25, image: "https://placehold.co/400x400/png?text=Crystal", rating: 4 },
-  { id: 4, name: "Paint by Numbers", category: "ART", price: 15, image: "https://placehold.co/400x400/png?text=Paint", rating: 5 },
-  { id: 5, name: "Wooden Puzzle", category: "TOYS", price: 12, image: "https://placehold.co/400x400/png?text=Puzzle", rating: 4 },
-  { id: 6, name: "Magic Science Kit", category: "STEM", price: 30, image: "https://placehold.co/400x400/png?text=Science", rating: 5 },
-  { id: 7, name: "Bead Jewelry Set", category: "DIY", price: 18, image: "https://placehold.co/400x400/png?text=Beads", rating: 4 },
-  { id: 8, name: "Clay Modeling Set", category: "ART", price: 22, image: "https://placehold.co/400x400/png?text=Clay", rating: 5 },
+  { id: 1, name: "Mechanical Dinosaur", category: "KIDS TOYS", price: 35, image: "https://placehold.co/400x400/png?text=Dino", rating: 4, reviews: 45 },
+  { id: 2, name: "Solar Windmill", category: "STEM", price: 20, image: "https://placehold.co/400x400/png?text=Windmill", rating: 5, reviews: 32 },
+  { id: 3, name: "Crystal Growing Kit", category: "DIY", price: 25, image: "https://placehold.co/400x400/png?text=Crystal", rating: 4, reviews: 18 },
+  { id: 4, name: "Paint by Numbers", category: "ART", price: 15, image: "https://placehold.co/400x400/png?text=Paint", rating: 5, reviews: 56 },
+  { id: 5, name: "Wooden Puzzle", category: "TOYS", price: 12, image: "https://placehold.co/400x400/png?text=Puzzle", rating: 4, reviews: 29 },
+  { id: 6, name: "Magic Science Kit", category: "STEM", price: 30, image: "https://placehold.co/400x400/png?text=Science", rating: 5, reviews: 67 },
+  { id: 7, name: "Bead Jewelry Set", category: "DIY", price: 18, image: "https://placehold.co/400x400/png?text=Beads", rating: 4, reviews: 12 },
+  { id: 8, name: "Clay Modeling Set", category: "ART", price: 22, image: "https://placehold.co/400x400/png?text=Clay", rating: 5, reviews: 34 },
 ];
 
 export default function TabbedProducts() {

@@ -2,11 +2,21 @@
 
 import React from "react";
 import Link from "next/link";
-import { Sitemap, Home, ShoppingBag, Info, Phone, HelpCircle, User, Zap, Cpu, Microscope, Gamepad2, Palette, Baby, BookOpen } from "lucide-react";
+import { Home, ShoppingBag, Info, Phone, HelpCircle, User, Zap, Cpu, Microscope, Gamepad2, Palette, Baby, BookOpen, Map } from "lucide-react";
 import { motion } from "framer-motion";
 
+interface SitemapSection {
+  title: string;
+  icon: React.ReactNode;
+  links: {
+    name: string;
+    href: string;
+    icon?: React.ReactNode;
+  }[];
+}
+
 export default function SitemapPage() {
-  const sections = [
+  const sections: SitemapSection[] = [
     {
       title: "Main Pages",
       icon: <Home className="text-primary" size={20} />,
@@ -46,7 +56,7 @@ export default function SitemapPage() {
       icon: <User className="text-primary" size={20} />,
       links: [
         { name: "Login / Register", href: "/login" },
-        { name: "My Account", href: "/customer/profile" },
+        { name: "My Account", href: "/customer" },
         { name: "My Orders", href: "/customer/orders" },
         { name: "Wishlist", href: "/customer/wishlist" }
       ]

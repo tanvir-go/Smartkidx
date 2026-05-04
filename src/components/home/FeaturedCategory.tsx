@@ -4,16 +4,16 @@ import Link from "next/link";
 import ProductCard from "../product/ProductCard";
 
 const products = [
-  { id: 1, name: "Educational Robot Kit", category: "Robotics", price: 45.00, oldPrice: 55.00, discount: 18, image: "/images/robotics-kit.png", rating: 4.8 },
-  { id: 2, name: "STEM Solar Car", category: "STEM", price: 24.99, image: "/images/solar-car.png", rating: 4.7 },
-  { id: 3, name: "Arduino Uno Kit", category: "Electronics", price: 35.00, image: "https://placehold.co/400x400/png?text=Arduino", rating: 4.9 },
-  { id: 4, name: "Coding Tablet", category: "Gadgets", price: 89.00, oldPrice: 110.00, discount: 19, image: "https://placehold.co/400x400/png?text=Tablet", rating: 4.5 },
-  { id: 5, name: "3D Pen for Kids", category: "Arts", price: 29.00, image: "https://placehold.co/400x400/png?text=3D+Pen", rating: 4.6 },
-  { id: 6, name: "Electronic Lab", category: "STEM", price: 59.00, image: "https://placehold.co/400x400/png?text=Lab", rating: 4.8 },
-  { id: 7, name: "Smart Watch v2", category: "Gadgets", price: 42.00, image: "https://placehold.co/400x400/png?text=Watch", rating: 4.4 },
-  { id: 8, name: "DIY Drone Kit", category: "Robotics", price: 120.00, image: "https://placehold.co/400x400/png?text=Drone", rating: 4.9 },
-  { id: 9, name: "Microscope Set", category: "STEM", price: 55.00, image: "https://placehold.co/400x400/png?text=Microscope", rating: 4.7 },
-  { id: 10, name: "Science Journal", category: "Books", price: 12.00, image: "https://placehold.co/400x400/png?text=Journal", rating: 5 },
+  { id: 1, name: "Educational Robot Kit", category: "Robotics", price: 45.00, oldPrice: 55.00, discount: 18, image: "/images/robotics-kit.png", rating: 4.8, reviews: 124 },
+  { id: 2, name: "STEM Solar Car", category: "STEM", price: 24.99, image: "/images/solar-car.png", rating: 4.7, reviews: 86 },
+  { id: 3, name: "Arduino Uno Kit", category: "Electronics", price: 35.00, image: "https://placehold.co/400x400/png?text=Arduino", rating: 4.9, reviews: 215 },
+  { id: 4, name: "Coding Tablet", category: "Gadgets", price: 89.00, oldPrice: 110.00, discount: 19, image: "https://placehold.co/400x400/png?text=Tablet", rating: 4.5, reviews: 45 },
+  { id: 5, name: "3D Pen for Kids", category: "Arts", price: 29.00, image: "https://placehold.co/400x400/png?text=3D+Pen", rating: 4.6, reviews: 72 },
+  { id: 6, name: "Electronic Lab", category: "STEM", price: 59.00, image: "https://placehold.co/400x400/png?text=Lab", rating: 4.8, reviews: 103 },
+  { id: 7, name: "Smart Watch v2", category: "Gadgets", price: 42.00, image: "https://placehold.co/400x400/png?text=Watch", rating: 4.4, reviews: 54 },
+  { id: 8, name: "DIY Drone Kit", category: "Robotics", price: 120.00, image: "https://placehold.co/400x400/png?text=Drone", rating: 4.9, reviews: 12 },
+  { id: 9, name: "Microscope Set", category: "STEM", price: 55.00, image: "https://placehold.co/400x400/png?text=Microscope", rating: 4.7, reviews: 38 },
+  { id: 10, name: "Science Journal", category: "Books", price: 12.00, image: "https://placehold.co/400x400/png?text=Journal", rating: 5, reviews: 95 },
 ];
 
 export default function FeaturedCategory() {

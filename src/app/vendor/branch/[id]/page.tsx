@@ -1,6 +1,5 @@
 "use client";
 
-import { useParams, useRouter } from "react-router-dom"; // Wait, Next.js use 'next/navigation'
 import { useParams as useNextParams } from "next/navigation";
 import { 
   Building2, 
