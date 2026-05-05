@@ -49,6 +49,7 @@ import {
   LogOut,
   Truck
 } from "lucide-react";
+import { toast } from "react-toastify";
 
 const sidebarGroups = [
   {
@@ -153,7 +154,7 @@ export default function SuperAdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -163,7 +164,7 @@ export default function SuperAdminLayout({
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FD] flex flex-col lg:flex-row">
+    <div className="h-screen bg-[#F8F9FD] flex flex-col lg:flex-row overflow-hidden">
       {/* Mobile Backdrop */}
       {isSidebarOpen && (
         <div 
@@ -175,8 +176,8 @@ export default function SuperAdminLayout({
       {/* Sidebar */}
       <aside 
         className={`
-          fixed lg:sticky top-0 bottom-0 left-0 z-50
-          bg-white border-r border-slate-100 flex flex-col
+          fixed lg:relative top-0 bottom-0 left-0 z-50
+          bg-white border-r border-slate-100 flex flex-col h-full
           transition-all duration-300 ease-in-out
           ${isSidebarOpen ? "w-[260px] translate-x-0" : "w-20 -translate-x-full lg:translate-x-0"}
         `}
@@ -210,7 +211,7 @@ export default function SuperAdminLayout({
               }`}
             >
               <LayoutDashboard size={18} />
-              {isSidebarOpen && <span className="text-[13px] font-bold">Dashboard</span>}
+              {isSidebarOpen && <span className="text-[13px] font-semibold">Dashboard</span>}
             </Link>
           </div>
 
@@ -239,7 +240,7 @@ export default function SuperAdminLayout({
                         {item.icon}
                       </span>
                       {isSidebarOpen && (
-                        <span className="text-[13px] font-bold">{item.name}</span>
+                        <span className="text-[13px] font-semibold">{item.name}</span>
                       )}
                     </Link>
                   );
@@ -268,9 +269,9 @@ export default function SuperAdminLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col">
+      <main className="flex-grow flex flex-col h-full overflow-hidden">
         {/* Header */}
-        <header className="bg-white/80 backdrop-blur-md h-20 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
+        <header className="bg-white/80 backdrop-blur-md min-h-[80px] py-4 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
           <div className="flex items-center gap-4 md:gap-8 flex-grow">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -279,8 +280,8 @@ export default function SuperAdminLayout({
               <Menu size={24} />
             </button>
             <div className="hidden sm:block">
-              <h1 className="text-sm font-black text-slate-800 uppercase tracking-widest leading-none">Super Admin</h1>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-1">SmartKids Network • {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
+              <h1 className="text-sm font-semibold text-slate-800 uppercase tracking-widest leading-none">Super Admin</h1>
+              <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-tighter mt-1">SmartKids Network • {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
             </div>
 
             <div className="relative w-full max-w-md hidden md:block">
@@ -294,7 +295,10 @@ export default function SuperAdminLayout({
           </div>
 
           <div className="flex items-center gap-2 md:gap-6">
-            <button className="bg-primary text-white px-3 md:px-5 py-2 rounded-lg font-black uppercase tracking-widest text-[10px] md:text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+            <button 
+              onClick={() => toast.success("New order creation opening...")}
+              className="bg-primary text-white px-3 md:px-5 py-2 rounded-lg font-semibold uppercase tracking-widest text-[10px] md:text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
+            >
               <Plus size={16} /> <span className="hidden sm:inline">New Order</span>
             </button>
 
@@ -307,8 +311,8 @@ export default function SuperAdminLayout({
             
             <div className="flex items-center gap-3 pl-2 group cursor-pointer border-l border-slate-100 ml-2">
               <div className="text-right hidden sm:block">
-                <p className="text-[11px] font-black text-slate-800 uppercase leading-none">John Doe</p>
-                <button onClick={handleLogout} className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 hover:text-red-500 transition-colors">Sign Out</button>
+                <p className="text-[11px] font-semibold text-slate-800 uppercase leading-none">John Doe</p>
+                <button onClick={handleLogout} className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest mt-1 hover:text-red-500 transition-colors">Sign Out</button>
               </div>
               <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-primary text-xs font-black group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
                 JD
@@ -317,26 +321,10 @@ export default function SuperAdminLayout({
           </div>
         </header>
 
-        <div className="p-4 md:p-8">
+        <div className="flex-grow overflow-y-auto p-4 md:p-8 custom-scrollbar">
           {children}
         </div>
       </main>
-
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #E2E8F0;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #CBD5E1;
-        }
-      `}</style>
     </div>
   );
 }

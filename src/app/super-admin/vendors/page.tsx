@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState } from "react";
 import { 
   Store, 
   MapPin, 
@@ -8,27 +9,57 @@ import {
   ChevronRight,
   MoreVertical,
   Search,
-  Filter
+  Filter,
+  Plus,
+  X,
+  Building,
+  Tag
 } from "lucide-react";
-
-const vendors = [
-  { id: 1, name: "Global Tech", category: "Electronics", city: "Dhaka", branches: 3, products: 255, status: "Active", joined: "Oct 12, 2023" },
-  { id: 2, name: "RoboMaster", category: "Robotics", city: "Chittagong", branches: 1, products: 45, status: "Pending", joined: "Nov 05, 2023" },
-  { id: 3, name: "Kids Planet", category: "Toys", city: "Sylhet", branches: 2, products: 120, status: "Active", joined: "Sep 20, 2023" },
-  { id: 4, name: "Learning Hub", category: "Books", city: "Dhaka", branches: 5, products: 890, status: "Active", joined: "Aug 15, 2023" },
-  { id: 5, name: "STEM Solutions", category: "Education", city: "Rajshahi", branches: 1, products: 32, status: "Suspended", joined: "Oct 30, 2023" },
-];
+import { toast } from "react-toastify";
 
 export default function VendorsPage() {
+  const [vendorList, setVendorList] = useState([
+    { id: 1, name: "Global Tech", category: "Electronics", city: "Dhaka", branches: 3, products: 255, status: "Active", joined: "Oct 12, 2023" },
+    { id: 2, name: "RoboMaster", category: "Robotics", city: "Chittagong", branches: 1, products: 45, status: "Pending", joined: "Nov 05, 2023" },
+    { id: 3, name: "Kids Planet", category: "Toys", city: "Sylhet", branches: 2, products: 120, status: "Active", joined: "Sep 20, 2023" },
+    { id: 4, name: "Learning Hub", category: "Books", city: "Dhaka", branches: 5, products: 890, status: "Active", joined: "Aug 15, 2023" },
+    { id: 5, name: "STEM Solutions", category: "Education", city: "Rajshahi", branches: 1, products: 32, status: "Suspended", joined: "Oct 30, 2023" },
+  ]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newVendor, setNewVendor] = useState({ name: "", city: "Dhaka", category: "Electronics" });
+
+  const handleAddVendor = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newVendor.name) {
+      toast.error("Vendor name is required");
+      return;
+    }
+
+    const id = vendorList.length + 1;
+    const today = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    
+    setVendorList([
+      { ...newVendor, id, branches: 1, products: 0, status: "Active", joined: today },
+      ...vendorList
+    ]);
+    setIsModalOpen(false);
+    setNewVendor({ name: "", city: "Dhaka", category: "Electronics" });
+    toast.success("New vendor onboarded successfully!");
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Vendor Management</h2>
-          <p className="text-slate-500 text-sm mt-1">Manage and monitor all registered vendors on the platform.</p>
+          <h2 className="text-2xl font-semibold text-slate-800 uppercase tracking-tight">Vendor Management</h2>
+          <p className="text-slate-500 text-sm mt-1 font-medium">Manage and monitor all registered vendors on the platform.</p>
         </div>
-        <button className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
-          Add New Vendor
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="bg-primary text-white px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 group"
+        >
+          <Plus size={18} className="group-hover:rotate-90 transition-transform" /> Add New Vendor
         </button>
       </div>
 
@@ -42,21 +73,10 @@ export default function VendorsPage() {
             className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
           />
         </div>
-        <div className="flex items-center gap-2">
-          <button className="flex items-center gap-2 px-4 py-3 bg-slate-50 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-100 transition-colors">
-            <Filter size={16} /> Filters
-          </button>
-          <select className="px-4 py-3 bg-slate-50 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-100 transition-colors outline-none border-none">
-            <option>All Categories</option>
-            <option>Electronics</option>
-            <option>Robotics</option>
-            <option>Toys</option>
-          </select>
-        </div>
       </div>
 
       {/* Vendors List */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -70,38 +90,36 @@ export default function VendorsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {vendors.map((vendor) => (
-                <tr key={vendor.id} className="hover:bg-slate-50/50 transition-colors group">
+              {vendorList.map((vendor) => (
+                <tr key={vendor.id} className="hover:bg-slate-50/50 transition-colors group animate-in fade-in slide-in-from-top-1">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                      <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
                         <Store size={20} />
                       </div>
                       <div>
                         <p className="text-sm font-bold text-slate-800">{vendor.name}</p>
-                        <p className="text-[10px] text-slate-400 font-bold flex items-center gap-1">
+                        <p className="text-[10px] text-slate-400 font-bold flex items-center gap-1 uppercase tracking-widest">
                           <MapPin size={10} /> {vendor.city}
                         </p>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-xs font-bold text-slate-600 px-3 py-1 bg-slate-100 rounded-lg">{vendor.category}</span>
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-3 py-1 bg-slate-100 rounded-lg">{vendor.category}</span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="space-y-1">
-                      <p className="text-xs text-slate-600 flex items-center gap-1.5 font-medium">
+                      <p className="text-[10px] text-slate-600 flex items-center gap-1.5 font-bold uppercase tracking-tight">
                         <Store size={12} className="text-slate-400" /> {vendor.branches} Branches
                       </p>
-                      <p className="text-xs text-slate-600 flex items-center gap-1.5 font-medium">
+                      <p className="text-[10px] text-slate-600 flex items-center gap-1.5 font-bold uppercase tracking-tight">
                         <Package size={12} className="text-slate-400" /> {vendor.products} Products
                       </p>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <p className="text-xs text-slate-600 font-medium flex items-center gap-1.5">
-                      <Clock size={12} className="text-slate-400" /> {vendor.joined}
-                    </p>
+                  <td className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase">
+                    {vendor.joined}
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
@@ -112,7 +130,7 @@ export default function VendorsPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
                       <button className="p-2 text-slate-400 hover:text-primary hover:bg-slate-50 rounded-lg transition-all">
                         <ChevronRight size={18} />
                       </button>
@@ -126,14 +144,77 @@ export default function VendorsPage() {
             </tbody>
           </table>
         </div>
-        <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Showing 1 to 5 of 48 Vendors</p>
-          <div className="flex gap-2">
-            <button className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-400 cursor-not-allowed">Previous</button>
-            <button className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 transition-all">Next</button>
+      </div>
+
+      {/* Add Vendor Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
+          <div className="relative bg-white w-full max-w-md rounded-[32px] shadow-2xl border border-slate-100 p-8 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-xl font-semibold text-slate-800 uppercase tracking-tight">Onboard New Vendor</h3>
+              <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-xl transition-colors">
+                <X size={20} className="text-slate-400" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddVendor} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Vendor/Business Name *</label>
+                <div className="relative">
+                  <Building size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input 
+                    type="text" 
+                    required
+                    value={newVendor.name}
+                    onChange={(e) => setNewVendor({...newVendor, name: e.target.value})}
+                    placeholder="e.g. Dhaka Robotics Hub"
+                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Base City</label>
+                  <select 
+                    value={newVendor.city}
+                    onChange={(e) => setNewVendor({...newVendor, city: e.target.value})}
+                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none"
+                  >
+                    <option>Dhaka</option>
+                    <option>Chittagong</option>
+                    <option>Sylhet</option>
+                    <option>Rajshahi</option>
+                    <option>Khulna</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Main Category</label>
+                  <select 
+                    value={newVendor.category}
+                    onChange={(e) => setNewVendor({...newVendor, category: e.target.value})}
+                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none"
+                  >
+                    <option>Electronics</option>
+                    <option>Robotics</option>
+                    <option>Toys</option>
+                    <option>Books</option>
+                    <option>Education</option>
+                  </select>
+                </div>
+              </div>
+
+              <button 
+                type="submit"
+                className="w-full bg-primary text-white py-4 rounded-2xl font-semibold uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 mt-4"
+              >
+                Complete Onboarding
+              </button>
+            </form>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

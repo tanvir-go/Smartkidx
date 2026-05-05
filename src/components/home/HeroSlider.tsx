@@ -11,8 +11,8 @@ const slides = [
     title: "Building the Future of Tech",
     subtitle: "TIME TO VALUE YOUR MONEY",
     description: "Explore our latest Robotics and IoT kits designed for young innovators.",
-    image: "/banner1.jpg",
-    color: "bg-emerald-50",
+    image: "/images/demo/hero1.png",
+    color: "bg-white",
     buttonText: "LEARN MORE",
     buttonColor: "bg-primary"
   },
@@ -21,8 +21,8 @@ const slides = [
     title: "Creative Minds, Smart Play",
     subtitle: "EDUCATIONAL TOYS & GAMES",
     description: "Discover a world of learning through play with our curated collection.",
-    image: "/banner2.jpg",
-    color: "bg-blue-50",
+    image: "/images/demo/hero2.png",
+    color: "bg-white",
     buttonText: "SHOP NOW",
     buttonColor: "bg-blue-600"
   },
@@ -31,8 +31,8 @@ const slides = [
     title: "STEM Excellence for Kids",
     subtitle: "SCIENCE & TECHNOLOGY",
     description: "Empower your child with hands-on STEM projects and experiments.",
-    image: "/banner3.jpg",
-    color: "bg-amber-50",
+    image: "/images/demo/hero3.png",
+    color: "bg-white",
     buttonText: "VIEW PROJECTS",
     buttonColor: "bg-accent"
   }
@@ -56,55 +56,80 @@ export default function HeroSlider() {
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          className={`absolute inset-0 ${slides[current].color} p-8 md:p-16 flex flex-col justify-center`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8 }}
+          className={`absolute inset-0 ${slides[current].color} border border-slate-100 rounded-2xl overflow-hidden`}
         >
-          <div className="max-w-md">
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-primary font-bold text-xs md:text-sm tracking-[0.2em] uppercase mb-2"
-            >
-              {slides[current].subtitle}
-            </motion.p>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-3xl md:text-5xl lg:text-6xl font-display font-black text-slate-800 leading-tight mb-4"
-            >
-              {slides[current].title}
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-sm md:text-base text-slate-600 mb-8"
-            >
-              {slides[current].description}
-            </motion.p>
-            <Link href="/shop">
-              <motion.button
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`${slides[current].buttonColor} text-white px-8 py-3 rounded-full font-bold text-sm shadow-lg shadow-primary/20 transition-all`}
-              >
-                {slides[current].buttonText}
-              </motion.button>
-            </Link>
-          </div>
+          {/* Subtle Background Pattern */}
+          <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:24px_24px] opacity-20"></div>
           
-          {/* Decorative Elements */}
-          <div className="absolute right-0 bottom-0 w-1/2 h-full hidden md:flex items-center justify-center pointer-events-none">
-             {/* Placeholder for images */}
-             <div className="w-64 h-64 bg-white/50 rounded-full blur-3xl absolute animate-pulse"></div>
+          <div className="container mx-auto h-full grid grid-cols-1 md:grid-cols-2 items-center gap-8 md:gap-16 px-8 md:px-16 relative z-10">
+            {/* Left Side: Content */}
+            <div className="flex flex-col justify-center text-left">
+              <motion.p
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-primary font-black text-[10px] md:text-xs tracking-[0.3em] uppercase mb-4"
+              >
+                {slides[current].subtitle}
+              </motion.p>
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-2xl md:text-4xl lg:text-5xl font-display font-black text-slate-900 leading-[1.1] mb-6 uppercase tracking-tight"
+              >
+                {slides[current].title}
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-sm md:text-lg text-slate-500 mb-10 max-w-sm font-semibold italic"
+              >
+                {slides[current].description}
+              </motion.p>
+              <Link href="/shop">
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`${slides[current].buttonColor} text-white px-10 py-4 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-primary/20 transition-all`}
+                >
+                  {slides[current].buttonText}
+                </motion.button>
+              </Link>
+            </div>
+
+            {/* Right Side: Image */}
+            <div className="hidden md:flex items-center justify-center h-full relative">
+               <motion.div
+                 key={`box-${current}`}
+                 initial={{ opacity: 0, scale: 0.8 }}
+                 animate={{ opacity: 1, scale: 1 }}
+                 transition={{ duration: 0.8, delay: 0.3 }}
+                 className="absolute inset-0 bg-slate-50/50 rounded-[60px] -rotate-6 scale-95"
+               ></motion.div>
+               <motion.img 
+                 key={`img-${current}`}
+                 initial={{ opacity: 0, scale: 0.5, y: 50, rotate: 10 }}
+                 animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+                 transition={{ 
+                   type: "spring",
+                   stiffness: 100,
+                   damping: 20,
+                   delay: 0.4 
+                 }}
+                 src={slides[current].image} 
+                 alt={slides[current].title}
+                 className="relative z-10 w-full h-full max-h-[400px] object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.12)]"
+               />
+            </div>
           </div>
         </motion.div>
       </AnimatePresence>

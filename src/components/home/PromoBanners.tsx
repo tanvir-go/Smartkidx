@@ -8,35 +8,35 @@ const banners = [
     title: "Boys Latest Trends Wear",
     subtitle: "Fashion",
     color: "bg-[#FF6B6B]",
-    image: "https://placehold.co/400x300/png?text=Boys+Fashion",
+    image: "/images/demo/hero2.png",
     link: "/shop?category=fashion"
   },
   {
     title: "Leatest Accessories",
     subtitle: "Gadgets",
     color: "bg-[#F7A4A4]",
-    image: "https://placehold.co/400x300/png?text=Gadgets",
+    image: "/images/demo/hero1.png",
     link: "/shop?category=gadgets"
   },
   {
     title: "Most Popular",
     subtitle: "Electronics",
     color: "bg-[#4D96FF]",
-    image: "https://placehold.co/400x300/png?text=Electronics",
+    image: "/images/demo/hero3.png",
     link: "/shop?category=electronics"
   },
   {
     title: "Best 2026 Collection Sale",
     subtitle: "New Arrival",
     color: "bg-[#FFD93D]",
-    image: "https://placehold.co/400x300/png?text=New+Arrival",
+    image: "/images/demo/toys_collection.png",
     link: "/shop?category=new"
   }
 ];
 
 export default function PromoBanners() {
   return (
-    <section className="py-8 bg-white">
+    <section className="py-6 bg-white">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {banners.map((banner, i) => (

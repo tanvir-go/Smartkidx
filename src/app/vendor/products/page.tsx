@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState } from "react";
 import { 
   Package, 
   Plus, 
@@ -9,26 +10,66 @@ import {
   Edit, 
   Trash2,
   TrendingUp,
-  AlertTriangle
+  AlertTriangle,
+  X,
+  Tag,
+  DollarSign,
+  Layers
 } from "lucide-react";
-
-const vendorProducts = [
-  { id: 1, name: "Robotics Starter Kit", sku: "SK-V1-001", price: "৳ 2,500", stock: 124, sales: 342, status: "Active" },
-  { id: 2, name: "STEM Solar Car", sku: "SK-V1-002", price: "৳ 1,200", stock: 12, sales: 85, status: "Low Stock" },
-  { id: 3, name: "DIY Drone Kit", sku: "SK-V1-003", price: "৳ 4,500", stock: 5, sales: 24, status: "Active" },
-  { id: 4, name: "Electronic Clock Kit", sku: "SK-V1-004", price: "৳ 950", stock: 0, sales: 156, status: "Out of Stock" },
-  { id: 5, name: "Smart Lamp Project", sku: "SK-V1-005", price: "৳ 1,800", stock: 45, sales: 67, status: "Inactive" },
-];
+import { toast } from "react-toastify";
 
 export default function VendorProductsPage() {
+  const [products, setProducts] = useState([
+    { id: 1, name: "Robotics Starter Kit", sku: "SK-V1-001", price: "৳ 2,500", stock: 124, sales: 342, status: "Active" },
+    { id: 2, name: "STEM Solar Car", sku: "SK-V1-002", price: "৳ 1,200", stock: 12, sales: 85, status: "Low Stock" },
+    { id: 3, name: "DIY Drone Kit", sku: "SK-V1-003", price: "৳ 4,500", stock: 5, sales: 24, status: "Active" },
+    { id: 4, name: "Electronic Clock Kit", sku: "SK-V1-004", price: "৳ 950", stock: 0, sales: 156, status: "Out of Stock" },
+    { id: 5, name: "Smart Lamp Project", sku: "SK-V1-005", price: "৳ 1,800", stock: 45, sales: 67, status: "Inactive" },
+  ]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newProduct, setNewProduct] = useState({ 
+    name: "", 
+    price: "", 
+    stock: "", 
+    category: "Electronics" 
+  });
+
+  const handleAddProduct = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newProduct.name || !newProduct.price || !newProduct.stock) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    const id = products.length + 1;
+    const productToAdd = {
+      id,
+      name: newProduct.name,
+      sku: `SK-V1-00${id}`,
+      price: `৳ ${parseInt(newProduct.price).toLocaleString()}`,
+      stock: parseInt(newProduct.stock),
+      sales: 0,
+      status: parseInt(newProduct.stock) > 0 ? "Active" : "Out of Stock"
+    };
+
+    setProducts([productToAdd, ...products]);
+    setIsModalOpen(false);
+    setNewProduct({ name: "", price: "", stock: "", category: "Electronics" });
+    toast.success("Product added to your inventory!");
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">My Products</h2>
+          <h2 className="text-2xl font-semibold text-slate-800 uppercase tracking-tight">My Products</h2>
           <p className="text-slate-500 text-sm mt-1">Manage your inventory and product listings.</p>
         </div>
-        <button className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 group">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="bg-primary text-white px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 group"
+        >
           <Plus size={18} className="group-hover:rotate-90 transition-transform" /> Add New Product
         </button>
       </div>
@@ -41,7 +82,7 @@ export default function VendorProductsPage() {
           </div>
           <div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Products</p>
-            <h3 className="text-xl font-black text-slate-800">255 Items</h3>
+            <h3 className="text-xl font-black text-slate-800">{products.length} Items</h3>
           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
@@ -50,7 +91,7 @@ export default function VendorProductsPage() {
           </div>
           <div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Low Stock Alert</p>
-            <h3 className="text-xl font-black text-slate-800">08 Items</h3>
+            <h3 className="text-xl font-black text-slate-800">{products.filter(p => p.stock > 0 && p.stock <= 10).length.toString().padStart(2, '0')} Items</h3>
           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
@@ -58,8 +99,8 @@ export default function VendorProductsPage() {
             <TrendingUp size={24} />
           </div>
           <div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Best Seller</p>
-            <h3 className="text-xl font-black text-slate-800">Robotics Kit</h3>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Listings</p>
+            <h3 className="text-xl font-black text-slate-800">{products.filter(p => p.status === "Active").length.toString().padStart(2, '0')} Items</h3>
           </div>
         </div>
       </div>
@@ -93,8 +134,8 @@ export default function VendorProductsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {vendorProducts.map((product) => (
-                <tr key={product.id} className="hover:bg-slate-50/50 transition-colors group">
+              {products.map((product) => (
+                <tr key={product.id} className="hover:bg-slate-50/50 transition-colors group animate-in fade-in slide-in-from-top-1">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all">
@@ -145,6 +186,90 @@ export default function VendorProductsPage() {
           </table>
         </div>
       </div>
+
+      {/* Add Product Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
+          <div className="relative bg-white w-full max-w-lg rounded-[32px] shadow-2xl border border-slate-100 p-8 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-xl font-semibold text-slate-800 uppercase tracking-tight">Add New Product</h3>
+              <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-xl transition-colors">
+                <X size={20} className="text-slate-400" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddProduct} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Product Name *</label>
+                <div className="relative">
+                  <Tag size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input 
+                    type="text" 
+                    required
+                    value={newProduct.name}
+                    onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                    placeholder="e.g. Advanced Arduino Uno R4"
+                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Price (৳) *</label>
+                  <div className="relative">
+                    <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input 
+                      type="number" 
+                      required
+                      value={newProduct.price}
+                      onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                      placeholder="2500"
+                      className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Stock Qty *</label>
+                  <div className="relative">
+                    <Layers size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input 
+                      type="number" 
+                      required
+                      value={newProduct.stock}
+                      onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
+                      placeholder="50"
+                      className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category</label>
+                <select 
+                  value={newProduct.category}
+                  onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
+                  className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none"
+                >
+                  <option>Electronics</option>
+                  <option>Robotics</option>
+                  <option>STEM Kits</option>
+                  <option>Books</option>
+                </select>
+              </div>
+
+              <button 
+                type="submit"
+                className="w-full bg-primary text-white py-4 rounded-2xl font-semibold uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 mt-4"
+              >
+                Publish Product
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

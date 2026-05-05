@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useState } from "react";
 
 const saleProducts = [
-  { id: 1, name: "1000pcs DIY Art Craft Sets Supplies for Kids", price: 799, oldPrice: 850, discount: 6, image: "/images/art-craft.png" },
-  { id: 2, name: "Robotics Starter Kit v2.0", price: 1499, oldPrice: 1750, discount: 14, image: "/images/robotics-kit.png" }
+  { id: 1, name: "1000pcs DIY Art Craft Sets Supplies for Kids", price: 799, oldPrice: 850, discount: 6, image: "/images/demo/hero2.png" },
+  { id: 2, name: "Robotics Starter Kit v2.0", price: 1499, oldPrice: 1750, discount: 14, image: "/images/demo/hero1.png" }
 ];
 
 const bestPopular = [
@@ -20,7 +20,7 @@ export default function MixedShowcase() {
   const [currentSale, setCurrentSale] = useState(0);
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-10 bg-white">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
@@ -84,14 +84,14 @@ export default function MixedShowcase() {
                   <h4 className="text-xl font-black uppercase leading-tight mb-2">Robotics & IOT<br/>For Smart Kids</h4>
                   <Link href="/shop" className="text-[10px] font-black uppercase tracking-widest border-b border-white/50 hover:border-white transition-colors">Shop Now</Link>
                 </div>
-                <img src="https://placehold.co/300x200/png?text=Robotics" className="absolute bottom-0 right-0 w-2/3 h-auto object-contain transition-transform duration-700 group-hover:scale-110" alt="Banner" />
+                <img src="/images/demo/hero1.png" className="absolute bottom-0 right-0 w-2/3 h-auto object-contain transition-transform duration-700 group-hover:scale-110" alt="Banner" />
              </div>
              <div className="flex-grow bg-[#F7A4A4] rounded-[32px] p-8 text-white relative overflow-hidden group">
                 <div className="relative z-10">
                   <h4 className="text-xl font-black uppercase leading-tight mb-2">Best Stationary<br/>For Girls</h4>
                   <Link href="/shop" className="text-[10px] font-black uppercase tracking-widest border-b border-white/50 hover:border-white transition-colors">Shop Now</Link>
                 </div>
-                <img src="https://placehold.co/300x200/png?text=Stationary" className="absolute bottom-0 right-0 w-2/3 h-auto object-contain transition-transform duration-700 group-hover:scale-110" alt="Banner" />
+                <img src="/images/demo/girls_stationary.png" className="absolute bottom-0 right-0 w-2/3 h-auto object-contain transition-transform duration-700 group-hover:scale-110" alt="Banner" />
              </div>
           </div>
 

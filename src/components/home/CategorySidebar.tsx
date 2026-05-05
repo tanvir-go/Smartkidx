@@ -1,25 +1,6 @@
 import Link from "next/link";
-import { 
-  Menu, 
-  ChevronRight, 
-  Cpu, 
-  Gamepad2, 
-  BookOpen, 
-  Palette, 
-  Baby, 
-  Zap,
-  Microscope
-} from "lucide-react";
-
-const categories = [
-  { name: "Electronics & Gadgets", icon: <Cpu size={18} />, href: "/category/electronics" },
-  { name: "Robotics | IoT", icon: <Microscope size={18} />, href: "/category/robotics" },
-  { name: "Kids Toys", icon: <Gamepad2 size={18} />, href: "/category/toys" },
-  { name: "Stationary", icon: <Palette size={18} />, href: "/category/stationary" },
-  { name: "Kids Lifestyle", icon: <Baby size={18} />, href: "/category/lifestyle" },
-  { name: "Books", icon: <BookOpen size={18} />, href: "/category/books" },
-  { name: "STEM Kits", icon: <Zap size={18} />, href: "/category/stem-kits" },
-];
+import { Menu, ChevronRight } from "lucide-react";
+import { categories } from "@/data/navigation";
 
 export default function CategorySidebar() {
   return (

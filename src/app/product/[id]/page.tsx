@@ -77,8 +77,8 @@ export default function ProductDetailPage({ params: paramsPromise }: { params: P
         </div>
       </div>
 
-      <main className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+      <main className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[40%_1fr] gap-10 md:gap-20">
           {/* Left: Image Gallery */}
           <div className="space-y-6">
             <motion.div 
@@ -122,110 +122,74 @@ export default function ProductDetailPage({ params: paramsPromise }: { params: P
 
           {/* Right: Product Details */}
           <div className="flex flex-col">
-            <div className="mb-8">
-              <p className="text-sm font-black text-primary uppercase tracking-[0.2em] mb-4">{product.category}</p>
-              <h1 className="text-4xl md:text-5xl font-black text-slate-800 leading-tight mb-6">
+            <div className="mb-6">
+              <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] mb-1">{product.brand || "SmartKids"}</p>
+              <h1 className="text-3xl md:text-4xl font-black text-slate-800 leading-tight mb-4 tracking-tight">
                 {product.name}
               </h1>
               
-              <div className="flex items-center gap-6 mb-8 border-b border-slate-100 pb-8">
-                <div className="flex items-center gap-1.5">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={18} className={i < 4 ? "fill-accent text-accent" : "text-slate-200"} />
-                    ))}
-                  </div>
-                  <span className="text-sm font-bold text-slate-800">{product.rating}</span>
-                  <span className="text-sm text-slate-400 font-medium">({product.reviews} customer reviews)</span>
-                </div>
-                <div className="h-4 w-px bg-slate-200"></div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 size={16} className="text-emerald-500" />
-                  <span className="text-sm font-bold text-emerald-600 uppercase tracking-widest">{product.stock} in stock</span>
-                </div>
-              </div>
-
-              <div className="flex items-baseline gap-4 mb-8">
-                <span className="text-5xl font-black text-slate-900">৳{product.price.toFixed(2)}</span>
-                {product.oldPrice && (
-                  <span className="text-xl text-slate-400 line-through font-bold">৳{product.oldPrice.toFixed(2)}</span>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-xl font-black text-slate-900">৳{product.price.toLocaleString()} BDT</span>
+                {product.stock <= 0 ? (
+                  <span className="bg-amber-100 text-amber-700 text-[9px] font-black px-2 py-1 rounded-full uppercase">Sold out</span>
+                ) : (
+                  <span className="bg-emerald-50 text-emerald-600 text-[9px] font-black px-2 py-1 rounded-full uppercase">In stock</span>
                 )}
               </div>
-
-              <p className="text-slate-500 text-lg leading-relaxed mb-8">
-                {product.description}
+              
+              <p className="text-[10px] font-bold text-slate-400 mb-8">
+                <span className="underline cursor-pointer">Shipping</span> calculated at checkout.
               </p>
 
-              <ul className="space-y-3 mb-10">
-                {product.features.map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm font-bold text-slate-700">
-                    <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                      <Plus size={12} />
-                    </div>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <div className="space-y-6">
+                {/* Quantity */}
+                <div className="space-y-2">
+                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Quantity</label>
+                  <div className="flex items-center w-32 bg-white rounded-lg border border-slate-200">
+                    <button onClick={decrementQty} className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-primary transition-colors">
+                      <Minus size={14} />
+                    </button>
+                    <span className="flex-grow text-center font-bold text-sm text-slate-800">{quantity}</span>
+                    <button onClick={incrementQty} className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-primary transition-colors">
+                      <Plus size={14} />
+                    </button>
+                  </div>
+                </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-6 mt-auto">
-              <div className="flex flex-wrap items-center gap-6">
-                <div className="flex items-center bg-slate-100 rounded-2xl p-1 border border-slate-200">
-                  <button onClick={decrementQty} className="w-12 h-12 flex items-center justify-center text-slate-500 hover:text-primary transition-colors">
-                    <Minus size={20} />
+                {/* Actions */}
+                <div className="flex items-center gap-4">
+                  <button 
+                    onClick={handleAddToCart}
+                    disabled={product.stock <= 0}
+                    className="bg-primary text-white px-8 py-4 rounded-full font-black text-xs uppercase tracking-widest hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
+                  >
+                    <ShoppingCart size={16} />
+                    Add to cart
                   </button>
-                  <span className="w-12 text-center font-black text-lg text-slate-800">{quantity}</span>
-                  <button onClick={incrementQty} className="w-12 h-12 flex items-center justify-center text-slate-500 hover:text-primary transition-colors">
-                    <Plus size={20} />
+                  <button 
+                    onClick={handleWishlistToggle}
+                    className={`px-8 py-4 rounded-full font-black text-xs uppercase tracking-widest transition-all flex items-center gap-3 border-2 ${
+                      isInWishlist(id) 
+                        ? "border-red-100 bg-red-50 text-red-500" 
+                        : "border-slate-100 bg-white text-slate-400 hover:text-primary hover:border-primary/20"
+                    }`}
+                  >
+                    <Heart size={16} className={isInWishlist(id) ? "fill-current" : ""} />
+                    {isInWishlist(id) ? "In Wishlist" : "Wishlist"}
                   </button>
                 </div>
 
-                <button 
-                  onClick={handleAddToCart}
-                  className="flex-grow bg-primary text-white px-10 py-5 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-4 group"
-                >
-                  <ShoppingCart size={20} className="group-hover:scale-110 transition-transform" />
-                  Add to Cart
-                </button>
-
-                <button 
-                  onClick={handleWishlistToggle}
-                  className={`w-16 h-16 rounded-2xl border-2 transition-all flex items-center justify-center ${
-                    isInWishlist(id) ? "border-red-100 text-red-500 bg-red-50/30" : "border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100"
-                  }`}
-                >
-                  <Heart size={24} className={isInWishlist(id) ? "fill-current" : ""} />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-10 border-t border-slate-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
-                    <Truck size={24} />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Shipping</p>
-                    <p className="text-xs font-bold text-slate-800">Free Worldwide</p>
-                  </div>
+                {/* Description */}
+                <div className="pt-8 border-t border-slate-100">
+                  <p className="text-slate-500 text-sm leading-relaxed font-medium">
+                    {product.description}
+                  </p>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
-                    <RotateCcw size={24} />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Returns</p>
-                    <p className="text-xs font-bold text-slate-800">30-Day Policy</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
-                    <ShieldCheck size={24} />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Secure</p>
-                    <p className="text-xs font-bold text-slate-800">100% Guaranteed</p>
-                  </div>
+
+                {/* Share */}
+                <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer hover:text-primary transition-colors">
+                  <Share2 size={12} />
+                  <span>Share</span>
                 </div>
               </div>
             </div>
@@ -233,7 +197,7 @@ export default function ProductDetailPage({ params: paramsPromise }: { params: P
         </div>
 
         {/* Tabs Section */}
-        <div className="mt-24">
+        <div className="mt-16">
           <div className="flex items-center justify-center gap-12 border-b border-slate-100 mb-12">
             {["Description", "Specification", "Reviews (124)"].map((tab) => (
               <button 
@@ -299,8 +263,8 @@ export default function ProductDetailPage({ params: paramsPromise }: { params: P
             <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Related Innovations</h2>
             <Link href="/shop" className="text-[10px] font-black text-primary uppercase tracking-[0.2em] hover:underline">View All Projects</Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {products.filter(p => p.id !== product.id).slice(0, 4).map((p) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+            {products.filter(p => p.id !== product.id).slice(0, 5).map((p) => (
               <ProductCard key={p.id} {...p as any} />
             ))}
           </div>

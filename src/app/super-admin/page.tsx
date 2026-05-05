@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState } from "react";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -19,6 +20,7 @@ import {
   ChevronDown
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 
 const stats = [
   { name: "TOTAL SALES", value: "$4,876", change: "+10.1%", trend: "up", icon: <ShoppingCart size={20} className="text-emerald-500" />, color: "bg-emerald-50" },
@@ -31,37 +33,31 @@ const stats = [
   { name: "PAYMENT FAILURES", value: "4,876", change: "-0.5%", trend: "down", icon: <AlertCircle size={20} className="text-red-500" />, color: "bg-red-50" },
 ];
 
-const countries = [
-  { name: "Canada", code: "CA", sales: "2480k", trend: "up" },
-  { name: "Korea", code: "KR", sales: "200k", trend: "down" },
-  { name: "France", code: "FR", sales: "300k", trend: "up" },
-  { name: "German", code: "DE", sales: "40000k", trend: "down" },
-];
-
-const fulfillment = [
-  { name: "Shipped orders", count: 50, total: 100, color: "bg-blue-500" },
-  { name: "Delivered", count: 40, total: 100, color: "bg-emerald-500" },
-  { name: "Pending shipments", count: 20, total: 100, color: "bg-orange-500" },
-  { name: "Stock orders", count: 10, total: 100, color: "bg-red-500" },
-  { name: "Back Product", count: 2, total: 100, color: "bg-slate-800" },
-];
-
-const recentOrders = [
-  { id: "#254830", customer: "John Doe", date: "12 Sept, 2027", product: "Wireless Mouse", amount: "$20", status: "PENDING" },
-  { id: "#254831", customer: "Jane Smith", date: "12 Sept, 2027", product: "Gaming Keyboard", amount: "$40", status: "DELIVERED" },
-  { id: "#254832", customer: "Mike Johnson", date: "12 Sept, 2027", product: "USB-C Hub", amount: "$60", status: "SHIPPED" },
-  { id: "#254833", customer: "Sarah Williams", date: "12 Sept, 2027", product: "Monitor Stand", amount: "$80", status: "PENDING" },
-  { id: "#254834", customer: "Alex Brown", date: "12 Sept, 2027", product: "Desk Lamp", amount: "$100", status: "DELIVERED" },
-];
-
-const stockUpdates = [
-  { id: "#25453", name: "Product 1", category: "Cloth", stock: 3, status: "LOW STOCK", vendor: "G-Shop" },
-  { id: "#23454", name: "Product 2", category: "Cloth", stock: 6, status: "IN STOCK", vendor: "G-Shop" },
-  { id: "#25455", name: "Product 3", category: "Cloth", stock: 9, status: "LOW STOCK", vendor: "G-Shop" },
-  { id: "#23456", name: "Product 4", category: "Cloth", stock: 12, status: "IN STOCK", vendor: "G-Shop" },
-];
-
 export default function SuperAdminDashboard() {
+  const [orders, setOrders] = useState([
+    { id: "#254830", customer: "John Doe", date: "12 Sept, 2027", product: "Wireless Mouse", amount: "$20", status: "PENDING" },
+    { id: "#254831", customer: "Jane Smith", date: "12 Sept, 2027", product: "Gaming Keyboard", amount: "$40", status: "DELIVERED" },
+    { id: "#254832", customer: "Mike Johnson", date: "12 Sept, 2027", product: "USB-C Hub", amount: "$60", status: "SHIPPED" },
+    { id: "#254833", customer: "Sarah Williams", date: "12 Sept, 2027", product: "Monitor Stand", amount: "$80", status: "PENDING" },
+    { id: "#254834", customer: "Alex Brown", date: "12 Sept, 2027", product: "Desk Lamp", amount: "$100", status: "DELIVERED" },
+  ]);
+
+  const [stock, setStock] = useState([
+    { id: "#25453", name: "Product 1", category: "Cloth", stock: 3, status: "LOW STOCK", vendor: "G-Shop" },
+    { id: "#23454", name: "Product 2", category: "Cloth", stock: 6, status: "IN STOCK", vendor: "G-Shop" },
+    { id: "#25455", name: "Product 3", category: "Cloth", stock: 9, status: "LOW STOCK", vendor: "G-Shop" },
+    { id: "#23456", name: "Product 4", category: "Cloth", stock: 12, status: "IN STOCK", vendor: "G-Shop" },
+  ]);
+
+  const handleCancelOrder = (id: string) => {
+    setOrders(orders.map(o => o.id === id ? { ...o, status: "CANCELLED" } : o));
+    toast.info(`Order ${id} has been cancelled.`);
+  };
+
+  const handleOrderNow = (name: string) => {
+    toast.success(`Restock order placed for ${name}!`);
+  };
+
   return (
     <div className="space-y-8 pb-12 animate-in fade-in duration-500">
       {/* Stats Grid */}
@@ -72,7 +68,8 @@ export default function SuperAdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
             key={stat.name} 
-            className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm relative overflow-hidden group"
+            className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm relative overflow-hidden group cursor-pointer hover:border-primary/50 transition-all"
+            onClick={() => toast.info(`Viewing details for ${stat.name}`)}
           >
             <div className="flex items-center justify-between mb-4">
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.name}</p>
@@ -84,7 +81,6 @@ export default function SuperAdminDashboard() {
             <div className="flex items-center justify-between">
               <h3 className="text-2xl font-black text-slate-800">{stat.value}</h3>
               <div className="h-10 w-24 relative opacity-40 group-hover:opacity-100 transition-opacity">
-                {/* Mock Sparkline SVG */}
                 <svg viewBox="0 0 100 40" className="w-full h-full">
                   <path 
                     d={stat.trend === "up" ? "M0 30 Q 25 10, 50 25 T 100 10" : "M0 10 Q 25 30, 50 15 T 100 35"} 
@@ -96,25 +92,22 @@ export default function SuperAdminDashboard() {
                 </svg>
               </div>
             </div>
-            {/* Background Accent */}
             <div className={`absolute bottom-0 left-0 right-0 h-1 ${stat.trend === "up" ? "bg-emerald-500" : "bg-red-500"} opacity-20`}></div>
           </motion.div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Order Status Chart Card */}
         <div className="lg:col-span-2 bg-white rounded-[32px] border border-slate-100 shadow-sm p-8">
           <div className="flex items-center justify-between mb-10">
             <h3 className="font-black text-slate-800 uppercase tracking-widest text-sm">Order Status</h3>
-            <button className="p-2 hover:bg-slate-50 rounded-xl transition-all">
+            <button onClick={() => toast.success("Opening status report...")} className="p-2 hover:bg-slate-50 rounded-xl transition-all">
               <MoreVertical size={18} className="text-slate-400" />
             </button>
           </div>
           
           <div className="flex flex-col md:flex-row items-center justify-around gap-8">
-            {/* Mock Donut Chart */}
-            <div className="relative w-64 h-64">
+            <div className="relative w-64 h-64 cursor-pointer" onClick={() => toast.info("Opening detailed analytics...")}>
               <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
                 <circle cx="18" cy="18" r="16" fill="transparent" stroke="#F1F5F9" strokeWidth="3" />
                 <circle cx="18" cy="18" r="16" fill="transparent" stroke="#10b981" strokeWidth="3" strokeDasharray="60 40" />
@@ -128,7 +121,6 @@ export default function SuperAdminDashboard() {
               </div>
             </div>
 
-            {/* Chart Legend */}
             <div className="grid grid-cols-2 gap-x-12 gap-y-4">
               {[
                 { name: "New Shipment", count: 60, color: "bg-emerald-500" },
@@ -151,7 +143,6 @@ export default function SuperAdminDashboard() {
           </div>
         </div>
 
-        {/* Top Countries Card */}
         <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm p-8">
           <div className="flex flex-col mb-8">
             <h3 className="font-black text-slate-800 uppercase tracking-widest text-sm">Top Countries By sales</h3>
@@ -159,8 +150,13 @@ export default function SuperAdminDashboard() {
           </div>
 
           <div className="space-y-6">
-            {countries.map((country) => (
-              <div key={country.name} className="flex items-center gap-4 group">
+            {[
+              { name: "Canada", code: "CA", sales: "2480k", trend: "up" },
+              { name: "Korea", code: "KR", sales: "200k", trend: "down" },
+              { name: "France", code: "FR", sales: "300k", trend: "up" },
+              { name: "German", code: "DE", sales: "40000k", trend: "down" },
+            ].map((country) => (
+              <div key={country.name} className="flex items-center gap-4 group cursor-pointer" onClick={() => toast.info(`Viewing sales in ${country.name}`)}>
                 <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center font-black text-[10px] text-slate-500 group-hover:bg-primary group-hover:text-white transition-all">
                   {country.code}
                 </div>
@@ -186,26 +182,25 @@ export default function SuperAdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Revenue Chart Card */}
         <div className="lg:col-span-2 bg-white rounded-[32px] border border-slate-100 shadow-sm p-8">
           <div className="flex items-center justify-between mb-10">
             <div>
               <h3 className="font-black text-slate-800 uppercase tracking-widest text-sm">Accommodation Revenue</h3>
               <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mt-1">(+42%) than last year</p>
             </div>
-            <button className="p-2 hover:bg-slate-50 rounded-xl transition-all">
+            <button onClick={() => toast.success("Exporting revenue report...")} className="p-2 hover:bg-slate-50 rounded-xl transition-all">
               <MoreVertical size={18} className="text-slate-400" />
             </button>
           </div>
 
           <div className="h-64 flex items-end gap-3 md:gap-4">
             {[35, 60, 42, 55, 40, 65, 75, 48, 45, 38, 44, 32].map((val, i) => (
-              <div key={i} className="flex-grow flex flex-col items-center gap-2 group cursor-pointer">
+              <div key={i} className="flex-grow flex flex-col items-center gap-2 group cursor-pointer" onClick={() => toast.info(`${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i]} Revenue: $${val}k`)}>
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: `${val * 2}px` }}
                   transition={{ delay: i * 0.05, duration: 1 }}
-                  className={`w-full max-w-[40px] rounded-t-lg transition-all ${
+                  className={`w-full max-w-[40px] rounded-t-lg transition-all group-hover:opacity-80 ${
                     val > 50 ? "bg-[#14B8A6]" : "bg-[#F59E0B]"
                   }`}
                 ></motion.div>
@@ -217,15 +212,20 @@ export default function SuperAdminDashboard() {
           </div>
         </div>
 
-        {/* Fulfillment Card */}
         <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm p-8">
           <h3 className="font-black text-slate-800 uppercase tracking-widest text-sm mb-10">Order Fulfillment Status</h3>
           
           <div className="space-y-8">
-            {fulfillment.map((item) => (
-              <div key={item.name}>
+            {[
+              { name: "Shipped orders", count: 50, color: "bg-blue-500" },
+              { name: "Delivered", count: 40, color: "bg-emerald-500" },
+              { name: "Pending shipments", count: 20, color: "bg-orange-500" },
+              { name: "Stock orders", count: 10, color: "bg-red-500" },
+              { name: "Back Product", count: 2, color: "bg-slate-800" },
+            ].map((item) => (
+              <div key={item.name} className="cursor-pointer group" onClick={() => toast.info(`Viewing ${item.name} details`)}>
                 <div className="flex justify-between items-end mb-2">
-                  <p className="text-[11px] font-black text-slate-800 uppercase tracking-tight">{item.name}</p>
+                  <p className="text-[11px] font-black text-slate-800 uppercase tracking-tight group-hover:text-primary transition-colors">{item.name}</p>
                   <p className="text-[10px] font-bold text-slate-400 uppercase">{item.count} ({item.count}%)</p>
                 </div>
                 <div className="h-2 w-full bg-slate-50 rounded-full overflow-hidden">
@@ -244,8 +244,9 @@ export default function SuperAdminDashboard() {
 
       {/* Recent Orders Table */}
       <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-slate-50">
+        <div className="p-8 border-b border-slate-50 flex items-center justify-between">
           <h3 className="font-black text-slate-800 uppercase tracking-widest text-sm">Recent Orders</h3>
+          <button onClick={() => toast.info("Opening full order management...")} className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">View All</button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -261,43 +262,47 @@ export default function SuperAdminDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {recentOrders.map((order) => (
+              {orders.map((order) => (
                 <tr key={order.id} className="hover:bg-slate-50/50 transition-colors">
                   <td className="px-8 py-5 text-[11px] font-bold text-slate-500">{order.id}</td>
                   <td className="px-8 py-5 text-[11px] font-black text-slate-800">{order.customer}</td>
                   <td className="px-8 py-5 text-[11px] font-bold text-slate-500">{order.date}</td>
-                  <td className="px-8 py-5 text-[11px] font-black text-slate-800">{order.product}</td>
+                  <td className="px-8 py-5 text-[11px] font-black text-slate-800 uppercase tracking-tight">{order.product}</td>
                   <td className="px-8 py-5 text-[11px] font-black text-slate-800">{order.amount}</td>
                   <td className="px-8 py-5">
                     <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
                       order.status === "DELIVERED" ? "bg-emerald-50 text-emerald-500" :
                       order.status === "PENDING" ? "bg-amber-50 text-amber-500" :
-                      "bg-blue-50 text-blue-500"
+                      order.status === "SHIPPED" ? "bg-blue-50 text-blue-500" :
+                      "bg-rose-50 text-rose-500"
                     }`}>
                       {order.status}
                     </span>
                   </td>
                   <td className="px-8 py-5 text-center">
-                    <button className="px-4 py-1.5 border border-rose-100 text-rose-500 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-rose-50 transition-all">CANCEL</button>
+                    {order.status !== "CANCELLED" ? (
+                      <button 
+                        onClick={() => handleCancelOrder(order.id)}
+                        className="px-4 py-1.5 border border-rose-100 text-rose-500 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-rose-50 transition-all"
+                      >
+                        CANCEL
+                      </button>
+                    ) : (
+                      <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest italic">VOID</span>
+                    )}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <div className="p-8 flex items-center justify-center gap-2">
-          <button className="p-2 text-slate-400 hover:text-primary"><ChevronDown className="rotate-90" size={16} /></button>
-          <button className="w-8 h-8 rounded-full bg-primary text-white text-xs font-black">1</button>
-          <button className="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-500 text-xs font-black">2</button>
-          <button className="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-500 text-xs font-black">3</button>
-          <button className="p-2 text-slate-400 hover:text-primary"><ChevronDown className="-rotate-90" size={16} /></button>
-        </div>
       </div>
 
       {/* Stock Update Table */}
       <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-slate-50">
+        <div className="p-8 border-b border-slate-50 flex items-center justify-between">
           <h3 className="font-black text-slate-800 uppercase tracking-widest text-sm">Stock Update</h3>
+          <button onClick={() => toast.info("Opening full inventory...")} className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">Manage All</button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -312,11 +317,11 @@ export default function SuperAdminDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {stockUpdates.map((item) => (
+              {stock.map((item) => (
                 <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all shadow-inner">
                         <Package size={20} />
                       </div>
                       <div>
@@ -325,8 +330,8 @@ export default function SuperAdminDashboard() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-8 py-5 text-[11px] font-black text-slate-800 uppercase">{item.category}</td>
-                  <td className="px-8 py-5 text-[11px] font-black text-slate-800">{item.stock}</td>
+                  <td className="px-8 py-5 text-[11px] font-black text-slate-800 uppercase tracking-tight">{item.category}</td>
+                  <td className="px-8 py-5 text-[11px] font-black text-slate-800">{item.stock} Units</td>
                   <td className="px-8 py-5">
                     <span className={`px-3 py-1 rounded text-[9px] font-black uppercase tracking-widest ${
                       item.status === "LOW STOCK" ? "bg-rose-50 text-rose-500" : "bg-emerald-50 text-emerald-500"
@@ -334,9 +339,14 @@ export default function SuperAdminDashboard() {
                       {item.status}
                     </span>
                   </td>
-                  <td className="px-8 py-5 text-[11px] font-black text-slate-800 uppercase">{item.vendor}</td>
+                  <td className="px-8 py-5 text-[11px] font-black text-slate-800 uppercase tracking-tight">{item.vendor}</td>
                   <td className="px-8 py-5 text-center">
-                    <button className="bg-[#10B981] text-white text-[9px] font-black uppercase tracking-widest px-6 py-2 rounded-lg hover:bg-[#059669] transition-all shadow-lg shadow-emerald-200">ORDER NOW</button>
+                    <button 
+                      onClick={() => handleOrderNow(item.name)}
+                      className="bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest px-6 py-2 rounded-lg hover:bg-slate-800 transition-all shadow-lg shadow-slate-200"
+                    >
+                      ORDER NOW
+                    </button>
                   </td>
                 </tr>
               ))}

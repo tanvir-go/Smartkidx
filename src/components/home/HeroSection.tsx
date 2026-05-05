@@ -4,7 +4,7 @@ import TopSellers from "./TopSellers";
 
 export default function HeroSection() {
   return (
-    <section className="pt-6 pb-20 bg-slate-50">
+    <section className="pt-6 pb-12 bg-slate-50">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-12 gap-6 lg:gap-8 items-stretch">
           {/* Left Sidebar Placeholder (Occupied by Header Dropdown) */}

@@ -66,24 +66,17 @@ export default function ProductCard({
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="bg-white rounded-2xl border border-slate-100 overflow-hidden group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 h-full flex flex-col"
+      className="bg-white rounded-2xl border border-slate-100 overflow-hidden group hover:shadow-2xl hover:shadow-slate-200/40 transition-all duration-500 h-full flex flex-col"
     >
-      <div className="relative aspect-[4/5] overflow-hidden">
+      <div className="relative aspect-square overflow-hidden bg-slate-50/50">
         {/* Badges */}
-        <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
+        <div className="absolute top-2 left-2 z-10 flex flex-col gap-1.5">
+          <span className="bg-slate-900 text-white text-[8px] font-black px-2 py-1 rounded-sm uppercase tracking-widest shadow-sm">
+            Hardware
+          </span>
           {discount && (
-            <span className="bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-md shadow-sm">
+            <span className="bg-red-500 text-white text-[8px] font-black px-2 py-1 rounded-sm uppercase tracking-widest shadow-sm">
               -{discount}%
-            </span>
-          )}
-          {isNew && (
-            <span className="bg-primary text-white text-[10px] font-black px-2 py-1 rounded-md shadow-sm">
-              NEW
-            </span>
-          )}
-          {isHot && (
-            <span className="bg-orange-500 text-white text-[10px] font-black px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
-              <Zap size={10} className="fill-current" /> HOT
             </span>
           )}
         </div>
@@ -91,70 +84,52 @@ export default function ProductCard({
         {/* Wishlist Button */}
         <button 
           onClick={handleWishlistToggle}
-          className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center transition-all shadow-sm opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 duration-300 ${
+          className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center transition-all shadow-sm opacity-0 group-hover:opacity-100 duration-300 ${
             isInWishlist(id) ? "text-red-500 bg-white" : "text-slate-400 hover:text-red-500 hover:bg-white"
           }`}
         >
-          <Heart size={16} className={isInWishlist(id) ? "fill-current" : ""} />
+          <Heart size={14} className={isInWishlist(id) ? "fill-current" : ""} />
         </button>
 
         {/* Product Image */}
-        <Link href={`/product/${id}`} className="block w-full h-full">
+        <Link href={`/product/${id}`} className="block w-full h-full p-6">
           <img 
             src={image} 
             alt={name}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110 drop-shadow-sm"
           />
         </Link>
-
-        {/* Quick Actions Overlay */}
-        <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/20 to-transparent flex gap-2">
-          <button 
-            onClick={handleAddToCart}
-            className="flex-grow bg-white text-slate-900 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all shadow-lg"
-          >
-            <ShoppingCart size={16} /> ADD TO CART
-          </button>
-          <Link href={`/product/${id}`} className="w-10 h-10 bg-white text-slate-900 rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-lg">
-            <Eye size={18} />
-          </Link>
-        </div>
       </div>
 
-      <div className="p-4 md:p-5 flex flex-col flex-grow">
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">{category}</p>
-        <Link href={`/product/${id}`} className="block text-sm md:text-base font-bold text-slate-800 hover:text-primary transition-colors line-clamp-2 mb-2 h-10 md:h-12 leading-snug">
+      <div className="p-3 md:p-4 flex flex-col flex-grow">
+        {/* Category & Rating */}
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{category.split('|')[0]}</p>
+          <div className="flex items-center gap-0.5">
+            <Star size={10} className="fill-amber-400 text-amber-400" />
+            <span className="text-[10px] font-black text-slate-400">{rating}</span>
+          </div>
+        </div>
+
+        {/* Title */}
+        <Link href={`/product/${id}`} className="block text-xs md:text-sm font-black text-slate-800 hover:text-primary transition-colors line-clamp-2 mb-3 leading-tight min-h-[32px]">
           {name}
         </Link>
         
-        <div className="flex items-center gap-2 mb-4">
-          <div className="flex items-center gap-0.5">
-            {[...Array(5)].map((_, i) => (
-              <Star 
-                key={i} 
-                size={12} 
-                className={i < Math.floor(rating) ? "fill-accent text-accent" : "text-slate-200"} 
-              />
-            ))}
-          </div>
-          <span className="text-sm text-slate-400 font-bold">({reviews})</span>
-        </div>
-
-        <div className="flex items-center justify-between mt-auto">
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg md:text-xl font-black text-slate-900">৳{price.toFixed(2)}</span>
+        {/* Price and Cart Row */}
+        <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-50">
+          <div className="flex flex-col">
+            <span className="text-base md:text-lg font-black text-slate-900 leading-none mb-1">৳{price.toLocaleString()}</span>
             {oldPrice && (
-              <span className="text-xs text-slate-400 line-through">৳{oldPrice.toFixed(2)}</span>
+              <span className="text-[10px] text-slate-300 line-through font-bold">৳{oldPrice.toLocaleString()}</span>
             )}
           </div>
-          <div className="md:hidden">
-            <button 
-              onClick={handleAddToCart}
-              className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20"
-            >
-              <ShoppingCart size={14} />
-            </button>
-          </div>
+          <button 
+            onClick={handleAddToCart}
+            className="w-9 h-9 rounded-full flex items-center justify-center bg-slate-900 text-white hover:bg-primary transition-all shadow-lg shadow-slate-200"
+          >
+            <ShoppingCart size={16} strokeWidth={2.5} />
+          </button>
         </div>
       </div>
     </motion.div>

@@ -7,12 +7,10 @@ export const categories = [
     slug: "electronics",
     href: "/category/electronics",
     subcategories: [
-      { name: "Cameras & Digital Gadgets", slug: "cameras-gadgets" },
-      { name: "Educational Video & Audio Devices", slug: "video-audio" },
-      { name: "Gaming Consoles & Accessories", slug: "gaming" },
-      { name: "Headphones & Earbuds", slug: "headphones" },
-      { name: "Learning Tablets & Kids Laptops", slug: "tablets-laptops" },
-      { name: "Smartwatches & Wearables", slug: "smartwatches" }
+      { name: "Learning Tablets", slug: "tablets" },
+      { name: "Smartwatches", slug: "smartwatches" },
+      { name: "Digital Cameras", slug: "cameras" },
+      { name: "Gaming Consoles", slug: "gaming" }
     ]
   },
   { 
@@ -23,10 +21,53 @@ export const categories = [
     subcategories: [
       { name: "Coding & Programming Kits", slug: "coding-kits" },
       { name: "DIY Robotics Kits", slug: "diy-robotics" },
-      { name: "Sensors & Controllers", slug: "sensors" },
-      { name: "Drones (Mini / Beginner Friendly)", slug: "drones" },
-      { name: "IoT Smart Home Toys", slug: "iot-toys" },
-      { name: "STEM Robotics Projects", slug: "stem-robotics" }
+      { name: "Sensors & Modules", slug: "sensors" },
+      { name: "Drones & RC", slug: "drones" }
+    ]
+  },
+  { 
+    name: "Kids Toys", 
+    icon: <Gamepad2 size={18} />, 
+    slug: "toys",
+    href: "/category/toys",
+    subcategories: [
+      { name: "Robotics Kits", slug: "robotics-kits" },
+      { name: "Art & Craft Kits", slug: "art-craft" },
+      { name: "Building Blocks", slug: "building-blocks" },
+      { name: "Remote Control Cars", slug: "rc-cars" }
+    ]
+  },
+  { 
+    name: "Stationary", 
+    icon: <Palette size={18} />, 
+    slug: "stationary",
+    href: "/category/stationary",
+    subcategories: [
+      { name: "School Supplies", slug: "school-supplies" },
+      { name: "Art Supplies", slug: "art-supplies" },
+      { name: "Notebooks & Diaries", slug: "notebooks" }
+    ]
+  },
+  { 
+    name: "Kids Lifestyle", 
+    icon: <Baby size={18} />, 
+    slug: "lifestyle",
+    href: "/category/lifestyle",
+    subcategories: [
+      { name: "School Bags", slug: "school-bags" },
+      { name: "Kids Clothing", slug: "clothing" },
+      { name: "Kids Footwear", slug: "footwear" }
+    ]
+  },
+  { 
+    name: "Books", 
+    icon: <BookOpen size={18} />, 
+    slug: "books",
+    href: "/category/books",
+    subcategories: [
+      { name: "Storybooks", slug: "storybooks" },
+      { name: "Activity Books", slug: "activity-books" },
+      { name: "Language Learning", slug: "language-learning" }
     ]
   },
   {
@@ -37,64 +78,8 @@ export const categories = [
     subcategories: [
       { name: "Science Kits", slug: "science-kits" },
       { name: "Engineering Kits", slug: "engineering-kits" },
-      { name: "Math Kits", slug: "math-kits" },
-      { name: "Chemistry Sets", slug: "chemistry-sets" }
-    ]
-  },
-  { 
-    name: "Kids Toys", 
-    icon: <Gamepad2 size={18} />, 
-    slug: "toys",
-    href: "/category/toys",
-    subcategories: [
-      { name: "Action Figures & Dolls", slug: "action-figures" },
-      { name: "Art & Craft Kits", slug: "art-craft" },
-      { name: "Building Blocks & Construction Sets", slug: "building-blocks" },
-      { name: "Remote Control Cars & Vehicles", slug: "rc-vehicles" },
-      { name: "Soft Toys & Plushies", slug: "plushies" },
-      { name: "Puzzles & Board Games", slug: "puzzles-games" },
-      { name: "Outdoor Toys", slug: "outdoor-toys" }
-    ]
-  },
-  { 
-    name: "Stationary", 
-    icon: <Palette size={18} />, 
-    slug: "stationary",
-    href: "/category/stationary",
-    subcategories: [
-      { name: "Art Supplies", slug: "art-supplies" },
-      { name: "Bags & Pencil Cases", slug: "bags-cases" },
-      { name: "Coloring Books & Crayons", slug: "coloring" },
-      { name: "Geometry Sets & Math Tools", slug: "math-tools" },
-      { name: "Notebooks & Diaries", slug: "notebooks" },
-      { name: "School Supplies", slug: "school-supplies" }
-    ]
-  },
-  { 
-    name: "Kids Lifestyle", 
-    icon: <Baby size={18} />, 
-    slug: "lifestyle",
-    href: "/category/lifestyle",
-    subcategories: [
-      { name: "Accessories", slug: "lifestyle-accessories" },
-      { name: "School Bags & Backpacks", slug: "backpacks" },
-      { name: "Clothing", slug: "clothing" },
-      { name: "Footwear", slug: "footwear" },
-      { name: "Lunch Boxes & Water Bottles", slug: "dining" },
-      { name: "Room Décor & Furniture", slug: "room-decor" }
-    ]
-  },
-  { 
-    name: "Books", 
-    icon: <BookOpen size={18} />, 
-    slug: "books",
-    href: "/category/books",
-    subcategories: [
-      { name: "Activity Books", slug: "activity-books" },
-      { name: "Bilingual & Language Learning Books", slug: "language-books" },
-      { name: "Comics & Graphic Novels", slug: "comics" },
-      { name: "Educational & Reference Books", slug: "educational-books" },
-      { name: "Storybooks & Novels", slug: "storybooks" }
+      { name: "Physics Experiments", slug: "physics" },
+      { name: "Chemistry Sets", slug: "chemistry" }
     ]
   }
 ];

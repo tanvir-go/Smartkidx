@@ -109,7 +109,7 @@ export default function AboutPage() {
             <div className="relative">
                <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl relative">
                   <Image 
-                    src="https://placehold.co/800x1000/png?text=STEM+Innovation" 
+                    src="/images/demo/featured_stem.png" 
                     alt="Mission" 
                     fill
                     className="object-cover"
@@ -171,25 +171,24 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Founder Message */}
       <section className="py-20 lg:py-32">
         <div className="container mx-auto px-4">
-          <div className="bg-slate-900 rounded-[60px] p-8 md:p-20 text-white relative overflow-hidden">
+          <div className="bg-white rounded-[60px] p-8 md:p-20 text-slate-800 relative overflow-hidden border-2 border-slate-50 shadow-2xl shadow-slate-200/50">
              <div className="grid lg:grid-cols-2 gap-16 items-center relative z-10">
                <div>
-                  <MessageCircle size={64} className="text-primary opacity-50 mb-8" />
-                  <p className="text-2xl md:text-4xl font-display font-medium leading-relaxed mb-10 italic">
+                  <MessageCircle size={64} className="text-primary opacity-20 mb-8" />
+                  <p className="text-2xl md:text-4xl font-display font-medium leading-relaxed mb-10 italic text-slate-700">
                     "Every child is born a scientist. Our job is to give them the right laboratory to explore their wildest ideas."
                   </p>
                   <div>
                     <p className="text-xl font-black uppercase tracking-widest text-primary">MD Nasir Feroz</p>
-                    <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mt-1">Founder & CEO, SmartKids</p>
+                    <p className="text-slate-500 font-bold uppercase tracking-widest text-xs mt-1">Founder & CEO, SmartKids</p>
                   </div>
                </div>
                <div className="hidden lg:block relative">
-                  <div className="aspect-square w-full max-w-md mx-auto rounded-[40px] overflow-hidden border-8 border-white/10 relative">
+                  <div className="aspect-square w-full max-w-md mx-auto rounded-[40px] overflow-hidden border-8 border-white relative shadow-xl">
                      <Image 
-                       src="https://placehold.co/600x600/png?text=Founder+Image" 
+                       src="/images/demo/founder.png" 
                        alt="Founder" 
                        fill
                        className="object-cover"

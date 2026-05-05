@@ -41,15 +41,18 @@ export default function CategoryPage({ params: paramsPromise }: { params: Promis
 
   // Filter products
   const filteredProducts = allProducts.filter(p => {
-    const pCat = p.category.toLowerCase();
-    if (categorySlug === "electronics" && pCat.includes("electronics")) return true;
-    if (categorySlug === "robotics" && pCat.includes("robotics")) return true;
-    if (categorySlug === "stem-kits" && pCat.includes("stem")) return true;
-    if (categorySlug === "toys" && pCat.includes("toys")) return true;
-    if (categorySlug === "stationary" && pCat.includes("stationary")) return true;
-    if (categorySlug === "lifestyle" && pCat.includes("lifestyle")) return true;
-    if (categorySlug === "books" && pCat.includes("books")) return true;
-    return false;
+    const matchesCategory = p.category.toLowerCase().includes(categorySlug.replace(/-/g, ' ')) || 
+                           (categorySlug === "robotics" && p.category.includes("Robotics")) ||
+                           (categorySlug === "stem-kits" && p.category.includes("STEM"));
+
+    if (!matchesCategory) return false;
+
+    if (subCategorySlug) {
+      const formattedSubSlug = subCategorySlug.replace(/-/g, ' ');
+      return p.subCategory.toLowerCase().includes(formattedSubSlug);
+    }
+
+    return true;
   });
 
   const displayProducts = filteredProducts.length > 0 ? filteredProducts : allProducts.slice(0, 8);

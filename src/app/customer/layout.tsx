@@ -33,7 +33,7 @@ export default function CustomerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -43,9 +43,9 @@ export default function CustomerLayout({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="h-screen bg-slate-50 flex flex-col overflow-hidden">
       {/* Top Header */}
-      <header className="bg-white/80 backdrop-blur-md h-20 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
+      <header className="bg-white/80 backdrop-blur-md min-h-[80px] py-4 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
         <div className="flex items-center gap-4 md:gap-8">
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -64,8 +64,8 @@ export default function CustomerLayout({
           </Link>
           <div className="h-6 w-px bg-slate-100 hidden xl:block"></div>
           <div className="hidden sm:block">
-            <h1 className="text-xs font-black text-slate-800 uppercase tracking-widest leading-none">Customer Account</h1>
-            <p className="text-[9px] text-primary font-bold uppercase tracking-tighter mt-1">SmartKids Member</p>
+            <h1 className="text-sm font-semibold text-slate-800 uppercase tracking-widest leading-none">Customer Account</h1>
+            <p className="text-[9px] text-primary font-semibold uppercase tracking-tighter mt-1">SmartKids Member</p>
           </div>
         </div>
 
@@ -86,8 +86,8 @@ export default function CustomerLayout({
           
           <div className="flex items-center gap-3 pl-2 group cursor-pointer">
             <div className="text-right hidden sm:block">
-              <p className="text-[11px] font-black text-slate-800 uppercase leading-none">John Smith</p>
-              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5">Premium</p>
+              <p className="text-[11px] font-semibold text-slate-800 uppercase leading-none">John Smith</p>
+              <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest mt-1.5">Premium</p>
             </div>
             <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary text-xs font-black shadow-sm group-hover:bg-primary group-hover:text-white transition-all">
               JS
@@ -96,7 +96,7 @@ export default function CustomerLayout({
         </div>
       </header>
 
-      <div className="flex-grow flex relative">
+      <div className="flex-grow flex relative overflow-hidden">
         {/* Mobile Sidebar Overlay */}
         {isSidebarOpen && (
           <div 
@@ -107,9 +107,9 @@ export default function CustomerLayout({
 
         {/* Sidebar */}
         <aside className={`
-          fixed lg:sticky top-20 bottom-0 left-0 z-50 lg:z-30
+          fixed lg:relative top-0 bottom-0 left-0 z-50
           w-72 bg-white border-r border-slate-100 
-          flex flex-col p-6 space-y-2
+          flex flex-col p-6 space-y-2 h-full
           transition-transform duration-300 ease-in-out
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}>
@@ -129,7 +129,7 @@ export default function CustomerLayout({
                 <span className={isActive ? "text-white" : "text-slate-400 group-hover:text-primary"}>
                   {item.icon}
                 </span>
-                <span className="text-sm font-bold uppercase tracking-wider">{item.name}</span>
+                <span className="text-[13px] font-semibold">{item.name}</span>
               </Link>
             );
           })}
@@ -141,13 +141,13 @@ export default function CustomerLayout({
             className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-red-50 text-red-500 rounded-xl transition-all"
           >
             <LogOut size={20} />
-            <span className="text-sm font-bold uppercase tracking-wider">Sign Out</span>
+            <span className="text-[13px] font-semibold">Sign Out</span>
           </button>
         </aside>
 
         {/* Content Area */}
-        <main className="flex-grow p-4 md:p-8 overflow-y-auto">
-          <div className="max-w-5xl mx-auto">
+        <main className="flex-grow overflow-y-auto h-full custom-scrollbar">
+          <div className="p-4 md:p-8 max-w-7xl mx-auto">
             {children}
           </div>
         </main>

@@ -91,84 +91,93 @@ export default function MainHeader() {
   }, []);
 
   return (
-    <header className={`${isSticky ? "fixed top-0 left-0 right-0 z-50 shadow-md bg-white animate-in slide-in-from-top duration-300" : "relative z-[40] bg-white"}`}>
+    <header className={`${isSticky ? "fixed top-0 left-0 right-0 z-50 border-b border-slate-100 bg-white animate-in slide-in-from-top duration-300" : "relative z-[40] bg-white"}`}>
       <div className="container mx-auto px-4">
         {/* Middle Row: Logo, Menu, Socials, Login */}
-        <div className="flex items-center justify-between py-6">
-          {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
-            <Image 
-              src="/Smart-Kids-Logo.webp" 
-              alt="SmartKids Logo" 
-              width={200} 
-              height={60} 
-              className="h-12 w-auto object-contain"
-              priority
-            />
-          </Link>
+        <div className="flex items-center py-2 relative">
+          {/* Logo (Left side) */}
+          <div className="flex-1 flex justify-start">
+            <Link href="/" className="flex-shrink-0">
+              <Image 
+                src="/Smart-Kids-Logo.webp" 
+                alt="SmartKids Logo" 
+                width={200} 
+                height={60} 
+                className="h-10 w-auto object-contain"
+                priority
+              />
+            </Link>
+          </div>
 
-          {/* Navigation Menu */}
-          <nav className="hidden lg:flex items-center space-x-6">
-            <Link href="/shop" className="text-[11px] font-black text-slate-800 hover:text-primary transition-colors uppercase tracking-tight">Shop</Link>
+          {/* Navigation Menu (Centered) */}
+          <nav className="hidden lg:flex items-center">
+            <Link href="/shop" className="text-[11px] font-black text-slate-800 hover:text-primary transition-colors uppercase tracking-tight px-5">Shop</Link>
+            
+            <div className="w-px h-3 bg-slate-100"></div>
             
             {/* Mega Menu: Our Categories */}
-            <div className="group relative py-6">
+            <div className="group relative py-3 px-5">
               <Link href="/categories" className="text-[11px] font-black text-slate-800 hover:text-primary transition-colors uppercase tracking-tight flex items-center gap-1">
                 Our Categories <ChevronDown size={12} className="text-slate-400 group-hover:rotate-180 transition-transform" />
               </Link>
               
-              {/* Mega Menu Content */}
-              <div className="absolute top-full -left-48 w-[900px] bg-white shadow-2xl border border-slate-100 p-8 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] rounded-b-2xl">
+              {/* Mega Menu Content (unchanged) */}
+              <div className="absolute top-full -left-48 w-[900px] bg-white border border-slate-100 p-8 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] rounded-b-2xl">
                 <div className="grid grid-cols-3 gap-10">
-                  {/* Column 1: Electronics | Robotics | IOT */}
+                  {/* Column 1: Electronics & Gadgets */}
                   <div>
-                    <h3 className="text-xs font-black text-primary uppercase tracking-widest border-b border-slate-100 pb-3 mb-4">Electronics | Robotics | IOT</h3>
+                    <h3 className="text-xs font-black text-primary uppercase tracking-widest border-b border-slate-100 pb-3 mb-4">Electronics & Gadgets</h3>
                     <ul className="space-y-3">
                       {[
-                        "Variations swatches", "New", "Catalog mode", "Login to see prices", 
-                        "Cookies law info", "Shop sidebar widgets collapse", "Mobile bottom navbar", 
-                        "Age verification", "Variation on shop page #1", "Variation on shop page #2"
-                      ].map((item, i) => (
+                        { name: "Learning Tablets", slug: "tablets" },
+                        { name: "Smartwatches", slug: "smartwatches" },
+                        { name: "Digital Cameras", slug: "cameras" },
+                        { name: "Gaming Consoles", slug: "gaming" }
+                      ].map((sub, i) => (
                         <li key={i}>
-                          <Link href="#" className="text-[11px] font-bold text-slate-500 hover:text-primary transition-colors uppercase tracking-tight flex items-center gap-2 group/item">
+                          <Link href={`/category/electronics/${sub.slug}`} className="text-[11px] font-bold text-slate-500 hover:text-primary transition-colors uppercase tracking-tight flex items-center gap-2 group/item">
                             <span className="w-1 h-1 rounded-full bg-slate-200 group-hover/item:bg-primary transition-colors"></span>
-                            {item}
+                            {sub.name}
                           </Link>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  {/* Column 2: Kids Lifestyle | Toys */}
+                  {/* Column 2: Robotics | IoT */}
                   <div>
-                    <h3 className="text-xs font-black text-primary uppercase tracking-widest border-b border-slate-100 pb-3 mb-4">Kids Lifestyle | Toys</h3>
+                    <h3 className="text-xs font-black text-primary uppercase tracking-widest border-b border-slate-100 pb-3 mb-4">Robotics | IoT</h3>
                     <ul className="space-y-3">
                       {[
-                        "Unlimited", "All images on shop page", "Pagination in main gallery", 
-                        "Size guides", "360° product viewer", "Full width product page", 
-                        "Quantity input on shop page", "Custom product tabs", "Show brand on product loop"
-                      ].map((item, i) => (
+                        { name: "Coding & Programming Kits", slug: "coding-kits" },
+                        { name: "DIY Robotics Kits", slug: "diy-robotics" },
+                        { name: "Sensors & Modules", slug: "sensors" },
+                        { name: "Drones & RC", slug: "drones" }
+                      ].map((sub, i) => (
                         <li key={i}>
-                          <Link href="#" className="text-[11px] font-bold text-slate-500 hover:text-primary transition-colors uppercase tracking-tight flex items-center gap-2 group/item">
+                          <Link href={`/category/robotics/${sub.slug}`} className="text-[11px] font-bold text-slate-500 hover:text-primary transition-colors uppercase tracking-tight flex items-center gap-2 group/item">
                             <span className="w-1 h-1 rounded-full bg-slate-200 group-hover/item:bg-primary transition-colors"></span>
-                            {item}
+                            {sub.name}
                           </Link>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  {/* Column 3: Books | Stationary */}
+                  {/* Column 3: STEM Kits */}
                   <div>
-                    <h3 className="text-xs font-black text-primary uppercase tracking-widest border-b border-slate-100 pb-3 mb-4">Books | Stationary</h3>
+                    <h3 className="text-xs font-black text-primary uppercase tracking-widest border-b border-slate-100 pb-3 mb-4">STEM Kits</h3>
                     <ul className="space-y-3">
                       {[
-                        "Sticky add to cart", "Buy now button", "Visitor counter", "Custom product label"
-                      ].map((item, i) => (
+                        { name: "Science Kits", slug: "science-kits" },
+                        { name: "Engineering Kits", slug: "engineering-kits" },
+                        { name: "Physics Experiments", slug: "physics" },
+                        { name: "Chemistry Sets", slug: "chemistry" }
+                      ].map((sub, i) => (
                         <li key={i}>
-                          <Link href="#" className="text-[11px] font-bold text-slate-500 hover:text-primary transition-colors uppercase tracking-tight flex items-center gap-2 group/item">
+                          <Link href={`/category/stem-kits/${sub.slug}`} className="text-[11px] font-bold text-slate-500 hover:text-primary transition-colors uppercase tracking-tight flex items-center gap-2 group/item">
                             <span className="w-1 h-1 rounded-full bg-slate-200 group-hover/item:bg-primary transition-colors"></span>
-                            {item}
+                            {sub.name}
                           </Link>
                         </li>
                       ))}
@@ -176,25 +185,30 @@ export default function MainHeader() {
                     
                     {/* Featured Promo in Mega Menu */}
                     <div className="mt-8 bg-slate-50 rounded-xl p-4 border border-slate-100">
-                      <p className="text-[10px] font-black text-primary uppercase mb-1">Mega Sale</p>
-                      <p className="text-xs font-black text-slate-800 uppercase leading-tight mb-2">Up to 50% Off STEM Kits</p>
-                      <button className="text-[10px] font-black text-white bg-primary px-3 py-1.5 rounded uppercase hover:bg-primary/90 transition-all">Shop Now</button>
+                      <p className="text-[10px] font-black text-primary uppercase mb-1">New Arrival</p>
+                      <p className="text-xs font-black text-slate-800 uppercase leading-tight mb-2">Solar Master Kit</p>
+                      <button className="text-[10px] font-black text-white bg-primary px-3 py-1.5 rounded uppercase hover:bg-primary/90 transition-all">Explore</button>
                     </div>
                   </div>
                 </div>
+
               </div>
             </div>
 
-            <Link href="/about" className="text-[11px] font-black text-slate-800 hover:text-primary transition-colors uppercase tracking-tight border-l border-slate-100 pl-4">About us</Link>
+            <div className="w-px h-3 bg-slate-100"></div>
+
+            <Link href="/about" className="text-[11px] font-black text-slate-800 hover:text-primary transition-colors uppercase tracking-tight px-5">About us</Link>
             
+            <div className="w-px h-3 bg-slate-100"></div>
+
             {/* Mega Menu: SmartKids */}
-            <div className="group relative py-6 border-l border-slate-100 pl-4">
+            <div className="group relative py-3 px-5">
               <Link href="/smartkids" className="text-[11px] font-black text-slate-800 hover:text-primary transition-colors uppercase tracking-tight flex items-center gap-1">
                 SmartKids <ChevronDown size={12} className="text-slate-400 group-hover:rotate-180 transition-transform" />
               </Link>
               
               {/* Mega Menu Content */}
-              <div className="absolute top-full -right-48 w-[800px] bg-white shadow-2xl border border-slate-100 p-8 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] rounded-b-2xl">
+              <div className="absolute top-full -right-48 w-[800px] bg-white border border-slate-100 p-8 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] rounded-b-2xl">
                 <div className="grid grid-cols-3 gap-10">
                   {/* Column 1: Investment & Returns */}
                   <div>
@@ -253,8 +267,8 @@ export default function MainHeader() {
 
 
 
-          {/* Right Section: Socials & Login */}
-          <div className="hidden lg:flex items-center gap-6">
+          {/* Right Section (Right side) */}
+          <div className="flex-1 hidden lg:flex items-center justify-end gap-6">
             <div className="flex items-center gap-2 pr-6 border-r border-slate-100">
               <Link href="#" className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all">
                 <Facebook size={14} />
@@ -275,10 +289,11 @@ export default function MainHeader() {
 
         {/* Bottom Row: Browse Categories & Search */}
         {!isSticky && (
-          <div className="hidden lg:flex items-stretch gap-0 border-t border-slate-100">
+          <div className="hidden lg:grid lg:grid-cols-4 xl:grid-cols-12 gap-6 lg:gap-8 items-stretch border-t border-slate-100">
             {/* Browse Categories (Green Block) */}
-            <div className="relative group w-72">
-              <button className="w-full h-full flex items-center justify-between bg-primary text-white px-6 py-4 font-bold text-sm transition-colors hover:bg-primary/95">
+            <div className="lg:col-span-1 xl:col-span-3">
+              <div className="relative group h-full">
+                <button className="w-full h-full flex items-center justify-between bg-primary text-white px-6 py-4 font-bold text-sm transition-colors hover:bg-primary/95">
                 <div className="flex items-center gap-3">
                   <Menu size={20} />
                   BROWSE CATEGORIES
@@ -287,7 +302,7 @@ export default function MainHeader() {
               </button>
               
               {/* Dropdown Menu */}
-              <div className={`absolute top-full left-0 w-full bg-white shadow-2xl border border-slate-100 transition-all duration-300 z-50 flex flex-col 
+              <div className={`absolute top-full left-0 w-full bg-white border border-slate-100 transition-all duration-300 z-50 flex flex-col 
                 ${isHome ? "opacity-100 visible h-[584px]" : "opacity-0 invisible group-hover:opacity-100 group-hover:visible h-auto py-2"}`}>
                 <nav className="py-2 flex-grow">
                   {categories.map((cat, index) => (
@@ -327,7 +342,7 @@ export default function MainHeader() {
                   ))}
                 </nav>
                 <div className="p-6 border-t border-slate-100 bg-slate-50/50">
-                  <div className="bg-white rounded-lg p-4 text-center border border-slate-100 shadow-sm">
+                  <div className="bg-white rounded-lg p-4 text-center border border-slate-100">
                     <p className="text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">New Arrivals</p>
                     <p className="text-xs font-black text-slate-800 mb-3 uppercase">Robotics Masterclass</p>
                     <button className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest">Shop Now</button>
@@ -335,9 +350,10 @@ export default function MainHeader() {
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Search Area */}
-            <div className="flex-grow flex items-center border-l border-slate-100 px-6">
+          {/* Search Area */}
+          <div className="lg:col-span-3 xl:col-span-6 flex items-center py-2">
               <div className="flex-grow flex items-center border border-slate-200 rounded relative">
                 <input 
                   type="text" 
@@ -387,7 +403,7 @@ export default function MainHeader() {
                         initial={{ opacity: 0, scale: 0.9, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                        className="absolute top-full right-0 mt-4 w-80 bg-white shadow-2xl border border-slate-100 rounded-[32px] p-6 z-[60]"
+                        className="absolute top-full right-0 mt-4 w-80 bg-white border border-slate-100 rounded-[32px] p-6 z-[60]"
                       >
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-2">
@@ -502,7 +518,7 @@ export default function MainHeader() {
                           initial={{ opacity: 0, y: 10, scale: 0.95 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                          className="absolute top-full right-0 mt-2 w-64 bg-white shadow-2xl border border-slate-100 rounded-2xl py-3 z-[60] overflow-hidden"
+                          className="absolute top-full right-0 mt-2 w-64 bg-white border border-slate-100 rounded-2xl py-3 z-[60] overflow-hidden"
                         >
                           <div className="px-4 py-2 border-b border-slate-50 mb-2">
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Filter by Category</p>
@@ -545,37 +561,37 @@ export default function MainHeader() {
             </div>
 
             {/* Support & Cart */}
-            <div className="flex items-center gap-8 pl-6">
-              <div className="flex items-center gap-3 text-primary">
-                <PhoneCall size={32} strokeWidth={1} />
+            <div className="hidden xl:flex xl:col-span-3 items-center justify-end gap-6">
+              <div className="flex items-center gap-6 text-primary">
+                <PhoneCall size={28} strokeWidth={1} />
                 <div className="leading-tight">
-                  <p className="text-[10px] font-black uppercase tracking-tight">24/7 Support</p>
-                  <p className="text-sm font-black">+8809614556655</p>
+                  <p className="text-[10px] font-black uppercase tracking-tight text-slate-400">24/7 Support</p>
+                  <p className="text-xs font-black">+8809614556655</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 border-l border-slate-100 pl-6 py-2">
-            <Link href="/wishlist" className="relative p-2 text-slate-700 hover:text-primary transition-all group">
-              <div className="relative">
-                <Heart size={24} strokeWidth={2.5} />
-                {wishlistCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-lg shadow-red-500/20 group-hover:scale-110 transition-transform">
-                    {wishlistCount}
-                  </span>
-                )}
-              </div>
-            </Link>
+              <div className="flex items-center gap-3 border-l border-slate-100 pl-6 py-2">
+                <Link href="/wishlist" className="relative p-2 text-slate-700 hover:text-primary transition-all group">
+                  <div className="relative">
+                    <Heart size={20} strokeWidth={2.5} />
+                    {wishlistCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white">
+                        {wishlistCount}
+                      </span>
+                    )}
+                  </div>
+                </Link>
 
-            <Link href="/cart" className="relative p-2 text-slate-700 hover:text-primary transition-all group">
-              <div className="relative">
-                <ShoppingCart size={24} strokeWidth={2.5} />
-                <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-                  {cartCount}
-                </span>
-              </div>
-            </Link>
+                <Link href="/cart" className="relative p-2 text-slate-700 hover:text-primary transition-all group">
+                  <div className="relative">
+                    <ShoppingCart size={20} strokeWidth={2.5} />
+                    <span className="absolute -top-1.5 -right-1.5 bg-primary text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-white">
+                      {cartCount}
+                    </span>
+                  </div>
+                </Link>
                 <div className="leading-tight">
-                  <p className="text-sm font-black text-slate-800">৳ {cartTotal.toFixed(2)}</p>
-                  <p className="text-[10px] text-slate-400 font-bold">{cartCount} items</p>
+                  <p className="text-xs font-black text-slate-800">৳ {cartTotal.toFixed(2)}</p>
+                  <p className="text-[9px] text-slate-400 font-bold">{cartCount} items</p>
                 </div>
               </div>
             </div>
@@ -583,7 +599,7 @@ export default function MainHeader() {
         )}
 
         {/* Mobile Header */}
-        <div className="lg:hidden py-4 flex items-center justify-between gap-4">
+        <div className="lg:hidden py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <button 
               onClick={() => setIsMobileMenuOpen(true)}
@@ -597,7 +613,7 @@ export default function MainHeader() {
                 alt="SmartKids Logo" 
                 width={120} 
                 height={32} 
-                className="h-7 w-auto object-contain"
+                className="h-10 w-auto object-contain"
               />
             </Link>
           </div>

@@ -13,7 +13,7 @@ export default function TabbedProducts() {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <section className="py-16 bg-slate-50">
+    <section className="py-12 bg-slate-50">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6 border-b border-slate-200 pb-4">
            <div className="flex gap-8 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
@@ -48,7 +48,7 @@ export default function TabbedProducts() {
                   Shop All
                 </button>
               </div>
-              <img src="https://placehold.co/400x500/png?text=Kids+Toys" className="absolute bottom-0 right-0 w-3/4 h-auto object-contain transition-transform duration-700 group-hover:scale-110" alt="Toys" />
+              <img src="/images/demo/toys_collection.png" className="absolute bottom-0 right-0 w-3/4 h-auto object-contain transition-transform duration-700 group-hover:scale-110" alt="Toys" />
            </div>
 
            {/* Product Grid */}

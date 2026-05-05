@@ -9,7 +9,7 @@ const products = allProducts.slice(0, 10); // Use first 10 for demo
 
 export default function FeaturedCategory() {
   return (
-    <section className="py-16 bg-slate-50">
+    <section className="py-12 bg-slate-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-10 border-b border-slate-200 pb-4">
           <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Electronics | Robotics | IOT</h2>
@@ -20,7 +20,7 @@ export default function FeaturedCategory() {
           {/* Large Side Banner */}
           <div className="lg:w-1/4 relative rounded-[32px] overflow-hidden group min-h-[400px]">
              <img 
-               src="https://placehold.co/600x1000/png?text=STEM+Innovation+Banner" 
+               src="/images/demo/featured_stem.png" 
                alt="Featured Category"
                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
              />

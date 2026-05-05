@@ -91,7 +91,7 @@ export default function VendorLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -102,7 +102,7 @@ export default function VendorLayout({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
+    <div className="h-screen bg-slate-50 flex flex-col lg:flex-row overflow-hidden">
       {/* Mobile Backdrop */}
       {isSidebarOpen && (
         <div 
@@ -114,8 +114,8 @@ export default function VendorLayout({
       {/* Sidebar */}
       <aside 
         className={`
-          fixed lg:sticky top-0 bottom-0 left-0 z-50
-          bg-white border-r border-slate-100 flex flex-col
+          fixed lg:relative top-0 bottom-0 left-0 z-50
+          bg-white border-r border-slate-100 flex flex-col h-full
           transition-all duration-300 ease-in-out
           ${isSidebarOpen ? "w-64 translate-x-0" : "w-20 -translate-x-full lg:translate-x-0"}
         `}
@@ -207,7 +207,7 @@ export default function VendorLayout({
                         {item.icon}
                       </span>
                       {isSidebarOpen && (
-                        <span className="text-[13px] font-bold uppercase tracking-tight">{item.name}</span>
+                        <span className="text-[13px] font-semibold">{item.name}</span>
                       )}
                     </Link>
                   );
@@ -229,9 +229,9 @@ export default function VendorLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col">
+      <main className="flex-grow flex flex-col h-full overflow-hidden">
         {/* Header */}
-        <header className="bg-white/80 backdrop-blur-md h-20 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
+        <header className="bg-white/80 backdrop-blur-md min-h-[80px] py-4 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
           <div className="flex items-center gap-4 md:gap-8 flex-grow">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -240,8 +240,8 @@ export default function VendorLayout({
               <Menu size={24} />
             </button>
             <div className="hidden sm:block">
-              <h1 className="text-sm font-black text-slate-800 uppercase tracking-widest leading-none">Vendor Console</h1>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-1">Global Tech • {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
+              <h1 className="text-sm font-semibold text-slate-800 uppercase tracking-widest leading-none">Vendor Console</h1>
+              <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-tighter mt-1">Global Tech • {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
             </div>
 
             <div className="relative w-full max-w-md hidden md:block">
@@ -269,8 +269,8 @@ export default function VendorLayout({
 
             <div className="flex items-center gap-3 pl-2 group cursor-pointer">
               <div className="text-right hidden sm:block">
-                <p className="text-[11px] font-black text-slate-800 uppercase leading-none">Global Tech</p>
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5">Verified Vendor</p>
+                <p className="text-[11px] font-semibold text-slate-800 uppercase leading-none">Global Tech</p>
+                <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest mt-1.5">Verified Vendor</p>
               </div>
               <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white text-xs font-black shadow-lg shadow-primary/20 group-hover:scale-105 transition-all">
                 GT
@@ -279,26 +279,10 @@ export default function VendorLayout({
           </div>
         </header>
 
-        <div className="p-4 md:p-8">
+        <div className="flex-grow overflow-y-auto p-4 md:p-8 custom-scrollbar">
           {children}
         </div>
       </main>
-
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #E2E8F0;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #CBD5E1;
-        }
-      `}</style>
     </div>
   );
 }
