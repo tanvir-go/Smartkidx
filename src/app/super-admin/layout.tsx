@@ -46,7 +46,8 @@ import {
   Search,
   ChevronDown,
   Plus,
-  LogOut
+  LogOut,
+  Truck
 } from "lucide-react";
 
 const sidebarGroups = [
@@ -56,6 +57,15 @@ const sidebarGroups = [
       { name: "Manage Product", icon: <Package size={18} />, href: "/super-admin/products" },
       { name: "Categories & Attributes", icon: <Layers size={18} />, href: "/super-admin/categories" },
       { name: "Manage Inventory", icon: <Boxes size={18} />, href: "/super-admin/inventory" },
+    ]
+  },
+  {
+    title: "PROCUREMENT",
+    items: [
+      { name: "Suppliers", icon: <Truck size={18} />, href: "/super-admin/procurement/suppliers" },
+      { name: "Purchase & GRN", icon: <ScrollText size={18} />, href: "/super-admin/procurement/purchase" },
+      { name: "Purchase Invoice", icon: <Receipt size={18} />, href: "/super-admin/procurement/invoice" },
+      { name: "Purchase Returns", icon: <Undo2 size={18} />, href: "/super-admin/procurement/returns" },
     ]
   },
   {
@@ -143,7 +153,7 @@ export default function SuperAdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -153,13 +163,26 @@ export default function SuperAdminLayout({
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FD] flex">
+    <div className="min-h-screen bg-[#F8F9FD] flex flex-col lg:flex-row">
+      {/* Mobile Backdrop */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
+
       {/* Sidebar */}
       <aside 
-        className={`${isSidebarOpen ? "w-[260px]" : "w-20"} bg-white border-r border-slate-100 transition-all duration-300 flex flex-col fixed inset-y-0 z-50`}
+        className={`
+          fixed lg:sticky top-0 bottom-0 left-0 z-50
+          bg-white border-r border-slate-100 flex flex-col
+          transition-all duration-300 ease-in-out
+          ${isSidebarOpen ? "w-[260px] translate-x-0" : "w-20 -translate-x-full lg:translate-x-0"}
+        `}
       >
         <div className="p-6 flex items-center justify-between">
-          <div className={`${!isSidebarOpen && "hidden"} transition-all`}>
+          <div className={`${!isSidebarOpen && "lg:hidden"} transition-all`}>
             <Link href="/super-admin" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-black">S</div>
               <span className="text-xl font-black tracking-tight text-slate-800">SmartKids</span>
@@ -177,6 +200,9 @@ export default function SuperAdminLayout({
           <div className="mb-4">
             <Link
               href="/super-admin"
+              onClick={() => {
+                if (window.innerWidth < 1024) setIsSidebarOpen(false);
+              }}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all group ${
                 pathname === "/super-admin" 
                   ? "bg-primary text-white shadow-lg shadow-primary/20" 
@@ -200,6 +226,9 @@ export default function SuperAdminLayout({
                     <Link
                       key={item.name}
                       href={item.href}
+                      onClick={() => {
+                        if (window.innerWidth < 1024) setIsSidebarOpen(false);
+                      }}
                       className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all group ${
                         isActive 
                           ? "bg-primary/10 text-primary" 
@@ -239,34 +268,41 @@ export default function SuperAdminLayout({
       </aside>
 
       {/* Main Content */}
-      <main className={`flex-grow transition-all duration-300 ${isSidebarOpen ? "ml-[260px]" : "ml-20"}`}>
+      <main className="flex-grow flex flex-col">
         {/* Header */}
-        <header className="bg-white/80 backdrop-blur-md h-20 border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-40">
-          <div className="flex items-center gap-4 flex-grow max-w-xl">
-            <div className="relative w-full">
+        <header className="bg-white/80 backdrop-blur-md h-20 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
+          <div className="flex items-center gap-4 md:gap-8 flex-grow">
+            <button 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="lg:hidden p-2 text-slate-400 hover:text-primary transition-colors"
+            >
+              <Menu size={24} />
+            </button>
+            <div className="hidden sm:block">
+              <h1 className="text-sm font-black text-slate-800 uppercase tracking-widest leading-none">Super Admin</h1>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-1">SmartKids Network • {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
+            </div>
+
+            <div className="relative w-full max-w-md hidden md:block">
               <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
               <input 
                 type="text" 
-                placeholder="Search anything... (Ctrl+K)" 
+                placeholder="Search anything..." 
                 className="w-full pl-12 pr-4 py-2.5 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
-            <button className="bg-primary text-white px-5 py-2 rounded-lg font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
-              <Plus size={16} /> New Order
+          <div className="flex items-center gap-2 md:gap-6">
+            <button className="bg-primary text-white px-3 md:px-5 py-2 rounded-lg font-black uppercase tracking-widest text-[10px] md:text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+              <Plus size={16} /> <span className="hidden sm:inline">New Order</span>
             </button>
 
-            <div className="h-8 w-px bg-slate-100"></div>
+            <div className="h-8 w-px bg-slate-100 hidden sm:block"></div>
 
             <button className="relative p-2.5 text-slate-400 hover:text-primary hover:bg-slate-50 rounded-xl transition-all">
               <Bell size={20} />
               <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
-
-            <button className="p-2.5 text-slate-400 hover:text-primary hover:bg-slate-50 rounded-xl transition-all">
-              <Settings size={20} />
             </button>
             
             <div className="flex items-center gap-3 pl-2 group cursor-pointer border-l border-slate-100 ml-2">
@@ -281,7 +317,7 @@ export default function SuperAdminLayout({
           </div>
         </header>
 
-        <div className="p-8">
+        <div className="p-4 md:p-8">
           {children}
         </div>
       </main>

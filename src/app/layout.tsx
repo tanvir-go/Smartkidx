@@ -16,6 +16,8 @@ export const metadata: Metadata = {
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CartProvider } from "@/context/CartContext";
+import { WishlistProvider } from "@/context/WishlistContext";
 
 export default function RootLayout({
   children,
@@ -28,9 +30,13 @@ export default function RootLayout({
       className={`${hind.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <ConditionalLayout>
-          {children}
-        </ConditionalLayout>
+        <CartProvider>
+          <WishlistProvider>
+            <ConditionalLayout>
+              {children}
+            </ConditionalLayout>
+          </WishlistProvider>
+        </CartProvider>
         <ToastContainer 
           position="bottom-right"
           autoClose={3000}

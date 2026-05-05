@@ -3,7 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, ShoppingCart, Eye, Star, Zap } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
+import { toast } from "react-toastify";
 
 interface ProductCardProps {
   id: number;
@@ -32,6 +37,30 @@ export default function ProductCard({
   isNew,
   isHot
 }: ProductCardProps) {
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const router = useRouter();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart({ id, name, category, price, oldPrice, discount, image, rating, reviews, isNew, isHot } as any);
+    toast.success(`${name} added to cart!`);
+    router.push("/cart");
+  };
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isInWishlist(id)) {
+      removeFromWishlist(id);
+      toast.info(`${name} removed from wishlist`);
+    } else {
+      addToWishlist({ id, name, category, price, oldPrice, discount, image, rating, reviews, isNew, isHot } as any);
+      toast.success(`${name} added to wishlist!`);
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -60,8 +89,13 @@ export default function ProductCard({
         </div>
 
         {/* Wishlist Button */}
-        <button className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 duration-300">
-          <Heart size={16} />
+        <button 
+          onClick={handleWishlistToggle}
+          className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center transition-all shadow-sm opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 duration-300 ${
+            isInWishlist(id) ? "text-red-500 bg-white" : "text-slate-400 hover:text-red-500 hover:bg-white"
+          }`}
+        >
+          <Heart size={16} className={isInWishlist(id) ? "fill-current" : ""} />
         </button>
 
         {/* Product Image */}
@@ -75,12 +109,15 @@ export default function ProductCard({
 
         {/* Quick Actions Overlay */}
         <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/20 to-transparent flex gap-2">
-          <button className="flex-grow bg-white text-slate-900 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all shadow-lg">
+          <button 
+            onClick={handleAddToCart}
+            className="flex-grow bg-white text-slate-900 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all shadow-lg"
+          >
             <ShoppingCart size={16} /> ADD TO CART
           </button>
-          <button className="w-10 h-10 bg-white text-slate-900 rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-lg">
+          <Link href={`/product/${id}`} className="w-10 h-10 bg-white text-slate-900 rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-lg">
             <Eye size={18} />
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -100,7 +137,7 @@ export default function ProductCard({
               />
             ))}
           </div>
-          <span className="text-[10px] text-slate-400 font-bold">({reviews})</span>
+          <span className="text-sm text-slate-400 font-bold">({reviews})</span>
         </div>
 
         <div className="flex items-center justify-between mt-auto">
@@ -111,7 +148,10 @@ export default function ProductCard({
             )}
           </div>
           <div className="md:hidden">
-            <button className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
+            <button 
+              onClick={handleAddToCart}
+              className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20"
+            >
               <ShoppingCart size={14} />
             </button>
           </div>

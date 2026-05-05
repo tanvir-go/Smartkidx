@@ -4,42 +4,33 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Star, ShoppingCart } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCart } from "@/context/CartContext";
+import { toast } from "react-toastify";
 
-const topSellers = [
-  {
-    id: 1,
-    name: "1000pcs DIY Art Craft Sets Supplies for Kids",
-    category: "Art & Craft Kits",
-    price: 799.00,
-    oldPrice: 850.00,
-    discount: 6,
-    image: "/images/art-craft.png",
-    rating: 5,
-    stock: "Only 12 Left!"
-  },
-  {
-    id: 2,
-    name: "Robotics Starter Kit v2.0 - STEM Edition",
-    category: "Robotics | IoT",
-    price: 1499.00,
-    oldPrice: 1750.00,
-    discount: 14,
-    image: "/images/robotics-kit.png",
-    rating: 4.9,
-    stock: "Limited Edition"
-  }
-];
+import { products as allProducts } from "@/data/products";
+
+const topSellers = allProducts.slice(0, 2);
 
 export default function TopSellers() {
   const [current, setCurrent] = useState(0);
+  const { addToCart } = useCart();
+  const router = useRouter();
 
   const next = () => setCurrent((prev) => (prev + 1) % topSellers.length);
   const prev = () => setCurrent((prev) => (prev - 1 + topSellers.length) % topSellers.length);
 
   const product = topSellers[current];
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addToCart(product);
+    toast.success(`${product.name} added to cart!`);
+    router.push("/cart");
+  };
+
   return (
-    <div className="bg-white border border-slate-200 rounded-[32px] overflow-hidden hidden xl:flex flex-col shadow-sm h-[560px] group/card hover:shadow-xl hover:shadow-primary/5 transition-all duration-500">
+    <div className="bg-white border border-slate-200 rounded-[32px] overflow-hidden flex flex-col shadow-sm h-full min-h-[500px] xl:h-[560px] group/card hover:shadow-xl hover:shadow-primary/5 transition-all duration-500">
       <div className="px-8 py-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
         <h3 className="font-black text-slate-800 uppercase tracking-widest text-xs">Top Sellers</h3>
         <div className="flex gap-2">
@@ -92,11 +83,16 @@ export default function TopSellers() {
         <div className="mt-auto pt-8 border-t border-slate-50">
           <div className="flex items-baseline justify-between mb-5">
             <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-black text-slate-900 leading-none">৳{product.price.toLocaleString()}</span>
-              <span className="text-sm text-slate-400 line-through font-bold">৳{product.oldPrice.toLocaleString()}</span>
+              <span className="text-3xl font-black text-slate-900 leading-none">৳{product.price?.toLocaleString()}</span>
+              {product.oldPrice && (
+                <span className="text-sm text-slate-400 line-through font-bold">৳{product.oldPrice.toLocaleString()}</span>
+              )}
             </div>
           </div>
-          <button className="w-full bg-slate-900 text-white py-4 rounded-[20px] text-xs font-black uppercase tracking-widest hover:bg-primary transition-all shadow-xl shadow-slate-200 group-hover/card:shadow-primary/20 flex items-center justify-center gap-3">
+          <button 
+            onClick={handleAddToCart}
+            className="w-full bg-slate-900 text-white py-4 rounded-[20px] text-xs font-black uppercase tracking-widest hover:bg-primary transition-all shadow-xl shadow-slate-200 group-hover/card:shadow-primary/20 flex items-center justify-center gap-3"
+          >
             <ShoppingCart size={18} /> ADD TO CART
           </button>
         </div>

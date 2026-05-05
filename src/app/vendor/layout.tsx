@@ -15,14 +15,69 @@ import {
   Search,
   ChevronDown,
   Building2,
-  Plus
+  Plus,
+  Package,
+  Layers,
+  Boxes,
+  ShoppingCart,
+  Monitor,
+  FileText,
+  Trash2,
+  BadgeDollarSign,
+  Truck,
+  ScrollText,
+  Receipt,
+  Undo2,
+  UserCircle
 } from "lucide-react";
 
-const sidebarItems = [
-  { name: "Main Dashboard", icon: <LayoutDashboard size={20} />, href: "/vendor" },
-  { name: "My Products", icon: <ShoppingBag size={20} />, href: "/vendor/products" },
-  { name: "Sales Reports", icon: <BarChart3 size={20} />, href: "/vendor/reports" },
-  { name: "Settings", icon: <Settings size={20} />, href: "/vendor/settings" },
+const sidebarGroups = [
+  {
+    title: "DASHBOARD",
+    items: [
+      { name: "Main Dashboard", icon: <LayoutDashboard size={18} />, href: "/vendor" },
+    ]
+  },
+  {
+    title: "PRODUCT MANAGEMENT",
+    items: [
+      { name: "Manage Product", icon: <Package size={18} />, href: "/vendor/products" },
+      { name: "Categories & Attributes", icon: <Layers size={18} />, href: "/vendor/categories" },
+      { name: "Manage Inventory", icon: <Boxes size={18} />, href: "/vendor/inventory" },
+    ]
+  },
+  {
+    title: "ORDER MANAGEMENT",
+    items: [
+      { name: "Orders", icon: <ShoppingCart size={18} />, href: "/vendor/orders" },
+      { name: "e POS Billing", icon: <Monitor size={18} />, href: "/vendor/pos" },
+      { name: "Invoices", icon: <FileText size={18} />, href: "/vendor/invoices" },
+      { name: "Abandoned Cart", icon: <Trash2 size={18} />, href: "/vendor/abandoned" },
+      { name: "Transactions", icon: <BadgeDollarSign size={18} />, href: "/vendor/transactions" },
+    ]
+  },
+  {
+    title: "PROCUREMENT",
+    items: [
+      { name: "Suppliers", icon: <Truck size={18} />, href: "/vendor/procurement/suppliers" },
+      { name: "Purchase & GRN", icon: <ScrollText size={18} />, href: "/vendor/procurement/purchase" },
+      { name: "Purchase Invoice", icon: <Receipt size={18} />, href: "/vendor/procurement/invoice" },
+      { name: "Purchase Returns", icon: <Undo2 size={18} />, href: "/vendor/procurement/returns" },
+    ]
+  },
+  {
+    title: "USER MANAGEMENT",
+    items: [
+      { name: "Customer", icon: <UserCircle size={18} />, href: "/vendor/customers" },
+    ]
+  },
+  {
+    title: "OTHER",
+    items: [
+      { name: "Sales Reports", icon: <BarChart3 size={18} />, href: "/vendor/reports" },
+      { name: "Settings", icon: <Settings size={18} />, href: "/vendor/settings" },
+    ]
+  },
 ];
 
 const branches = [
@@ -36,7 +91,7 @@ export default function VendorLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -47,13 +102,26 @@ export default function VendorLayout({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
+      {/* Mobile Backdrop */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
+
       {/* Sidebar */}
       <aside 
-        className={`${isSidebarOpen ? "w-64" : "w-20"} bg-white border-r border-slate-100 transition-all duration-300 flex flex-col fixed inset-y-0 z-50`}
+        className={`
+          fixed lg:sticky top-0 bottom-0 left-0 z-50
+          bg-white border-r border-slate-100 flex flex-col
+          transition-all duration-300 ease-in-out
+          ${isSidebarOpen ? "w-64 translate-x-0" : "w-20 -translate-x-full lg:translate-x-0"}
+        `}
       >
         <div className="p-6 flex items-center justify-between border-b border-slate-50">
-          <div className={`${!isSidebarOpen && "hidden"} transition-all`}>
+          <div className={`${!isSidebarOpen && "lg:hidden"} transition-all`}>
             <Link href="/vendor">
               <span className="text-xl font-black tracking-tighter text-slate-800">SMART<span className="text-primary">KIDS</span></span>
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest -mt-1">Vendor Portal</p>
@@ -113,29 +181,41 @@ export default function VendorLayout({
           </div>
         )}
 
-        <nav className="flex-grow py-6 px-4 space-y-2">
-          {sidebarItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all group ${
-                  isActive 
-                    ? "bg-primary/10 text-primary" 
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
-                }`}
-              >
-                <span className={isActive ? "text-primary" : "text-slate-400 group-hover:text-slate-600"}>
-                  {item.icon}
-                </span>
-                {isSidebarOpen && (
-                  <span className="text-sm font-bold uppercase tracking-wider">{item.name}</span>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+        <div className="flex-grow overflow-y-auto px-4 py-6 custom-scrollbar space-y-6">
+          {sidebarGroups.map((group) => (
+            <div key={group.title}>
+              {isSidebarOpen && (
+                <p className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{group.title}</p>
+              )}
+              <div className="space-y-1">
+                {group.items.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => {
+                        if (window.innerWidth < 1024) setIsSidebarOpen(false);
+                      }}
+                      className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all group ${
+                        isActive 
+                          ? "bg-primary/10 text-primary" 
+                          : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+                      }`}
+                    >
+                      <span className={isActive ? "text-primary" : "text-slate-400 group-hover:text-slate-600"}>
+                        {item.icon}
+                      </span>
+                      {isSidebarOpen && (
+                        <span className="text-[13px] font-bold uppercase tracking-tight">{item.name}</span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
 
         <div className="p-4 border-t border-slate-50">
           <button 
@@ -149,11 +229,17 @@ export default function VendorLayout({
       </aside>
 
       {/* Main Content */}
-      <main className={`flex-grow transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
+      <main className="flex-grow flex flex-col">
         {/* Header */}
-        <header className="bg-white/80 backdrop-blur-md h-20 border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-40">
-          <div className="flex items-center gap-8 flex-grow">
-            <div>
+        <header className="bg-white/80 backdrop-blur-md h-20 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
+          <div className="flex items-center gap-4 md:gap-8 flex-grow">
+            <button 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="lg:hidden p-2 text-slate-400 hover:text-primary transition-colors"
+            >
+              <Menu size={24} />
+            </button>
+            <div className="hidden sm:block">
               <h1 className="text-sm font-black text-slate-800 uppercase tracking-widest leading-none">Vendor Console</h1>
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-1">Global Tech • {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
             </div>
@@ -168,7 +254,7 @@ export default function VendorLayout({
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 md:gap-6">
             <div className="hidden lg:flex flex-col items-end">
               <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Active Sales</p>
               <p className="text-xs font-black text-slate-800">৳ 95,500.00</p>
@@ -179,7 +265,7 @@ export default function VendorLayout({
               <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-white"></span>
             </button>
             
-            <div className="h-8 w-px bg-slate-100"></div>
+            <div className="h-8 w-px bg-slate-100 hidden sm:block"></div>
 
             <div className="flex items-center gap-3 pl-2 group cursor-pointer">
               <div className="text-right hidden sm:block">
@@ -193,10 +279,26 @@ export default function VendorLayout({
           </div>
         </header>
 
-        <div className="p-8">
+        <div className="p-4 md:p-8">
           {children}
         </div>
       </main>
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #E2E8F0;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #CBD5E1;
+        }
+      `}</style>
     </div>
   );
 }

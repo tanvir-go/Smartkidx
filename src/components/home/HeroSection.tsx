@@ -14,12 +14,12 @@ export default function HeroSection() {
 
           
           {/* Center Slider */}
-          <div className="col-span-1 lg:col-span-3 xl:col-span-6 h-full">
+          <div className="col-span-1 lg:col-span-3 xl:col-span-6 h-full order-1 lg:order-2">
             <HeroSlider />
           </div>
           
-          {/* Right Top Sellers */}
-          <div className="hidden xl:block xl:col-span-3 h-full">
+          {/* Right Top Sellers (Visible on tablet/desktop, hidden on small mobile if preferred, or stacked) */}
+          <div className="col-span-1 lg:col-span-4 xl:col-span-3 h-full order-3">
             <TopSellers />
           </div>
         </div>

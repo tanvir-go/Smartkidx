@@ -5,10 +5,13 @@ import Image from "next/image";
 import { 
   Search, 
   ShoppingCart, 
+  ShoppingBag,
+  Heart,
   PhoneCall, 
   ChevronDown, 
   Menu, 
   User, 
+  Info,
   ChevronRight, 
   Facebook, 
   Instagram, 
@@ -25,6 +28,8 @@ import {
   X
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -32,80 +37,85 @@ const categories = [
   { 
     name: "Electronics & Gadgets", 
     icon: <Cpu size={18} />, 
+    slug: "electronics",
     href: "/category/electronics",
     subcategories: [
-      "Cameras & Digital Gadgets",
-      "Educational Video & Audio Devices",
-      "Gaming Consoles & Accessories",
-      "Headphones & Earbuds",
-      "Learning Tablets & Kids Laptops",
-      "Smartwatches & Wearables"
+      { name: "Cameras & Digital Gadgets", slug: "cameras-gadgets" },
+      { name: "Educational Video & Audio Devices", slug: "video-audio" },
+      { name: "Gaming Consoles & Accessories", slug: "gaming" },
+      { name: "Headphones & Earbuds", slug: "headphones" },
+      { name: "Learning Tablets & Kids Laptops", slug: "tablets-laptops" },
+      { name: "Smartwatches & Wearables", slug: "smartwatches" }
     ]
   },
   { 
     name: "Robotics | IoT", 
     icon: <Microscope size={18} />, 
+    slug: "robotics",
     href: "/category/robotics",
     subcategories: [
-      "Coding & Programming Kits",
-      "DIY Robotics Kits",
-      "Sensors & Controllers",
-      "Drones (Mini / Beginner Friendly)",
-      "IoT Smart Home Toys",
-      "STEM Robotics Projects"
+      { name: "Coding & Programming Kits", slug: "coding-kits" },
+      { name: "DIY Robotics Kits", slug: "diy-robotics" },
+      { name: "Sensors & Controllers", slug: "sensors" },
+      { name: "Drones (Mini / Beginner Friendly)", slug: "drones" },
+      { name: "IoT Smart Home Toys", slug: "iot-toys" },
+      { name: "STEM Robotics Projects", slug: "stem-robotics" }
     ]
   },
   { 
     name: "Kids Toys", 
     icon: <Gamepad2 size={18} />, 
+    slug: "toys",
     href: "/category/toys",
     subcategories: [
-      "Action Figures & Dolls",
-      "Art & Craft Kits",
-      "Building Blocks & Construction Sets",
-      "Remote Control Cars & Vehicles",
-      "Soft Toys & Plushies",
-      "Puzzles & Board Games",
-      "Outdoor Toys"
+      { name: "Action Figures & Dolls", slug: "action-figures" },
+      { name: "Art & Craft Kits", slug: "art-craft" },
+      { name: "Building Blocks & Construction Sets", slug: "building-blocks" },
+      { name: "Remote Control Cars & Vehicles", slug: "rc-vehicles" },
+      { name: "Soft Toys & Plushies", slug: "plushies" },
+      { name: "Puzzles & Board Games", slug: "puzzles-games" },
+      { name: "Outdoor Toys", slug: "outdoor-toys" }
     ]
   },
   { 
     name: "Stationary", 
     icon: <Palette size={18} />, 
+    slug: "stationary",
     href: "/category/stationary",
     subcategories: [
-      "Art Supplies (Sketch Pads, Paint, Brushes)",
-      "Bags & Pencil Cases",
-      "Coloring Books & Crayons",
-      "Geometry Sets & Math Tools",
-      "Notebooks & Diaries",
-      "School Supplies"
+      { name: "Art Supplies", slug: "art-supplies" },
+      { name: "Bags & Pencil Cases", slug: "bags-cases" },
+      { name: "Coloring Books & Crayons", slug: "coloring" },
+      { name: "Geometry Sets & Math Tools", slug: "math-tools" },
+      { name: "Notebooks & Diaries", slug: "notebooks" },
+      { name: "School Supplies", slug: "school-supplies" }
     ]
   },
   { 
     name: "Kids Lifestyle", 
     icon: <Baby size={18} />, 
+    slug: "lifestyle",
     href: "/category/lifestyle",
     subcategories: [
-      "Accessories (Hats, Belts, Watches)",
-      "School Bags & Backpacks",
-      "Clothing (Casual, Party, Uniforms)",
-      "Footwear (Shoes, Sandals, Sports)",
-      "Lunch Boxes & Water Bottles",
-      "Room Décor & Furniture"
+      { name: "Accessories", slug: "lifestyle-accessories" },
+      { name: "School Bags & Backpacks", slug: "backpacks" },
+      { name: "Clothing", slug: "clothing" },
+      { name: "Footwear", slug: "footwear" },
+      { name: "Lunch Boxes & Water Bottles", slug: "dining" },
+      { name: "Room Décor & Furniture", slug: "room-decor" }
     ]
   },
   { 
     name: "Books", 
     icon: <BookOpen size={18} />, 
+    slug: "books",
     href: "/category/books",
     subcategories: [
-      "Activity Books",
-      "Bilingual & Language Learning Books",
-      "Comics & Graphic Novels",
-      "Educational Books",
-      "Exam Preparation / Workbooks",
-      "Story Books"
+      { name: "Activity Books", slug: "activity-books" },
+      { name: "Bilingual & Language Learning Books", slug: "language-books" },
+      { name: "Comics & Graphic Novels", slug: "comics" },
+      { name: "Educational & Reference Books", slug: "educational-books" },
+      { name: "Storybooks & Novels", slug: "storybooks" }
     ]
   },
   { name: "STEM Kits", icon: <Zap size={18} />, href: "/category/stem" },
@@ -113,8 +123,8 @@ const categories = [
 
 export default function MainHeader() {
   const [isSticky, setIsSticky] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-  const [cartTotal, setCartTotal] = useState(0);
+  const { cartCount, cartTotal } = useCart();
+  const { wishlistCount } = useWishlist();
   const [userRole, setUserRole] = useState<string | null>(null);
   const pathname = usePathname();
   const router = useRouter();
@@ -123,6 +133,8 @@ export default function MainHeader() {
   const [foundProducts, setFoundProducts] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("Select Category");
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
   const sampleProducts = [
     { id: 1, name: "Arduino Uno R3 Starter Kit", price: 45.00, image: "https://placehold.co/100x100/png?text=Arduino", category: "Robotics" },
@@ -386,13 +398,13 @@ export default function MainHeader() {
                       {/* Sub-menu Dropdown */}
                       {cat.subcategories && (
                         <div className="absolute top-0 left-full w-72 bg-white shadow-2xl border border-slate-100 py-2 opacity-0 invisible group-hover/category:opacity-100 group-hover/category:visible transition-all duration-300 z-[100] rounded-r-xl -ml-px">
-                          {cat.subcategories.map((sub, subIdx) => (
+                          {cat.subcategories.map((sub: any, subIdx: number) => (
                             <Link 
                               key={subIdx} 
-                              href={`/category/${cat.name.toLowerCase().split(' ')[0]}/${sub.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`}
+                              href={`/category/${cat.slug}/${sub.slug}`}
                               className="block px-6 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-primary transition-all border-b border-slate-50 last:border-0"
                             >
-                              {sub}
+                              {sub.name}
                             </Link>
                           ))}
                         </div>
@@ -416,7 +428,7 @@ export default function MainHeader() {
                 <input 
                   type="text" 
                   placeholder="Search for products" 
-                  className="flex-grow px-6 py-3 text-sm focus:outline-none text-slate-500 italic rounded-l"
+                  className="flex-grow px-6 py-3 text-sm focus:outline-none text-black italic rounded-l"
                 />
                 
                 {/* Image Search Button */}
@@ -628,15 +640,28 @@ export default function MainHeader() {
                 </div>
               </div>
               <div className="flex items-center gap-4 border-l border-slate-100 pl-6 py-2">
-                <div className="relative">
-                  <ShoppingCart size={28} className="text-slate-300" strokeWidth={1.5} />
-                  <span className="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                    0
+            <Link href="/wishlist" className="relative p-2 text-slate-700 hover:text-primary transition-all group">
+              <div className="relative">
+                <Heart size={24} strokeWidth={2.5} />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-lg shadow-red-500/20 group-hover:scale-110 transition-transform">
+                    {wishlistCount}
                   </span>
-                </div>
+                )}
+              </div>
+            </Link>
+
+            <Link href="/cart" className="relative p-2 text-slate-700 hover:text-primary transition-all group">
+              <div className="relative">
+                <ShoppingCart size={24} strokeWidth={2.5} />
+                <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+                  {cartCount}
+                </span>
+              </div>
+            </Link>
                 <div className="leading-tight">
-                  <p className="text-sm font-black text-slate-800">৳ 0.00</p>
-                  <p className="text-[10px] text-slate-400 font-bold">0 items</p>
+                  <p className="text-sm font-black text-slate-800">৳ {cartTotal.toFixed(2)}</p>
+                  <p className="text-[10px] text-slate-400 font-bold">{cartCount} items</p>
                 </div>
               </div>
             </div>
@@ -644,28 +669,175 @@ export default function MainHeader() {
         )}
 
         {/* Mobile Header */}
-        <div className="lg:hidden py-4 flex items-center justify-between">
-          <Link href="/">
-            <Image 
-              src="/Smart-Kids-Logo.webp" 
-              alt="SmartKids Logo" 
-              width={150} 
-              height={40} 
-              className="h-8 w-auto object-contain"
-            />
-          </Link>
-
-          <div className="flex items-center gap-4">
-            <Link href="/cart" className="relative">
-              <ShoppingCart size={24} className="text-slate-700" />
-              <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
-            </Link>
-            <button className="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full">
+        <div className="lg:hidden py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600 hover:bg-primary/10 hover:text-primary transition-all"
+            >
               <Menu size={24} />
             </button>
+            <Link href="/">
+              <Image 
+                src="/Smart-Kids-Logo.webp" 
+                alt="SmartKids Logo" 
+                width={120} 
+                height={32} 
+                className="h-7 w-auto object-contain"
+              />
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link href="/wishlist" className="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600 relative">
+              <Heart size={20} />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-white">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+            <button 
+              onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+              className="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600"
+            >
+              <Search size={20} />
+            </button>
+            <Link href="/cart" className="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600 relative">
+              <ShoppingCart size={20} />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-white">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+            <Link href={getPortalHref()} className="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-xl shadow-lg shadow-primary/20">
+              <User size={20} />
+            </Link>
           </div>
         </div>
+
+        {/* Mobile Search Bar (Expandable) */}
+        <AnimatePresence>
+          {isMobileSearchOpen && (
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="lg:hidden overflow-hidden border-t border-slate-100 py-4"
+            >
+              <div className="flex items-center bg-slate-50 rounded-xl px-4 py-2 border border-slate-200">
+                <Search size={18} className="text-slate-400" />
+                <input 
+                  type="text" 
+                  placeholder="Search products..." 
+                  className="bg-transparent border-none focus:ring-0 text-sm px-3 py-1 flex-grow italic"
+                />
+                <button className="text-slate-400 p-1">
+                  <Camera size={18} />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+
+      {/* Mobile Menu Drawer */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] lg:hidden"
+            />
+            
+            {/* Drawer Content */}
+            <motion.div 
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 left-0 bottom-0 w-[85%] max-w-[400px] bg-white z-[101] lg:hidden flex flex-col shadow-2xl"
+            >
+              {/* Drawer Header */}
+              <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <Image src="/Smart-Kids-Logo.webp" alt="Logo" width={120} height={32} className="h-7 w-auto" />
+                <button 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-800 transition-all shadow-sm"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Drawer Scroll Area */}
+              <div className="flex-grow overflow-y-auto p-6 space-y-8 custom-scrollbar">
+                {/* Main Navigation */}
+                <nav className="space-y-1">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 px-2">Navigation</p>
+                  <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 text-slate-800 font-bold uppercase text-sm tracking-tight transition-all group">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all"><Menu size={18} /></div>
+                    Home
+                  </Link>
+                  <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 text-slate-800 font-bold uppercase text-sm tracking-tight transition-all group">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all"><ShoppingBag size={18} /></div>
+                    Shop
+                  </Link>
+                  <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 text-slate-800 font-bold uppercase text-sm tracking-tight transition-all group">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all"><Info size={18} /></div>
+                    About Us
+                  </Link>
+                </nav>
+
+                {/* Categories Accordion */}
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 px-2">Our Categories</p>
+                  <div className="grid grid-cols-1 gap-3">
+                    {categories.map((cat, idx) => (
+                      <Link 
+                        key={idx}
+                        href={`/category/${cat.slug}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 transition-all group"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="text-primary">{cat.icon}</div>
+                          <span className="text-sm font-bold text-slate-700">{cat.name}</span>
+                        </div>
+                        <ChevronRight size={16} className="text-slate-300 group-hover:text-primary transition-all" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Other Links */}
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <Link href="/become-affiliate" onClick={() => setIsMobileMenuOpen(false)} className="block px-2 text-[11px] font-black text-slate-500 uppercase tracking-widest hover:text-primary transition-colors">Become an Affiliate</Link>
+                  <Link href="/newsletter" onClick={() => setIsMobileMenuOpen(false)} className="block px-2 text-[11px] font-black text-slate-500 uppercase tracking-widest hover:text-primary transition-colors">Newsletter</Link>
+                  <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="block px-2 text-[11px] font-black text-slate-500 uppercase tracking-widest hover:text-primary transition-colors">Contact Us</Link>
+                </div>
+              </div>
+
+              {/* Drawer Footer */}
+              <div className="p-6 border-t border-slate-100 bg-slate-50/50">
+                <div className="flex items-center justify-between mb-6">
+                  <p className="text-xs font-black text-slate-800 uppercase tracking-tight">Need Help?</p>
+                  <p className="text-sm font-black text-primary">+8809614556655</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Link href="#" className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#1877F2] transition-all"><Facebook size={18} /></Link>
+                  <Link href="#" className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#E4405F] transition-all"><Instagram size={18} /></Link>
+                  <Link href="#" className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#FF0000] transition-all"><Youtube size={18} /></Link>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
