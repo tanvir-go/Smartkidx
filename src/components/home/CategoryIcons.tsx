@@ -4,12 +4,12 @@ import { Cpu, Microscope, Gamepad2, Palette, Baby, BookOpen } from "lucide-react
 import Link from "next/link";
 
 const categories = [
-  { name: "Robotics", count: 124, icon: <Cpu size={40} />, color: "bg-blue-50 text-blue-500" },
-  { name: "STEM Kits", count: 86, icon: <Microscope size={40} />, color: "bg-emerald-50 text-emerald-500" },
-  { name: "Kids Toys", count: 245, icon: <Gamepad2 size={40} />, color: "bg-rose-50 text-rose-500" },
-  { name: "Stationary", count: 156, icon: <Palette size={40} />, color: "bg-amber-50 text-amber-500" },
-  { name: "Gadgets", count: 92, icon: <Baby size={40} />, color: "bg-indigo-50 text-indigo-500" },
-  { name: "Books", count: 112, icon: <BookOpen size={40} />, color: "bg-purple-50 text-purple-500" },
+  { name: "Robotics", slug: "robotics", count: 124, icon: <Cpu size={40} />, color: "bg-blue-50 text-blue-500" },
+  { name: "STEM Kits", slug: "stem-kits", count: 86, icon: <Microscope size={40} />, color: "bg-emerald-50 text-emerald-500" },
+  { name: "Kids Toys", slug: "kids-toys", count: 245, icon: <Gamepad2 size={40} />, color: "bg-rose-50 text-rose-500" },
+  { name: "Stationary", slug: "stationary", count: 156, icon: <Palette size={40} />, color: "bg-amber-50 text-amber-500" },
+  { name: "Gadgets", slug: "gadgets", count: 92, icon: <Baby size={40} />, color: "bg-indigo-50 text-indigo-500" },
+  { name: "Books", slug: "books", count: 112, icon: <BookOpen size={40} />, color: "bg-purple-50 text-purple-500" },
 ];
 
 export default function CategoryIcons() {
@@ -20,7 +20,7 @@ export default function CategoryIcons() {
           {categories.map((cat, i) => (
             <Link 
               key={i} 
-              href={`/category/${cat.name.toLowerCase()}`}
+              href={`/category/${cat.slug}`}
               className="flex flex-col items-center group"
             >
               <div className={`w-24 h-24 rounded-[40px] ${cat.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500 shadow-sm group-hover:shadow-xl`}>

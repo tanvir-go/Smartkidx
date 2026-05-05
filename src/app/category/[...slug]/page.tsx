@@ -13,20 +13,14 @@ import {
   Gamepad2,
   Palette,
   Baby,
-  BookOpen
+  BookOpen,
+  Zap
 } from "lucide-react";
 import { products as allProducts } from "@/data/products";
 import ProductCard from "@/components/product/ProductCard";
 import { motion, AnimatePresence } from "framer-motion";
 
-const sidebarCategories = [
-  { name: "Electronics & Gadgets", slug: "electronics", icon: <Cpu size={14} /> },
-  { name: "Robotics | IoT", slug: "robotics", icon: <Microscope size={14} /> },
-  { name: "Kids Toys", slug: "toys", icon: <Gamepad2 size={14} /> },
-  { name: "Stationary", slug: "stationary", icon: <Palette size={14} /> },
-  { name: "Kids Lifestyle", slug: "lifestyle", icon: <Baby size={14} /> },
-  { name: "Books", slug: "books", icon: <BookOpen size={14} /> }
-];
+import { categories } from "@/data/navigation";
 
 export default function CategoryPage({ params: paramsPromise }: { params: Promise<{ slug: string[] }> }) {
   const params = use(paramsPromise);
@@ -36,18 +30,21 @@ export default function CategoryPage({ params: paramsPromise }: { params: Promis
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("featured");
+  const [openCategory, setOpenCategory] = useState<string | null>(categorySlug);
 
   // Map slug back to display name
-  const categoryName = sidebarCategories.find(c => c.slug === categorySlug)?.name || categorySlug;
-  const subCategoryName = subCategorySlug ? subCategorySlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : null;
+  const activeCategory = categories.find(c => c.slug === categorySlug);
+  const categoryName = activeCategory?.name || categorySlug;
+  const subCategoryName = subCategorySlug 
+    ? activeCategory?.subcategories?.find(s => s.slug === subCategorySlug)?.name || subCategorySlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+    : null;
 
   // Filter products
-  // In a real app, products would have category/subcategory fields that match these slugs
-  // For mock data, we'll just show all products if no specific match, or filter by category name
   const filteredProducts = allProducts.filter(p => {
     const pCat = p.category.toLowerCase();
     if (categorySlug === "electronics" && pCat.includes("electronics")) return true;
     if (categorySlug === "robotics" && pCat.includes("robotics")) return true;
+    if (categorySlug === "stem-kits" && pCat.includes("stem")) return true;
     if (categorySlug === "toys" && pCat.includes("toys")) return true;
     if (categorySlug === "stationary" && pCat.includes("stationary")) return true;
     if (categorySlug === "lifestyle" && pCat.includes("lifestyle")) return true;
@@ -88,21 +85,50 @@ export default function CategoryPage({ params: paramsPromise }: { params: Promis
             <div className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100">
               <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 pb-4 border-b border-slate-50">All Categories</h3>
               <div className="space-y-2">
-                {sidebarCategories.map((cat) => (
-                  <Link 
-                    key={cat.slug}
-                    href={`/category/${cat.slug}`}
-                    className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all group ${
-                      categorySlug === cat.slug ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-slate-500 hover:bg-slate-50 hover:text-primary"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      {cat.icon}
-                      <span className="text-xs font-bold uppercase tracking-tight">{cat.name}</span>
+                {categories.map((cat) => {
+                  const isOpen = openCategory === cat.slug;
+                  const isActive = categorySlug === cat.slug;
+                  
+                  return (
+                    <div key={cat.slug} className="space-y-1">
+                      <button 
+                        onClick={() => setOpenCategory(isOpen ? null : cat.slug)}
+                        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all group ${
+                          isActive ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-slate-500 hover:bg-slate-50 hover:text-primary"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          {cat.icon}
+                          <span className="text-xs font-bold uppercase tracking-tight">{cat.name}</span>
+                        </div>
+                        <ChevronDown size={14} className={`transition-transform duration-300 ${isOpen ? "rotate-180" : ""} ${isActive ? "text-white" : "text-slate-200 group-hover:text-primary"}`} />
+                      </button>
+                      
+                      <AnimatePresence>
+                        {isOpen && cat.subcategories && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden pl-10 pr-4 space-y-1"
+                          >
+                            {cat.subcategories.map((sub) => (
+                              <Link
+                                key={sub.slug}
+                                href={`/category/${cat.slug}/${sub.slug}`}
+                                className={`block py-2 text-[11px] font-bold uppercase tracking-tight transition-colors ${
+                                  subCategorySlug === sub.slug ? "text-primary" : "text-slate-400 hover:text-slate-600"
+                                }`}
+                              >
+                                {sub.name}
+                              </Link>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
-                    <ChevronRight size={14} className={categorySlug === cat.slug ? "text-white" : "text-slate-200 group-hover:text-primary"} />
-                  </Link>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

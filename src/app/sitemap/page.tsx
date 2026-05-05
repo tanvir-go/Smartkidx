@@ -34,7 +34,7 @@ export default function SitemapPage() {
       links: [
         { name: "Electronics & Gadgets", href: "/category/electronics", icon: <Cpu size={14} /> },
         { name: "Robotics | IoT", href: "/category/robotics", icon: <Microscope size={14} /> },
-        { name: "STEM Kits", href: "/category/stem", icon: <Zap size={14} /> },
+        { name: "STEM Kits", href: "/category/stem-kits", icon: <Zap size={14} /> },
         { name: "Kids Toys", href: "/category/toys", icon: <Gamepad2 size={14} /> },
         { name: "Stationary", href: "/category/stationary", icon: <Palette size={14} /> },
         { name: "Kids Lifestyle", href: "/category/lifestyle", icon: <Baby size={14} /> },

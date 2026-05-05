@@ -18,7 +18,7 @@ const categories = [
   { name: "Stationary", icon: <Palette size={18} />, href: "/category/stationary" },
   { name: "Kids Lifestyle", icon: <Baby size={18} />, href: "/category/lifestyle" },
   { name: "Books", icon: <BookOpen size={18} />, href: "/category/books" },
-  { name: "STEM Kits", icon: <Zap size={18} />, href: "/category/stem" },
+  { name: "STEM Kits", icon: <Zap size={18} />, href: "/category/stem-kits" },
 ];
 
 export default function CategorySidebar() {
