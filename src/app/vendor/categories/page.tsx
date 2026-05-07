@@ -17,7 +17,7 @@ export default function VendorCategoriesPage() {
   
   const handleAddCategory = (data: any) => {
     if (editingCat) {
-      setCategories(categories.map(c => c.name === editingCat.name ? { ...data, count: c.count } : c));
+      setCategories(categories.map((c: any) => c.name === editingCat.name ? { ...data, count: c.count } : c));
     } else {
       setCategories([...categories, { ...data, count: 0 }]);
     }
@@ -83,7 +83,7 @@ export default function VendorCategoriesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {categories.map((cat, i) => (
+                {categories.map((cat: any, i: number) => (
                   <tr key={i} className="hover:bg-slate-50/50 transition-colors animate-in fade-in slide-in-from-top-1">
                     <td className="px-6 py-4 text-sm font-bold text-slate-700">{cat.name}</td>
                     <td className="px-6 py-4 text-right">
@@ -122,7 +122,7 @@ export default function VendorCategoriesPage() {
             </button>
           </div>
           <div className="p-6 space-y-4">
-            {attributes.map((attr, i) => (
+            {attributes.map((attr: any, i: number) => (
               <div key={i} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 group animate-in fade-in slide-in-from-top-1">
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-xs font-black text-slate-800 uppercase tracking-tight">{attr.name}</p>

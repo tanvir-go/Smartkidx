@@ -34,7 +34,7 @@ export default function VendorProductsPage() {
 
   const handleAddProduct = (data: any) => {
     if (editingProduct) {
-      setProducts(products.map(p => p.id === editingProduct.id ? { 
+      setProducts(products.map((p: any) => p.id === editingProduct.id ? { 
         ...p, 
         name: data.name, 
         sku: data.sku, 
@@ -157,7 +157,7 @@ export default function VendorProductsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {products.map((product) => (
+              {products.map((product: any) => (
                 <tr key={product.id} className="hover:bg-slate-50/50 transition-colors group animate-in fade-in slide-in-from-top-1">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">

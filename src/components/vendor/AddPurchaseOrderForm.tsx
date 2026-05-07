@@ -102,7 +102,7 @@ export default function AddPurchaseOrderForm({ onClose, onSuccess, initialData }
     let s = 0;
     let t = 0;
     
-    formData.items.forEach(item => {
+    formData.items.forEach((item: any) => {
       q += Number(item.qty);
       const lineSub = item.qty * item.unitPrice;
       const lineTax = (lineSub * item.tax) / 100;

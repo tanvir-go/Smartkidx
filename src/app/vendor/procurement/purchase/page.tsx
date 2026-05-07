@@ -22,7 +22,7 @@ export default function VendorPurchaseGRNPage() {
 
   const handleAddPO = (data: any) => {
     if (editingPO) {
-      setPurchaseOrders(purchaseOrders.map(po => po.poNumber === editingPO.poNumber ? data : po));
+      setPurchaseOrders(purchaseOrders.map((po: any) => po.poNumber === editingPO.poNumber ? data : po));
     } else {
       setPurchaseOrders([data, ...purchaseOrders]);
     }
@@ -79,7 +79,7 @@ export default function VendorPurchaseGRNPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {purchaseOrders.map((po, i) => (
+                {purchaseOrders.map((po: any, i: number) => (
                   <tr key={i} className="hover:bg-slate-50/50 transition-colors group">
                     <td className="px-6 py-5">
                       <span className="text-[11px] font-black text-slate-800 uppercase">{po.poNumber}</span>

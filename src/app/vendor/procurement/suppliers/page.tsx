@@ -16,7 +16,7 @@ export default function VendorSuppliersPage() {
 
   const handleAddSupplier = (data: any) => {
     if (editingSupplier) {
-      setSuppliers(suppliers.map(s => s.supplierName === editingSupplier.supplierName ? data : s));
+      setSuppliers(suppliers.map((s: any) => s.supplierName === editingSupplier.supplierName ? data : s));
     } else {
       setSuppliers([data, ...suppliers]);
     }
@@ -63,7 +63,7 @@ export default function VendorSuppliersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {suppliers.map((supplier, i) => (
+              {suppliers.map((supplier: any, i: number) => (
                 <tr key={i} className="hover:bg-slate-50/50 transition-colors animate-in fade-in slide-in-from-top-1">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
