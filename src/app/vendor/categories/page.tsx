@@ -129,7 +129,7 @@ export default function VendorCategoriesPage() {
                   <button className="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"><MoreHorizontal size={14} /></button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {attr.values.map((v, idx) => (
+                  {attr.values.map((v: string, idx: number) => (
                     <span key={idx} className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 shadow-sm">{v}</span>
                   ))}
                 </div>

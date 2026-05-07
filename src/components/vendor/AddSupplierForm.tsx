@@ -119,10 +119,13 @@ export default function AddSupplierForm({ onClose, onSuccess, initialData }: { o
     }, 1500);
   };
 
-  const SectionTitle = ({ title, subtitle }: { title: string; subtitle?: string }) => (
-    <div className="mb-6">
-      <h4 className="text-lg font-black text-slate-800 tracking-tight uppercase">{title}</h4>
-      {subtitle && <p className="text-slate-400 text-xs mt-1 font-medium">{subtitle}</p>}
+  const SectionTitle = ({ title, subtitle, icon: Icon }: { title: string; subtitle?: string; icon?: any }) => (
+    <div className="mb-6 flex items-center gap-3">
+      {Icon && <Icon size={20} className="text-primary" />}
+      <div>
+        <h4 className="text-lg font-black text-slate-800 tracking-tight uppercase">{title}</h4>
+        {subtitle && <p className="text-slate-400 text-xs mt-1 font-medium">{subtitle}</p>}
+      </div>
     </div>
   );
 
