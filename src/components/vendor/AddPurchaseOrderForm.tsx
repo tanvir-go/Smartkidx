@@ -321,7 +321,7 @@ export default function AddPurchaseOrderForm({ onClose, onSuccess, initialData }
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
-                        {formData.items.map((item) => (
+                        {formData.items.map((item: any) => (
                           <tr key={item.id} className="bg-white hover:bg-slate-50/50 transition-colors">
                             <td className="px-6 py-5 min-w-[240px]">
                               <select 
@@ -337,7 +337,7 @@ export default function AddPurchaseOrderForm({ onClose, onSuccess, initialData }
                                 className="w-full bg-slate-50 border-none rounded-xl px-4 py-2.5 text-[11px] font-bold focus:ring-1 focus:ring-primary outline-none"
                               >
                                 <option value="">Select Product...</option>
-                                {MOCK_PRODUCTS.map(p => <option key={p.id}>{p.name}</option>)}
+                                {MOCK_PRODUCTS.map((p: any) => <option key={p.id}>{p.name}</option>)}
                               </select>
                               <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-2 ml-1">{item.sku || "NO SKU"}</p>
                             </td>

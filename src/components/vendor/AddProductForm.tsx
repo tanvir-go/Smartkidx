@@ -133,11 +133,11 @@ export default function AddProductForm({ onClose, onSuccess, initialData }: { on
   };
 
   const removeVariant = (id: string) => {
-    setVariants(variants.filter(v => v.id !== id));
+    setVariants(variants.filter((v: Variant) => v.id !== id));
   };
 
   const updateVariant = (id: string, field: keyof Variant, value: string) => {
-    setVariants(variants.map(v => v.id === id ? { ...v, [field]: value } : v));
+    setVariants(variants.map((v: Variant) => v.id === id ? { ...v, [field]: value } : v));
   };
 
   const generateAIDescription = async () => {
