@@ -117,7 +117,7 @@ export default function AddProductForm({ onClose, onSuccess, initialData }: { on
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const val = type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
-    setFormData(prev => ({ ...prev, [name]: val }));
+    setFormData((prev: any) => ({ ...prev, [name]: val }));
   };
 
   const addVariant = () => {
@@ -148,7 +148,7 @@ export default function AddProductForm({ onClose, onSuccess, initialData }: { on
     setAiGenerating("description");
     // Mock AI delay
     await new Promise(resolve => setTimeout(resolve, 2000));
-    setFormData(prev => ({
+    setFormData((prev: any) => ({
       ...prev,
       fullDescription: `Introducing the premium ${prev.name}. Designed for high performance and durability, this product features state-of-the-art technology. Ideal for hobbyists and professionals alike, it offers unparalleled quality in its category. Key features include an ergonomic design, energy-efficient operation, and seamless integration with existing systems.`
     }));
@@ -163,7 +163,7 @@ export default function AddProductForm({ onClose, onSuccess, initialData }: { on
     }
     setAiGenerating("seo");
     await new Promise(resolve => setTimeout(resolve, 1500));
-    setFormData(prev => ({
+    setFormData((prev: any) => ({
       ...prev,
       seoTitle: `Buy ${prev.name} | Best Price in Bangladesh`,
       metaDescription: `Get the original ${prev.name} at SmartKids. High quality, authentic brand, and fast delivery across Bangladesh. Order now for the best deal!`,

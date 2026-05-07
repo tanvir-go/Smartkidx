@@ -90,7 +90,7 @@ export default function AddCategoryForm({ onClose, onSuccess, initialData }: { o
   // Auto-generate slug from name
   useEffect(() => {
     if (formData.name) {
-      setFormData(prev => ({
+      setFormData((prev: any) => ({
         ...prev,
         slug: prev.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
       }));
@@ -100,7 +100,7 @@ export default function AddCategoryForm({ onClose, onSuccess, initialData }: { o
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const val = type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
-    setFormData(prev => ({ ...prev, [name]: val }));
+    setFormData((prev: any) => ({ ...prev, [name]: val }));
   };
 
   const handleSubmit = () => {

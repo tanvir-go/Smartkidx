@@ -110,7 +110,7 @@ export default function AddPurchaseOrderForm({ onClose, onSuccess, initialData }
       t += lineTax;
     });
 
-    setFormData(prev => ({
+    setFormData((prev: any) => ({
       ...prev,
       totalQty: q,
       subtotal: s,
@@ -122,27 +122,27 @@ export default function AddPurchaseOrderForm({ onClose, onSuccess, initialData }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
   const addItem = () => {
-    setFormData(prev => ({
+    setFormData((prev: any) => ({
       ...prev,
       items: [...prev.items, { id: Date.now(), name: "", sku: "", variant: "", qty: 1, unitPrice: 0, discount: 0, tax: 0, subtotal: 0 }]
     }));
   };
 
   const removeItem = (id: number) => {
-    setFormData(prev => ({
+    setFormData((prev: any) => ({
       ...prev,
-      items: prev.items.filter(item => item.id !== id)
+      items: prev.items.filter((item: any) => item.id !== id)
     }));
   };
 
   const updateItem = (id: number, field: string, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev: any) => ({
       ...prev,
-      items: prev.items.map(item => item.id === id ? { ...item, [field]: value } : item)
+      items: prev.items.map((item: any) => item.id === id ? { ...item, [field]: value } : item)
     }));
   };
 
