@@ -1,35 +1,42 @@
 "use client";
 
 import React, { useState } from "react";
-import { Layers, Plus, Search, MoreHorizontal, X, Tag, Settings2 } from "lucide-react";
+import { Layers, Plus, Search, MoreHorizontal, X, Tag, Settings2, Pencil } from "lucide-react";
 import { toast } from "react-toastify";
+import AddCategoryForm from "@/components/vendor/AddCategoryForm";
 
 export default function VendorCategoriesPage() {
-  const [categories, setCategories] = useState([
+  const [categories, setCategories] = useState<any[]>([
     { name: "Electronics", count: 12 },
     { name: "Robotics", count: 8 },
     { name: "Kits", count: 15 }
   ]);
+
+  const [isCatModalOpen, setIsCatModalOpen] = useState(false);
+  const [editingCat, setEditingCat] = useState<any>(null);
+  
+  const handleAddCategory = (data: any) => {
+    if (editingCat) {
+      setCategories(categories.map(c => c.name === editingCat.name ? { ...data, count: c.count } : c));
+    } else {
+      setCategories([...categories, { ...data, count: 0 }]);
+    }
+    setIsCatModalOpen(false);
+    setEditingCat(null);
+  };
+
+  const handleEditCat = (cat: any) => {
+    setEditingCat(cat);
+    setIsCatModalOpen(true);
+  };
 
   const [attributes, setAttributes] = useState([
     { name: "Color", values: ["Red", "Green", "Blue"] },
     { name: "Size", values: ["Small", "Medium", "Large"] }
   ]);
 
-  const [isCatModalOpen, setIsCatModalOpen] = useState(false);
   const [isAttrModalOpen, setIsAttrModalOpen] = useState(false);
-  
-  const [newCatName, setNewCatName] = useState("");
   const [newAttr, setNewAttr] = useState({ name: "", values: "" });
-
-  const handleAddCategory = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCatName) return;
-    setCategories([...categories, { name: newCatName, count: 0 }]);
-    setNewCatName("");
-    setIsCatModalOpen(false);
-    toast.success("New category added!");
-  };
 
   const handleAddAttribute = (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,6 +79,7 @@ export default function VendorCategoriesPage() {
                 <tr className="bg-slate-50/50">
                   <th className="px-6 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Name</th>
                   <th className="px-6 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Products</th>
+                  <th className="px-6 py-3"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -80,6 +88,20 @@ export default function VendorCategoriesPage() {
                     <td className="px-6 py-4 text-sm font-bold text-slate-700">{cat.name}</td>
                     <td className="px-6 py-4 text-right">
                       <span className="px-2 py-1 rounded-lg bg-slate-100 text-[10px] font-black text-slate-500">{cat.count}</span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button 
+                          onClick={() => handleEditCat(cat)}
+                          className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all" 
+                          title="Edit Category"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                        <button className="p-2 text-slate-400 hover:text-primary transition-colors">
+                          <MoreHorizontal size={18} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -120,31 +142,13 @@ export default function VendorCategoriesPage() {
       {/* Add Category Modal */}
       {isCatModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsCatModalOpen(false)}></div>
-          <div className="relative bg-white w-full max-w-sm rounded-[32px] shadow-2xl border border-slate-100 p-8 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">New Category</h3>
-              <button onClick={() => setIsCatModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-xl transition-colors">
-                <X size={20} className="text-slate-400" />
-              </button>
-            </div>
-            <form onSubmit={handleAddCategory} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category Name</label>
-                <div className="relative">
-                  <Tag size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input 
-                    type="text" 
-                    required
-                    value={newCatName}
-                    onChange={(e) => setNewCatName(e.target.value)}
-                    placeholder="e.g. Science Projects"
-                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                  />
-                </div>
-              </div>
-              <button type="submit" className="w-full bg-primary text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-primary/90 transition-all shadow-xl shadow-primary/20">Add Category</button>
-            </form>
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => { setIsCatModalOpen(false); setEditingCat(null); }}></div>
+          <div className="relative bg-white w-full max-w-6xl rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200">
+            <AddCategoryForm 
+              onClose={() => { setIsCatModalOpen(false); setEditingCat(null); }} 
+              onSuccess={handleAddCategory}
+              initialData={editingCat}
+            />
           </div>
         </div>
       )}

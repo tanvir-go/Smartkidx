@@ -95,8 +95,8 @@ export default function MainHeader() {
       <div className="container mx-auto px-4">
         {/* Middle Row: Logo, Menu, Socials, Login */}
         <div className="flex items-center py-2 relative">
-          {/* Logo (Left side) */}
-          <div className="flex-1 flex justify-start">
+          {/* Logo (Left side) - Hidden on Mobile */}
+          <div className="flex-1 hidden lg:flex justify-start">
             <Link href="/" className="flex-shrink-0">
               <Image 
                 src="/Smart-Kids-Logo.webp" 
@@ -598,53 +598,26 @@ export default function MainHeader() {
           </div>
         )}
 
-        {/* Mobile Header */}
-        <div className="lg:hidden py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600 hover:bg-primary/10 hover:text-primary transition-all"
-            >
-              <Menu size={24} />
-            </button>
-            <Link href="/">
-              <Image 
-                src="/Smart-Kids-Logo.webp" 
-                alt="SmartKids Logo" 
-                width={120} 
-                height={32} 
-                className="h-10 w-auto object-contain"
-              />
-            </Link>
-          </div>
+        {/* Mobile Header - Refined */}
+        <div className="lg:hidden py-3 flex items-center justify-between">
+          {/* Drawer Menu (Left) */}
+          <button 
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600 hover:bg-primary/10 hover:text-primary transition-all"
+          >
+            <Menu size={24} />
+          </button>
 
-          <div className="flex items-center gap-2">
-            <Link href="/wishlist" className="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600 relative">
-              <Heart size={20} />
-              {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-white">
-                  {wishlistCount}
-                </span>
-              )}
-            </Link>
-            <button 
-              onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-              className="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600"
-            >
-              <Search size={20} />
-            </button>
-            <Link href="/cart" className="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600 relative">
-              <ShoppingCart size={20} />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-white">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
-            <Link href={getPortalHref()} className="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-xl shadow-lg shadow-primary/20">
-              <User size={20} />
-            </Link>
-          </div>
+          {/* Logo (Right) */}
+          <Link href="/">
+            <Image 
+              src="/Smart-Kids-Logo.webp" 
+              alt="SmartKids Logo" 
+              width={120} 
+              height={32} 
+              className="h-9 w-auto object-contain"
+            />
+          </Link>
         </div>
 
         {/* Mobile Search Bar (Expandable) */}
@@ -706,6 +679,18 @@ export default function MainHeader() {
 
               {/* Drawer Scroll Area */}
               <div className="flex-grow overflow-y-auto p-6 space-y-8 custom-scrollbar">
+                {/* Search Bar in Drawer */}
+                <div className="relative">
+                  <div className="flex items-center bg-slate-50 rounded-2xl px-4 py-3 border border-slate-100 focus-within:border-primary/30 transition-all">
+                    <Search size={18} className="text-slate-400" />
+                    <input 
+                      type="text" 
+                      placeholder="Search products..." 
+                      className="bg-transparent border-none focus:ring-0 text-sm px-3 flex-grow font-medium"
+                    />
+                  </div>
+                </div>
+
                 {/* Main Navigation */}
                 <nav className="space-y-1">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 px-2">Navigation</p>
@@ -716,6 +701,17 @@ export default function MainHeader() {
                   <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 text-slate-800 font-bold uppercase text-sm tracking-tight transition-all group">
                     <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all"><ShoppingBag size={18} /></div>
                     Shop
+                  </Link>
+                  <Link href="/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 text-slate-800 font-bold uppercase text-sm tracking-tight transition-all group">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all relative">
+                      <Heart size={18} />
+                      {wishlistCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-white">
+                          {wishlistCount}
+                        </span>
+                      )}
+                    </div>
+                    My Wishlist
                   </Link>
                   <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 text-slate-800 font-bold uppercase text-sm tracking-tight transition-all group">
                     <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all"><Info size={18} /></div>
@@ -768,6 +764,52 @@ export default function MainHeader() {
           </>
         )}
       </AnimatePresence>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-3 z-[90] shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+        <div className="flex items-center justify-between">
+          <Link href="/" className={`flex flex-col items-center gap-1 transition-all ${pathname === "/" ? "text-primary" : "text-slate-400"}`}>
+            <motion.div whileTap={{ scale: 0.9 }}>
+              <div className={`p-1 ${pathname === "/" ? "bg-primary/10 rounded-xl" : ""}`}>
+                <Menu size={20} />
+              </div>
+            </motion.div>
+            <span className="text-[9px] font-black uppercase tracking-widest">Home</span>
+          </Link>
+          
+          <Link href="/shop" className={`flex flex-col items-center gap-1 transition-all ${pathname === "/shop" ? "text-primary" : "text-slate-400"}`}>
+            <motion.div whileTap={{ scale: 0.9 }}>
+              <div className={`p-1 ${pathname === "/shop" ? "bg-primary/10 rounded-xl" : ""}`}>
+                <ShoppingBag size={20} />
+              </div>
+            </motion.div>
+            <span className="text-[9px] font-black uppercase tracking-widest">Shop</span>
+          </Link>
+          
+          <Link href="/cart" className={`flex flex-col items-center gap-1 transition-all ${pathname === "/cart" ? "text-primary" : "text-slate-400"}`}>
+            <motion.div whileTap={{ scale: 0.9 }} className="relative">
+              <div className={`p-1 ${pathname === "/cart" ? "bg-primary/10 rounded-xl" : ""}`}>
+                <ShoppingCart size={20} />
+              </div>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-white text-[8px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-white">
+                  {cartCount}
+                </span>
+              )}
+            </motion.div>
+            <span className="text-[9px] font-black uppercase tracking-widest">Cart</span>
+          </Link>
+          
+          <Link href={getPortalHref()} className={`flex flex-col items-center gap-1 transition-all ${pathname.startsWith("/vendor") || pathname.startsWith("/customer") || pathname.startsWith("/super-admin") ? "text-primary" : "text-slate-400"}`}>
+            <motion.div whileTap={{ scale: 0.9 }}>
+              <div className={`p-1 ${pathname.startsWith("/vendor") || pathname.startsWith("/customer") || pathname.startsWith("/super-admin") ? "bg-primary/10 rounded-xl" : ""}`}>
+                <User size={20} />
+              </div>
+            </motion.div>
+            <span className="text-[9px] font-black uppercase tracking-widest">Account</span>
+          </Link>
+        </div>
+      </div>
     </header>
   );
 }

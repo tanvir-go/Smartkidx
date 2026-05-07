@@ -17,6 +17,7 @@ import {
   Layers
 } from "lucide-react";
 import { toast } from "react-toastify";
+import AddProductForm from "@/components/vendor/AddProductForm";
 
 export default function VendorProductsPage() {
   const [products, setProducts] = useState([
@@ -28,35 +29,57 @@ export default function VendorProductsPage() {
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState({ 
-    name: "", 
-    price: "", 
-    stock: "", 
-    category: "Electronics" 
-  });
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [viewingProduct, setViewingProduct] = useState<any>(null);
 
-  const handleAddProduct = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newProduct.name || !newProduct.price || !newProduct.stock) {
-      toast.error("Please fill in all required fields");
-      return;
+  const handleAddProduct = (data: any) => {
+    if (editingProduct) {
+      setProducts(products.map(p => p.id === editingProduct.id ? { 
+        ...p, 
+        name: data.name, 
+        sku: data.sku, 
+        price: `৳ ${parseInt(data.regularPrice).toLocaleString()}`,
+        stock: parseInt(data.stockQuantity),
+        status: parseInt(data.stockQuantity) > 0 ? "Active" : "Out of Stock"
+      } : p));
+    } else {
+      const id = products.length + 1;
+      setProducts([{
+        id,
+        name: data.name,
+        sku: data.sku || `SK-V1-00${id}`,
+        price: `৳ ${parseInt(data.regularPrice).toLocaleString()}`,
+        stock: parseInt(data.stockQuantity),
+        sales: 0,
+        status: parseInt(data.stockQuantity) > 0 ? "Active" : "Out of Stock"
+      }, ...products]);
     }
-
-    const id = products.length + 1;
-    const productToAdd = {
-      id,
-      name: newProduct.name,
-      sku: `SK-V1-00${id}`,
-      price: `৳ ${parseInt(newProduct.price).toLocaleString()}`,
-      stock: parseInt(newProduct.stock),
-      sales: 0,
-      status: parseInt(newProduct.stock) > 0 ? "Active" : "Out of Stock"
-    };
-
-    setProducts([productToAdd, ...products]);
     setIsModalOpen(false);
-    setNewProduct({ name: "", price: "", stock: "", category: "Electronics" });
-    toast.success("Product added to your inventory!");
+    setEditingProduct(null);
+    setViewingProduct(null);
+  };
+
+  const handleEdit = (product: any) => {
+    // Map list product back to form structure for mock editing
+    setEditingProduct({
+      name: product.name,
+      sku: product.sku,
+      regularPrice: product.price.replace(/[^\d]/g, ""),
+      stockQuantity: product.stock.toString(),
+      id: product.id
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleView = (product: any) => {
+    setViewingProduct({
+      name: product.name,
+      sku: product.sku,
+      regularPrice: product.price.replace(/[^\d]/g, ""),
+      stockQuantity: product.stock.toString(),
+      id: product.id
+    });
+    setIsModalOpen(true);
   };
 
   return (
@@ -169,10 +192,16 @@ export default function VendorProductsPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                      <button 
+                        onClick={() => handleView(product)}
+                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                      >
                         <Eye size={18} />
                       </button>
-                      <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
+                      <button 
+                        onClick={() => handleEdit(product)}
+                        className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                      >
                         <Edit size={18} />
                       </button>
                       <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
@@ -190,83 +219,13 @@ export default function VendorProductsPage() {
       {/* Add Product Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
-          <div className="relative bg-white w-full max-w-lg rounded-[32px] shadow-2xl border border-slate-100 p-8 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-xl font-semibold text-slate-800 uppercase tracking-tight">Add New Product</h3>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-xl transition-colors">
-                <X size={20} className="text-slate-400" />
-              </button>
-            </div>
-
-            <form onSubmit={handleAddProduct} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Product Name *</label>
-                <div className="relative">
-                  <Tag size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input 
-                    type="text" 
-                    required
-                    value={newProduct.name}
-                    onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-                    placeholder="e.g. Advanced Arduino Uno R4"
-                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Price (৳) *</label>
-                  <div className="relative">
-                    <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input 
-                      type="number" 
-                      required
-                      value={newProduct.price}
-                      onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
-                      placeholder="2500"
-                      className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Stock Qty *</label>
-                  <div className="relative">
-                    <Layers size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input 
-                      type="number" 
-                      required
-                      value={newProduct.stock}
-                      onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
-                      placeholder="50"
-                      className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category</label>
-                <select 
-                  value={newProduct.category}
-                  onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
-                  className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none"
-                >
-                  <option>Electronics</option>
-                  <option>Robotics</option>
-                  <option>STEM Kits</option>
-                  <option>Books</option>
-                </select>
-              </div>
-
-              <button 
-                type="submit"
-                className="w-full bg-primary text-white py-4 rounded-2xl font-semibold uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 mt-4"
-              >
-                Publish Product
-              </button>
-            </form>
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => { setIsModalOpen(false); setEditingProduct(null); setViewingProduct(null); }}></div>
+          <div className="relative bg-white w-full max-w-6xl rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200">
+            <AddProductForm 
+              onClose={() => { setIsModalOpen(false); setEditingProduct(null); setViewingProduct(null); }} 
+              onSuccess={handleAddProduct}
+              initialData={editingProduct || viewingProduct}
+            />
           </div>
         </div>
       )}
