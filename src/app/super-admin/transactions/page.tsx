@@ -11,6 +11,7 @@ import {
   Banknote,
   Smartphone
 } from "lucide-react";
+import { exportToCSV } from "@/utils/export";
 
 const transactions = [
   { id: "#TXN-9023", order: "#ORD-9823", method: "bKash", type: "Credit", amount: "+ ৳ 2,500", date: "Oct 24, 2023", status: "Success" },
@@ -28,7 +29,15 @@ export default function TransactionsPage() {
           <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Financial Transactions</h2>
           <p className="text-slate-500 text-sm mt-1">Audit trail of all payments, refunds and platform fees.</p>
         </div>
-        <button className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+        <button 
+          onClick={() => exportToCSV(
+            transactions, 
+            ["Transaction ID", "Order ID", "Method", "Type", "Amount", "Date", "Status"], 
+            "Transactions_Statement",
+            (t) => [t.id, t.order, t.method, t.type, t.amount, t.date, t.status]
+          )}
+          className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
+        >
           <Download size={18} /> Export Statement
         </button>
       </div>

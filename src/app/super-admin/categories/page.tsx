@@ -12,9 +12,13 @@ import {
   Trash2,
   X,
   Link as LinkIcon,
-  Tag
+  Tag,
+  Download
 } from "lucide-react";
+import { exportToCSV } from "@/utils/export";
 import { toast } from "react-toastify";
+
+import AddCategoryForm from "@/components/vendor/AddCategoryForm";
 
 export default function CategoriesPage() {
   const [categoryList, setCategoryList] = useState([
@@ -27,23 +31,39 @@ export default function CategoriesPage() {
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newCategory, setNewCategory] = useState({ name: "", slug: "", icon: "📁" });
+  const [editingCategory, setEditingCategory] = useState<any>(null);
 
-  const handleAddCategory = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCategory.name || !newCategory.slug) {
-      toast.error("Please fill in the required fields");
-      return;
+  const handleOpenModal = (category?: any) => {
+    if (category) {
+      setEditingCategory(category);
+    } else {
+      setEditingCategory(null);
     }
+    setIsModalOpen(true);
+  };
 
-    const id = categoryList.length + 1;
-    setCategoryList([
-      { ...newCategory, id, items: 0, status: "Active" },
-      ...categoryList
-    ]);
+  const handleFormSuccess = (data: any) => {
+    if (editingCategory) {
+      setCategoryList(categoryList.map(c => 
+        c.id === editingCategory.id 
+          ? { ...c, ...data, id: editingCategory.id } 
+          : c
+      ));
+    } else {
+      const id = categoryList.length > 0 ? Math.max(...categoryList.map(c => c.id)) + 1 : 1;
+      setCategoryList([
+        { ...data, id, items: 0 },
+        ...categoryList
+      ]);
+    }
     setIsModalOpen(false);
-    setNewCategory({ name: "", slug: "", icon: "📁" });
-    toast.success("New product category created!");
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this category? This will affect all linked products.")) {
+      setCategoryList(categoryList.filter(c => c.id !== id));
+      toast.success("Category deleted successfully.");
+    }
   };
 
   return (
@@ -53,12 +73,25 @@ export default function CategoriesPage() {
           <h2 className="text-2xl font-semibold text-slate-800 uppercase tracking-tight">Categories & Attributes</h2>
           <p className="text-slate-500 text-sm mt-1 font-medium">Manage product categories and their global attributes.</p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-primary text-white px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 group"
-        >
-          <Plus size={18} className="group-hover:rotate-90 transition-transform" /> Add Category
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => exportToCSV(
+              categoryList, 
+              ["ID", "Name", "Slug", "Items", "Status"], 
+              "Categories_Export",
+              (c) => [c.id, c.name, c.slug, c.items, c.status]
+            )}
+            className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+          >
+            <Download size={18} /> Export CSV
+          </button>
+          <button 
+            onClick={() => handleOpenModal()}
+            className="bg-primary text-white px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 group"
+          >
+            <Plus size={18} className="group-hover:rotate-90 transition-transform" /> Add Category
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row items-center gap-4">
@@ -89,7 +122,7 @@ export default function CategoriesPage() {
                 <td className="px-8 py-5">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-xl group-hover:bg-primary group-hover:scale-110 transition-all shadow-sm">
-                      {cat.icon}
+                      {cat.icon || "📁"}
                     </div>
                     <div>
                       <p className="text-sm font-black text-slate-800 uppercase leading-none">{cat.name}</p>
@@ -108,8 +141,18 @@ export default function CategoriesPage() {
                 </td>
                 <td className="px-8 py-5 text-right">
                   <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                    <button className="p-2 text-slate-400 hover:text-primary hover:bg-slate-50 rounded-lg transition-all"><Edit size={16} /></button>
-                    <button className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={16} /></button>
+                    <button 
+                      onClick={() => handleOpenModal(cat)}
+                      className="p-2 text-slate-400 hover:text-primary hover:bg-slate-50 rounded-lg transition-all"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(cat.id)}
+                      className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -118,77 +161,16 @@ export default function CategoriesPage() {
         </table>
       </div>
 
-      {/* Add Category Modal */}
+      {/* Add/Edit Category Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
-          <div className="relative bg-white w-full max-w-md rounded-[32px] shadow-2xl border border-slate-100 p-8 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-xl font-semibold text-slate-800 uppercase tracking-tight">Add New Category</h3>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-xl transition-colors">
-                <X size={20} className="text-slate-400" />
-              </button>
-            </div>
-
-            <form onSubmit={handleAddCategory} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category Name *</label>
-                <div className="relative">
-                  <Tag size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input 
-                    type="text" 
-                    required
-                    value={newCategory.name}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setNewCategory({...newCategory, name: val, slug: val.toLowerCase().replace(/ /g, '-')});
-                    }}
-                    placeholder="e.g. Science Tools"
-                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category Slug *</label>
-                <div className="relative">
-                  <LinkIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input 
-                    type="text" 
-                    required
-                    value={newCategory.slug}
-                    onChange={(e) => setNewCategory({...newCategory, slug: e.target.value})}
-                    placeholder="science-tools"
-                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Icon Emoji</label>
-                <select 
-                  value={newCategory.icon}
-                  onChange={(e) => setNewCategory({...newCategory, icon: e.target.value})}
-                  className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                >
-                  <option>📁</option>
-                  <option>🤖</option>
-                  <option>🔌</option>
-                  <option>🧪</option>
-                  <option>💻</option>
-                  <option>🚁</option>
-                  <option>🎨</option>
-                  <option>🧩</option>
-                </select>
-              </div>
-
-              <button 
-                type="submit"
-                className="w-full bg-primary text-white py-4 rounded-2xl font-semibold uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 mt-4"
-              >
-                Create Category
-              </button>
-            </form>
+          <div className="relative bg-white w-full max-w-6xl rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200">
+            <AddCategoryForm 
+              onClose={() => setIsModalOpen(false)}
+              onSuccess={handleFormSuccess}
+              initialData={editingCategory}
+            />
           </div>
         </div>
       )}

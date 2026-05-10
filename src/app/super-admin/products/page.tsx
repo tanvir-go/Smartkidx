@@ -15,49 +15,74 @@ import {
   Trash2,
   X,
   DollarSign,
-  Layers
+  Layers,
+  Download
 } from "lucide-react";
+import { exportToCSV } from "@/utils/export";
 import { toast } from "react-toastify";
+
+import AddProductForm from "@/components/vendor/AddProductForm";
 
 export default function ProductsPage() {
   const [productList, setProductList] = useState([
-    { id: 1, name: "Robotics Starter Kit", vendor: "Global Tech", category: "Electronics", price: "৳ 2,500", stock: 124, status: "Published" },
-    { id: 2, name: "STEM Solar Car", vendor: "RoboMaster", category: "Robotics", price: "৳ 1,200", stock: 12, status: "Published" },
-    { id: 3, name: "Coding for Kids Book", vendor: "Learning Hub", category: "Books", price: "৳ 800", stock: 450, status: "Draft" },
-    { id: 4, name: "DIY Drone Kit", vendor: "Global Tech", category: "Robotics", price: "৳ 4,500", stock: 5, status: "Out of Stock" },
-    { id: 5, name: "Smart Watch for Kids", vendor: "TechToys", category: "Electronics", price: "৳ 3,200", stock: 86, status: "Pending" },
-    { id: 6, name: "Science Experiment Set", vendor: "STEM Solutions", category: "Education", price: "৳ 1,800", stock: 32, status: "Published" },
+    { id: 1, name: "Robotics Starter Kit", vendor: "Global Tech", category: "Electronics", price: "2500", stock: 124, status: "Published" },
+    { id: 2, name: "STEM Solar Car", vendor: "RoboMaster", category: "Robotics", price: "1200", stock: 12, status: "Published" },
+    { id: 3, name: "Coding for Kids Book", vendor: "Learning Hub", category: "Books", price: "800", stock: 450, status: "Draft" },
+    { id: 4, name: "DIY Drone Kit", vendor: "Global Tech", category: "Robotics", price: "4500", stock: 5, status: "Out of Stock" },
+    { id: 5, name: "Smart Watch for Kids", vendor: "TechToys", category: "Electronics", price: "3200", stock: 86, status: "Pending" },
+    { id: 6, name: "Science Experiment Set", vendor: "STEM Solutions", category: "Education", price: "1800", stock: 32, status: "Published" },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState({ 
-    name: "", 
-    vendor: "SmartKids Official", 
-    category: "Electronics", 
-    price: "", 
-    stock: "" 
-  });
+  const [editingProduct, setEditingProduct] = useState<any>(null);
 
-  const handleAddProduct = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newProduct.name || !newProduct.price || !newProduct.stock) {
-      toast.error("Please fill in all required fields");
-      return;
+  const handleOpenModal = (product?: any) => {
+    if (product) {
+      setEditingProduct({
+        ...product,
+        regularPrice: product.price,
+        stockQuantity: product.stock.toString()
+      });
+    } else {
+      setEditingProduct(null);
     }
+    setIsModalOpen(true);
+  };
 
-    const id = productList.length + 1;
-    const productToAdd = {
-      ...newProduct,
-      id,
-      price: `৳ ${parseInt(newProduct.price).toLocaleString()}`,
-      stock: parseInt(newProduct.stock),
-      status: "Published"
-    };
-
-    setProductList([productToAdd, ...productList]);
+  const handleFormSuccess = (data: any) => {
+    if (editingProduct) {
+      setProductList(productList.map(p => 
+        p.id === editingProduct.id 
+          ? { 
+              ...p, 
+              name: data.name, 
+              category: data.category, 
+              price: data.regularPrice, 
+              stock: parseInt(data.stockQuantity),
+              status: data.status 
+            } 
+          : p
+      ));
+    } else {
+      const newEntry = {
+        id: productList.length > 0 ? Math.max(...productList.map(p => p.id)) + 1 : 1,
+        name: data.name,
+        vendor: "SmartKids Official",
+        category: data.category,
+        price: data.regularPrice,
+        stock: parseInt(data.stockQuantity),
+        status: data.status
+      };
+      setProductList([newEntry, ...productList]);
+    }
     setIsModalOpen(false);
-    setNewProduct({ name: "", vendor: "SmartKids Official", category: "Electronics", price: "", stock: "" });
-    toast.success("Global product added successfully!");
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      setProductList(productList.filter(p => p.id !== id));
+      toast.success("Product removed from global registry.");
+    }
   };
 
   return (
@@ -67,12 +92,25 @@ export default function ProductsPage() {
           <h2 className="text-2xl font-semibold text-slate-800 uppercase tracking-tight">Global Products</h2>
           <p className="text-slate-500 text-sm mt-1 font-medium">Monitor and manage all products across all vendors.</p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-primary text-white px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 group"
-        >
-          <Plus size={18} className="group-hover:rotate-90 transition-transform" /> Add Global Product
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => exportToCSV(
+              productList, 
+              ["ID", "Name", "Vendor", "Category", "Price", "Stock", "Status"], 
+              "Products_Export",
+              (p) => [p.id, p.name, p.vendor, p.category, `৳ ${parseInt(p.price).toLocaleString()}`, p.stock, p.status]
+            )}
+            className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+          >
+            <Download size={18} /> Export CSV
+          </button>
+          <button 
+            onClick={() => handleOpenModal()}
+            className="bg-primary text-white px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 group"
+          >
+            <Plus size={18} className="group-hover:rotate-90 transition-transform" /> Add Global Product
+          </button>
+        </div>
       </div>
 
       {/* Product Search & Filter */}
@@ -127,15 +165,15 @@ export default function ProductsPage() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="space-y-1">
-                      <p className="text-sm font-black text-slate-800">{product.price}</p>
+                      <p className="text-sm font-black text-slate-800">৳ {parseInt(product.price).toLocaleString()}</p>
                       <p className={`text-[10px] font-bold uppercase tracking-widest ${
-                        product.stock <= 10 ? "text-red-500" : "text-slate-400"
+                        parseInt(product.stock) <= 10 ? "text-red-500" : "text-slate-400"
                       }`}>{product.stock} in stock</p>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                      product.status === "Published" ? "bg-emerald-50 text-emerald-600" : 
+                      product.status === "Published" || product.status === "Active" ? "bg-emerald-50 text-emerald-600" : 
                       product.status === "Pending" ? "bg-orange-50 text-orange-600" : 
                       product.status === "Out of Stock" ? "bg-red-50 text-red-600" : "bg-slate-100 text-slate-400"
                     }`}>
@@ -144,13 +182,18 @@ export default function ProductsPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                      <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="View">
-                        <Eye size={18} />
-                      </button>
-                      <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Edit">
+                      <button 
+                        onClick={() => handleOpenModal(product)}
+                        className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" 
+                        title="Edit"
+                      >
                         <Edit size={18} />
                       </button>
-                      <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Delete">
+                      <button 
+                        onClick={() => handleDelete(product.id)}
+                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" 
+                        title="Delete"
+                      >
                         <Trash2 size={18} />
                       </button>
                     </div>
@@ -162,102 +205,38 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* Add Product Modal */}
+      {/* Add/Edit Product Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
-          <div className="relative bg-white w-full max-w-lg rounded-[32px] shadow-2xl border border-slate-100 p-8 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-xl font-semibold text-slate-800 uppercase tracking-tight">Add Global Product</h3>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-xl transition-colors">
-                <X size={20} className="text-slate-400" />
+          <div className="relative bg-white w-full max-w-6xl rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-8 py-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                  <Package size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">
+                    {editingProduct ? "Edit Product" : "Launch Global Product"}
+                  </h3>
+                  <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-0.5">Configuration Engine v1.0</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="p-3 hover:bg-slate-100 rounded-2xl transition-colors group"
+              >
+                <X size={24} className="text-slate-400 group-hover:rotate-90 transition-transform duration-300" />
               </button>
             </div>
-
-            <form onSubmit={handleAddProduct} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Product Name *</label>
-                <div className="relative">
-                  <Tag size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input 
-                    type="text" 
-                    required
-                    value={newProduct.name}
-                    onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-                    placeholder="e.g. SmartKids Explorer Drone"
-                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Price (৳) *</label>
-                  <div className="relative">
-                    <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input 
-                      type="number" 
-                      required
-                      value={newProduct.price}
-                      onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
-                      placeholder="2500"
-                      className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Initial Stock *</label>
-                  <div className="relative">
-                    <Layers size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input 
-                      type="number" 
-                      required
-                      value={newProduct.stock}
-                      onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
-                      placeholder="100"
-                      className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Vendor</label>
-                  <select 
-                    value={newProduct.vendor}
-                    onChange={(e) => setNewProduct({...newProduct, vendor: e.target.value})}
-                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none"
-                  >
-                    <option>SmartKids Official</option>
-                    <option>Global Tech</option>
-                    <option>RoboMaster</option>
-                    <option>Learning Hub</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category</label>
-                  <select 
-                    value={newProduct.category}
-                    onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
-                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none"
-                  >
-                    <option>Electronics</option>
-                    <option>Robotics</option>
-                    <option>STEM Kits</option>
-                    <option>Books</option>
-                    <option>Education</option>
-                  </select>
-                </div>
-              </div>
-
-              <button 
-                type="submit"
-                className="w-full bg-primary text-white py-4 rounded-2xl font-semibold uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 mt-4"
-              >
-                Create Global Product
-              </button>
-            </form>
+            
+            <div className="p-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
+              <AddProductForm 
+                onClose={() => setIsModalOpen(false)}
+                onSuccess={handleFormSuccess}
+                initialData={editingProduct} 
+              />
+            </div>
           </div>
         </div>
       )}

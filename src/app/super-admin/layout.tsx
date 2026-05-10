@@ -50,6 +50,7 @@ import {
   Truck
 } from "lucide-react";
 import { toast } from "react-toastify";
+import CreateOrderModal from "@/components/super-admin/CreateOrderForm";
 
 const sidebarGroups = [
   {
@@ -155,6 +156,7 @@ export default function SuperAdminLayout({
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -296,7 +298,7 @@ export default function SuperAdminLayout({
 
           <div className="flex items-center gap-2 md:gap-6">
             <button 
-              onClick={() => toast.success("New order creation opening...")}
+              onClick={() => setIsCreateOrderOpen(true)}
               className="bg-primary text-white px-3 md:px-5 py-2 rounded-lg font-semibold uppercase tracking-widest text-[10px] md:text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
             >
               <Plus size={16} /> <span className="hidden sm:inline">New Order</span>
@@ -324,6 +326,15 @@ export default function SuperAdminLayout({
         <div className="flex-grow overflow-y-auto p-4 md:p-8 custom-scrollbar">
           {children}
         </div>
+
+        <CreateOrderModal 
+          isOpen={isCreateOrderOpen} 
+          onClose={() => setIsCreateOrderOpen(false)}
+          onSave={(data: any) => {
+            console.log("Order Data:", data);
+            setIsCreateOrderOpen(false);
+          }}
+        />
       </main>
     </div>
   );

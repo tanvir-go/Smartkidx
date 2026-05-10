@@ -1,14 +1,35 @@
 "use client";
 
 import React from "react";
-import { Boxes, Search, Filter, AlertCircle, ArrowUpRight } from "lucide-react";
+import { Boxes, Search, Filter, AlertCircle, ArrowUpRight, Download } from "lucide-react";
+import { exportToCSV } from "@/utils/export";
+
+const inventoryData = [
+  { id: 1, name: "STEM Robotic Arm Kit 1", sku: "SK-ROB-001", quantity: 45, price: "৳ 2,500", status: "In Stock" },
+  { id: 2, name: "STEM Robotic Arm Kit 2", sku: "SK-ROB-002", quantity: 3, price: "৳ 2,500", status: "Low Stock" },
+  { id: 3, name: "STEM Robotic Arm Kit 3", sku: "SK-ROB-003", quantity: 45, price: "৳ 2,500", status: "In Stock" },
+  { id: 4, name: "STEM Robotic Arm Kit 4", sku: "SK-ROB-004", quantity: 45, price: "৳ 2,500", status: "In Stock" },
+];
 
 export default function VendorInventoryPage() {
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Manage Inventory</h2>
-        <p className="text-slate-500 text-sm mt-1">Monitor stock levels and manage product availability.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Manage Inventory</h2>
+          <p className="text-slate-500 text-sm mt-1">Monitor stock levels and manage product availability.</p>
+        </div>
+        <button 
+          onClick={() => exportToCSV(
+            inventoryData, 
+            ["ID", "Product", "SKU", "Quantity", "Price", "Status"], 
+            "Vendor_Inventory_Export",
+            (i) => [i.id, i.name, i.sku, i.quantity, i.price, i.status]
+          )}
+          className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+        >
+          <Download size={18} /> Export CSV
+        </button>
       </div>
 
       {/* Stats Cards */}
@@ -60,24 +81,24 @@ export default function VendorInventoryPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {[1, 2, 3, 4].map((i) => (
-                <tr key={i} className="hover:bg-slate-50/50 transition-colors">
+              {inventoryData.map((item) => (
+                <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-slate-100 shrink-0"></div>
-                      <p className="text-sm font-bold text-slate-800">STEM Robotic Arm Kit {i}</p>
+                      <p className="text-sm font-bold text-slate-800">{item.name}</p>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-xs font-medium text-slate-500">SK-ROB-00{i}</td>
+                  <td className="px-6 py-4 text-xs font-medium text-slate-500">{item.sku}</td>
                   <td className="px-6 py-4">
-                    <span className={`font-black text-sm ${i === 2 ? 'text-red-500' : 'text-slate-800'}`}>
-                      {i === 2 ? '3 Left' : '45 Units'}
+                    <span className={`font-black text-sm ${item.status === 'Low Stock' ? 'text-red-500' : 'text-slate-800'}`}>
+                      {item.status === 'Low Stock' ? `${item.quantity} Left` : `${item.quantity} Units`}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm font-black text-slate-800">৳ 2,500</td>
+                  <td className="px-6 py-4 text-sm font-black text-slate-800">{item.price}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${i === 2 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}>
-                      {i === 2 ? 'Low Stock' : 'In Stock'}
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${item.status === 'Low Stock' ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                      {item.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">

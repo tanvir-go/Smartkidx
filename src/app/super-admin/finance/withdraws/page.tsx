@@ -11,6 +11,7 @@ import {
   MoreVertical,
   Banknote
 } from "lucide-react";
+import { exportToCSV } from "@/utils/export";
 
 const withdrawals = [
   { id: "#WD-101", seller: "Global Tech", amount: "৳ 45,000", method: "Bank Transfer", date: "Oct 24, 2023", status: "Approved" },
@@ -27,9 +28,22 @@ export default function WithdrawalsPage() {
           <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Withdrawal Requests</h2>
           <p className="text-slate-500 text-sm mt-1">Review and process payout requests from platform sellers.</p>
         </div>
-        <button className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
-          <Banknote size={18} /> Batch Process
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => exportToCSV(
+              withdrawals, 
+              ["ID", "Seller", "Amount", "Method", "Date", "Status"], 
+              "Withdrawals_Export",
+              (w) => [w.id, w.seller, w.amount, w.method, w.date, w.status]
+            )}
+            className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+          >
+            <Download size={18} /> Export CSV
+          </button>
+          <button className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+            <Banknote size={18} /> Batch Process
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

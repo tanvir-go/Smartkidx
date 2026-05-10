@@ -152,7 +152,10 @@ export default function POSPage() {
             </button>
           </div>
 
-          <button className="w-full py-5 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2">
+          <button 
+            onClick={() => window.print()}
+            className="w-full py-5 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2"
+          >
             <Printer size={18} /> Complete Payment & Print
           </button>
         </div>

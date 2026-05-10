@@ -13,8 +13,10 @@ import {
   Shield,
   X,
   User,
-  ShieldAlert
+  ShieldAlert,
+  Download
 } from "lucide-react";
+import { exportToCSV } from "@/utils/export";
 import { toast } from "react-toastify";
 
 export default function AdminsManagementPage() {
@@ -53,12 +55,25 @@ export default function AdminsManagementPage() {
           <h2 className="text-2xl font-semibold text-slate-800 uppercase tracking-tight">Administrative Staff</h2>
           <p className="text-slate-500 text-sm mt-1">Manage internal team roles and system access permissions.</p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-slate-900 text-white px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 flex items-center gap-2"
-        >
-          <Plus size={18} /> Add Staff Member
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => exportToCSV(
+              staff, 
+              ["ID", "Name", "Role", "Email", "Status", "Access"], 
+              "Admins_Export",
+              (a) => [a.id, a.name, a.role, a.email, a.status, a.access]
+            )}
+            className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+          >
+            <Download size={18} /> Export CSV
+          </button>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-slate-900 text-white px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 flex items-center gap-2"
+          >
+            <Plus size={18} /> Add Staff Member
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">

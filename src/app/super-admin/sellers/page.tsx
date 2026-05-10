@@ -10,8 +10,10 @@ import {
   ShieldCheck,
   TrendingUp,
   Package,
-  MoreVertical
+  MoreVertical,
+  Download
 } from "lucide-react";
+import { exportToCSV } from "@/utils/export";
 
 const sellers = [
   { id: 1, name: "Global Tech", email: "sales@globaltech.com", city: "Dhaka", rating: 4.8, sales: "৳ 1.2M", items: 450, status: "Verified", logo: "GT" },
@@ -29,9 +31,22 @@ export default function SellersPage() {
           <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Sellers Management</h2>
           <p className="text-slate-500 text-sm mt-1">Monitor and manage all vendors/sellers on the platform.</p>
         </div>
-        <button className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
-          Register New Seller
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => exportToCSV(
+              sellers, 
+              ["ID", "Name", "Email", "City", "Rating", "Sales", "Items", "Status"], 
+              "Sellers_Export",
+              (s) => [s.id, s.name, s.email, s.city, s.rating, s.sales, s.items, s.status]
+            )}
+            className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+          >
+            <Download size={18} /> Export CSV
+          </button>
+          <button className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+            Register New Seller
+          </button>
+        </div>
       </div>
 
       {/* Seller Summary Stats */}

@@ -9,8 +9,10 @@ import {
   Package,
   TrendingUp,
   History,
-  MoreVertical
+  MoreVertical,
+  Download
 } from "lucide-react";
+import { exportToCSV } from "@/utils/export";
 
 const inventory = [
   { id: 1, name: "Robotics Starter Kit", sku: "RK-001", stock: 150, committed: 12, available: 138, warehouse: "Primary", status: "In Stock" },
@@ -29,6 +31,17 @@ export default function InventoryPage() {
           <p className="text-slate-500 text-sm mt-1">Global warehouse inventory and stock movement tracking.</p>
         </div>
         <div className="flex gap-3">
+          <button 
+            onClick={() => exportToCSV(
+              inventory, 
+              ["ID", "Name", "SKU", "Stock", "Committed", "Available", "Warehouse", "Status"], 
+              "Inventory_Export",
+              (i) => [i.id, i.name, i.sku, i.stock, i.committed, i.available, i.warehouse, i.status]
+            )}
+            className="flex items-center gap-2 px-5 py-3 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all"
+          >
+            <Download size={16} /> Export CSV
+          </button>
           <button className="flex items-center gap-2 px-5 py-3 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all">
             <History size={16} /> Movement Log
           </button>

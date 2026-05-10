@@ -9,8 +9,10 @@ import {
   UserX, 
   Shield, 
   Mail,
-  ChevronRight
+  ChevronRight,
+  Download
 } from "lucide-react";
+import { exportToCSV } from "@/utils/export";
 
 const allUsers = [
   { id: 1, name: "Admin User", role: "Super Admin", email: "admin@smartkids.com", status: "Active", joined: "Oct 20, 2023" },
@@ -28,9 +30,22 @@ export default function UsersManagementPage() {
           <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">System Users</h2>
           <p className="text-slate-500 text-sm mt-1">Manage permissions and accounts for all platform participants.</p>
         </div>
-        <button className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
-          <Users size={18} /> Invite User
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => exportToCSV(
+              allUsers, 
+              ["ID", "Name", "Role", "Email", "Status", "Joined"], 
+              "Users_Export",
+              (u) => [u.id, u.name, u.role, u.email, u.status, u.joined]
+            )}
+            className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+          >
+            <Download size={18} /> Export CSV
+          </button>
+          <button className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+            <Users size={18} /> Invite User
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row items-center gap-4">

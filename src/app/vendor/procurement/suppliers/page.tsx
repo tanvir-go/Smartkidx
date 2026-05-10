@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { Truck, Plus, Search, Filter, MoreHorizontal, FileDown, X, User, Phone, MapPin, Pencil } from "lucide-react";
+import { Truck, Plus, Search, Filter, MoreHorizontal, FileDown, X, User, Phone, MapPin, Pencil, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import AddSupplierForm from "@/components/vendor/AddSupplierForm";
+import DeleteModal from "@/components/vendor/DeleteModal";
 
 export default function VendorSuppliersPage() {
   const [suppliers, setSuppliers] = useState<any[]>([
@@ -13,6 +14,9 @@ export default function VendorSuppliersPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<any>(null);
+  
+  // Delete Modal State
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, name: "" });
 
   const handleAddSupplier = (data: any) => {
     if (editingSupplier) {
@@ -27,6 +31,16 @@ export default function VendorSuppliersPage() {
   const handleEdit = (supplier: any) => {
     setEditingSupplier(supplier);
     setIsModalOpen(true);
+  };
+
+  const handleDelete = (name: string) => {
+    setDeleteModal({ isOpen: true, name });
+  };
+
+  const confirmDelete = () => {
+    setSuppliers(prev => prev.filter(s => s.supplierName !== deleteModal.name));
+    toast.success(`Supplier "${deleteModal.name}" has been removed.`);
+    setDeleteModal({ isOpen: false, name: "" });
   };
 
   return (
@@ -89,8 +103,12 @@ export default function VendorSuppliersPage() {
                       >
                         <Pencil size={16} />
                       </button>
-                      <button className="p-2 text-slate-400 hover:text-primary transition-colors">
-                        <MoreHorizontal size={18} />
+                      <button 
+                        onClick={() => handleDelete(supplier.supplierName)}
+                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" 
+                        title="Delete"
+                      >
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </td>
@@ -101,16 +119,45 @@ export default function VendorSuppliersPage() {
         </div>
       </div>
 
+      <DeleteModal 
+        isOpen={deleteModal.isOpen} 
+        onClose={() => setDeleteModal({ ...deleteModal, isOpen: false })} 
+        onConfirm={confirmDelete} 
+        itemName={deleteModal.name} 
+        itemType="Supplier"
+      />
+
       {/* Add Supplier Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => { setIsModalOpen(false); setEditingSupplier(null); }}></div>
-          <div className="relative bg-white w-full max-w-6xl rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200">
-            <AddSupplierForm 
-              onClose={() => { setIsModalOpen(false); setEditingSupplier(null); }} 
-              onSuccess={handleAddSupplier}
-              initialData={editingSupplier}
-            />
+          <div className="relative bg-white w-full max-w-4xl rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-8 py-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                  <Truck size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">
+                    {editingSupplier ? "Update Partner" : "Establish New Partnership"}
+                  </h3>
+                  <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-0.5">Procurement Control System</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => { setIsModalOpen(false); setEditingSupplier(null); }}
+                className="p-3 hover:bg-slate-100 rounded-2xl transition-colors group"
+              >
+                <X size={24} className="text-slate-400 group-hover:rotate-90 transition-transform duration-300" />
+              </button>
+            </div>
+            
+            <div className="p-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
+              <AddSupplierForm 
+                onSubmit={handleAddSupplier} 
+                initialData={editingSupplier}
+              />
+            </div>
           </div>
         </div>
       )}

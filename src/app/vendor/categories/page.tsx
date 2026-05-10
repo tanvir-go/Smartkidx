@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { Layers, Plus, Search, MoreHorizontal, X, Tag, Settings2, Pencil } from "lucide-react";
+import { Layers, Plus, Search, MoreHorizontal, X, Tag, Settings2, Pencil, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import AddCategoryForm from "@/components/vendor/AddCategoryForm";
+import DeleteModal from "@/components/vendor/DeleteModal";
 
 export default function VendorCategoriesPage() {
   const [categories, setCategories] = useState<any[]>([
@@ -15,6 +16,9 @@ export default function VendorCategoriesPage() {
   const [isCatModalOpen, setIsCatModalOpen] = useState(false);
   const [editingCat, setEditingCat] = useState<any>(null);
   
+  // Delete Modal State
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, name: "", type: "" as "Category" | "Attribute" });
+
   const handleAddCategory = (data: any) => {
     if (editingCat) {
       setCategories(categories.map((c: any) => c.name === editingCat.name ? { ...data, count: c.count } : c));
@@ -28,6 +32,10 @@ export default function VendorCategoriesPage() {
   const handleEditCat = (cat: any) => {
     setEditingCat(cat);
     setIsCatModalOpen(true);
+  };
+
+  const handleDeleteCat = (name: string) => {
+    setDeleteModal({ isOpen: true, name, type: "Category" });
   };
 
   const [attributes, setAttributes] = useState([
@@ -46,6 +54,21 @@ export default function VendorCategoriesPage() {
     setNewAttr({ name: "", values: "" });
     setIsAttrModalOpen(false);
     toast.success("New attribute configured!");
+  };
+
+  const handleDeleteAttr = (name: string) => {
+    setDeleteModal({ isOpen: true, name, type: "Attribute" });
+  };
+
+  const confirmDelete = () => {
+    if (deleteModal.type === "Category") {
+      setCategories(prev => prev.filter(c => c.name !== deleteModal.name));
+      toast.success(`Category "${deleteModal.name}" deleted.`);
+    } else {
+      setAttributes(prev => prev.filter(a => a.name !== deleteModal.name));
+      toast.success(`Attribute "${deleteModal.name}" deleted.`);
+    }
+    setDeleteModal({ isOpen: false, name: "", type: "Category" });
   };
 
   return (
@@ -98,8 +121,12 @@ export default function VendorCategoriesPage() {
                         >
                           <Pencil size={16} />
                         </button>
-                        <button className="p-2 text-slate-400 hover:text-primary transition-colors">
-                          <MoreHorizontal size={18} />
+                        <button 
+                          onClick={() => handleDeleteCat(cat.name)}
+                          className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" 
+                          title="Delete"
+                        >
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>
@@ -116,81 +143,112 @@ export default function VendorCategoriesPage() {
             <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Global Attributes</h3>
             <button 
               onClick={() => setIsAttrModalOpen(true)}
-              className="text-primary text-[10px] font-black uppercase tracking-widest hover:underline"
+              className="flex items-center gap-2 px-4 py-1.5 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-primary hover:text-white transition-all shadow-sm"
             >
-              + Add Attribute
+              <Plus size={14} /> New Attribute
             </button>
           </div>
           <div className="p-6 space-y-4">
             {attributes.map((attr: any, i: number) => (
-              <div key={i} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 group animate-in fade-in slide-in-from-top-1">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs font-black text-slate-800 uppercase tracking-tight">{attr.name}</p>
-                  <button className="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"><MoreHorizontal size={14} /></button>
+              <div key={i} className="group p-6 rounded-3xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-xl hover:shadow-slate-100 transition-all flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
+                    <Tag size={18} />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight">{attr.name}</h4>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {attr.values.map((v: string, idx: number) => (
+                        <span key={idx} className="text-[9px] font-bold text-slate-400 bg-white px-1.5 py-0.5 rounded border border-slate-100">{v}</span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {attr.values.map((v: string, idx: number) => (
-                    <span key={idx} className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 shadow-sm">{v}</span>
-                  ))}
-                </div>
+                <button 
+                  onClick={() => handleDeleteAttr(attr.name)}
+                  className="p-2 text-slate-200 group-hover:text-red-400 hover:text-red-500 transition-all"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Add Category Modal */}
+      <DeleteModal 
+        isOpen={deleteModal.isOpen} 
+        onClose={() => setDeleteModal({ ...deleteModal, isOpen: false })} 
+        onConfirm={confirmDelete} 
+        itemName={deleteModal.name} 
+        itemType={deleteModal.type}
+      />
+
+      {/* Category Modal */}
       {isCatModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => { setIsCatModalOpen(false); setEditingCat(null); }}></div>
-          <div className="relative bg-white w-full max-w-6xl rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200">
-            <AddCategoryForm 
-              onClose={() => { setIsCatModalOpen(false); setEditingCat(null); }} 
-              onSuccess={handleAddCategory}
-              initialData={editingCat}
-            />
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsCatModalOpen(false)}></div>
+          <div className="relative bg-white w-full max-w-2xl rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-8 py-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                  <Layers size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">{editingCat ? "Modify Hierarchy" : "New Category Group"}</h3>
+                  <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-0.5">Classification Engine</p>
+                </div>
+              </div>
+              <button onClick={() => setIsCatModalOpen(false)} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors group">
+                <X size={24} className="text-slate-400 group-hover:rotate-90 transition-transform duration-300" />
+              </button>
+            </div>
+            <div className="p-8">
+              <AddCategoryForm onSubmit={handleAddCategory} initialData={editingCat} />
+            </div>
           </div>
         </div>
       )}
 
-      {/* Add Attribute Modal */}
+      {/* Attribute Modal */}
       {isAttrModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsAttrModalOpen(false)}></div>
-          <div className="relative bg-white w-full max-w-sm rounded-[32px] shadow-2xl border border-slate-100 p-8 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">Configure Attribute</h3>
-              <button onClick={() => setIsAttrModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-xl transition-colors">
-                <X size={20} className="text-slate-400" />
-              </button>
+          <div className="relative bg-white w-full max-w-lg rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200 p-10">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                <Settings2 size={24} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">Configure Attribute</h3>
+                <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-0.5">Variation Parameters</p>
+              </div>
             </div>
             <form onSubmit={handleAddAttribute} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Attribute Name</label>
-                <div className="relative">
-                  <Settings2 size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input 
-                    type="text" 
-                    required
-                    value={newAttr.name}
-                    onChange={(e) => setNewAttr({...newAttr, name: e.target.value})}
-                    placeholder="e.g. Material"
-                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Values (comma separated)</label>
+              <div>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Attribute Name</label>
                 <input 
                   type="text" 
-                  required
-                  value={newAttr.values}
-                  onChange={(e) => setNewAttr({...newAttr, values: e.target.value})}
-                  placeholder="e.g. Plastic, Metal, Wood"
-                  className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                  value={newAttr.name}
+                  onChange={(e) => setNewAttr({ ...newAttr, name: e.target.value })}
+                  placeholder="e.g. Material" 
+                  className="w-full px-5 py-3.5 bg-slate-50 border-none rounded-xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" 
                 />
               </div>
-              <button type="submit" className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-800 transition-all shadow-xl shadow-slate-200">Save Attribute</button>
+              <div>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Values (Comma Separated)</label>
+                <input 
+                  type="text" 
+                  value={newAttr.values}
+                  onChange={(e) => setNewAttr({ ...newAttr, values: e.target.value })}
+                  placeholder="e.g. Plastic, Metal, Wood" 
+                  className="w-full px-5 py-3.5 bg-slate-50 border-none rounded-xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" 
+                />
+              </div>
+              <div className="flex gap-4 pt-4">
+                <button type="button" onClick={() => setIsAttrModalOpen(false)} className="flex-1 py-3.5 bg-white border border-slate-200 text-slate-500 font-black uppercase tracking-widest text-[10px] rounded-xl hover:bg-slate-50 transition-all">Cancel</button>
+                <button type="submit" className="flex-1 py-3.5 bg-primary text-white font-black uppercase tracking-widest text-[10px] rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">Save Attribute</button>
+              </div>
             </form>
           </div>
         </div>

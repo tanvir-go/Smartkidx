@@ -14,10 +14,13 @@ import {
   X,
   Tag,
   DollarSign,
-  Layers
+  Layers,
+  Download
 } from "lucide-react";
+import { exportToCSV } from "@/utils/export";
 import { toast } from "react-toastify";
 import AddProductForm from "@/components/vendor/AddProductForm";
+import DeleteModal from "@/components/vendor/DeleteModal";
 
 export default function VendorProductsPage() {
   const [products, setProducts] = useState([
@@ -31,6 +34,9 @@ export default function VendorProductsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [viewingProduct, setViewingProduct] = useState<any>(null);
+  
+  // Delete Modal State
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: 0, name: "" });
 
   const handleAddProduct = (data: any) => {
     if (editingProduct) {
@@ -60,7 +66,6 @@ export default function VendorProductsPage() {
   };
 
   const handleEdit = (product: any) => {
-    // Map list product back to form structure for mock editing
     setEditingProduct({
       name: product.name,
       sku: product.sku,
@@ -82,6 +87,16 @@ export default function VendorProductsPage() {
     setIsModalOpen(true);
   };
 
+  const handleDelete = (id: number, name: string) => {
+    setDeleteModal({ isOpen: true, id, name });
+  };
+
+  const confirmDelete = () => {
+    setProducts(prev => prev.filter(p => p.id !== deleteModal.id));
+    toast.success(`Product "${deleteModal.name}" has been deleted.`);
+    setDeleteModal({ isOpen: false, id: 0, name: "" });
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -89,98 +104,101 @@ export default function VendorProductsPage() {
           <h2 className="text-2xl font-semibold text-slate-800 uppercase tracking-tight">My Products</h2>
           <p className="text-slate-500 text-sm mt-1">Manage your inventory and product listings.</p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-primary text-white px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 group"
-        >
-          <Plus size={18} className="group-hover:rotate-90 transition-transform" /> Add New Product
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => exportToCSV(
+              products, 
+              ["ID", "Name", "SKU", "Price", "Stock", "Sales", "Status"], 
+              "Vendor_Products_Export",
+              (p) => [p.id, p.name, p.sku, p.price, p.stock, p.sales, p.status]
+            )}
+            className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+          >
+            <Download size={18} /> Export CSV
+          </button>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-primary text-white px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 group"
+          >
+            <Plus size={18} className="group-hover:rotate-90 transition-transform" /> Add New Product
+          </button>
+        </div>
       </div>
 
       {/* Inventory Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
-            <Package size={24} />
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary"><Package size={24} /></div>
           <div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Products</p>
-            <h3 className="text-xl font-black text-slate-800">{products.length} Items</h3>
+            <h3 className="text-xl font-black text-slate-800">{products.length}</h3>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600">
-            <AlertTriangle size={24} />
-          </div>
+        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-500"><TrendingUp size={24} /></div>
           <div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Low Stock Alert</p>
-            <h3 className="text-xl font-black text-slate-800">{products.filter(p => p.stock > 0 && p.stock <= 10).length.toString().padStart(2, '0')} Items</h3>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Sales</p>
+            <h3 className="text-xl font-black text-slate-800">1,245</h3>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-            <TrendingUp size={24} />
-          </div>
+        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500"><Layers size={24} /></div>
           <div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Listings</p>
-            <h3 className="text-xl font-black text-slate-800">{products.filter(p => p.status === "Active").length.toString().padStart(2, '0')} Items</h3>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Stock Items</p>
+            <h3 className="text-xl font-black text-slate-800">842</h3>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-500"><AlertTriangle size={24} /></div>
+          <div>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Low Stock</p>
+            <h3 className="text-xl font-black text-slate-800">3 Items</h3>
           </div>
         </div>
       </div>
 
-      {/* Search & List */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-slate-50 flex flex-col md:flex-row items-center gap-4">
-          <div className="relative flex-grow">
+      <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+          <div className="relative max-w-md w-full">
             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Search my products..." 
-              className="w-full pl-12 pr-4 py-2.5 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-            />
+            <input type="text" placeholder="Search by name, SKU or category..." className="w-full pl-12 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all" />
           </div>
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-100 transition-colors">
-            <Filter size={16} /> Filters
+          <button className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-primary transition-all">
+            <Filter size={18} />
           </button>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full text-left">
             <thead>
-              <tr className="bg-slate-50">
-                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Product</th>
-                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Price</th>
-                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Stock</th>
-                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Sales</th>
-                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                <th className="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
+              <tr className="bg-slate-50/50">
+                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Product Information</th>
+                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Price</th>
+                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Stock</th>
+                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Sales</th>
+                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {products.map((product: any) => (
-                <tr key={product.id} className="hover:bg-slate-50/50 transition-colors group animate-in fade-in slide-in-from-top-1">
+              {products.map((product) => (
+                <tr key={product.id} className="hover:bg-slate-50/50 transition-colors group">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all">
+                      <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-all overflow-hidden">
                         <Package size={20} />
                       </div>
                       <div>
                         <p className="text-sm font-bold text-slate-800">{product.name}</p>
-                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">{product.sku}</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{product.sku}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <p className="text-sm font-black text-slate-800">{product.price}</p>
+                  <td className="px-6 py-4 text-sm font-black text-slate-800">{product.price}</td>
+                  <td className="px-6 py-4 text-center">
+                    <span className={`text-xs font-bold ${product.stock < 20 ? "text-red-500" : "text-slate-600"}`}>{product.stock}</span>
                   </td>
-                  <td className="px-6 py-4">
-                    <p className={`text-xs font-bold ${
-                      product.stock <= 10 ? "text-red-500" : "text-slate-600"
-                    }`}>{product.stock} Units</p>
-                  </td>
-                  <td className="px-6 py-4">
-                    <p className="text-xs font-bold text-slate-600">{product.sales} Sold</p>
-                  </td>
+                  <td className="px-6 py-4 text-center text-xs font-bold text-slate-600">{product.sales}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest ${
                       product.status === "Active" ? "bg-emerald-50 text-emerald-600" : 
@@ -204,7 +222,10 @@ export default function VendorProductsPage() {
                       >
                         <Edit size={18} />
                       </button>
-                      <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                      <button 
+                        onClick={() => handleDelete(product.id, product.name)}
+                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                      >
                         <Trash2 size={18} />
                       </button>
                     </div>
@@ -216,16 +237,46 @@ export default function VendorProductsPage() {
         </div>
       </div>
 
+      <DeleteModal 
+        isOpen={deleteModal.isOpen} 
+        onClose={() => setDeleteModal({ ...deleteModal, isOpen: false })} 
+        onConfirm={confirmDelete} 
+        itemName={deleteModal.name} 
+        itemType="Product"
+      />
+
       {/* Add Product Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => { setIsModalOpen(false); setEditingProduct(null); setViewingProduct(null); }}></div>
           <div className="relative bg-white w-full max-w-6xl rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200">
-            <AddProductForm 
-              onClose={() => { setIsModalOpen(false); setEditingProduct(null); setViewingProduct(null); }} 
-              onSuccess={handleAddProduct}
-              initialData={editingProduct || viewingProduct}
-            />
+            <div className="px-8 py-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                  <Package size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">
+                    {viewingProduct ? "Product Insights" : editingProduct ? "Update Product" : "Launch New Product"}
+                  </h3>
+                  <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-0.5">Configuration Engine v1.0</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => { setIsModalOpen(false); setEditingProduct(null); setViewingProduct(null); }}
+                className="p-3 hover:bg-slate-100 rounded-2xl transition-colors group"
+              >
+                <X size={24} className="text-slate-400 group-hover:rotate-90 transition-transform duration-300" />
+              </button>
+            </div>
+            
+            <div className="p-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
+              <AddProductForm 
+                onSubmit={handleAddProduct} 
+                initialData={viewingProduct || editingProduct} 
+                readOnly={!!viewingProduct}
+              />
+            </div>
           </div>
         </div>
       )}

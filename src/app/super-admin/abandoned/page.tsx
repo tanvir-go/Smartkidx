@@ -7,8 +7,10 @@ import {
   ShoppingBag, 
   Clock, 
   ChevronRight,
-  TrendingUp
+  TrendingUp,
+  Download
 } from "lucide-react";
+import { exportToCSV } from "@/utils/export";
 
 const carts = [
   { id: "#ABC-101", user: "John Doe", items: 3, value: "$250.00", lastSeen: "2 hours ago", status: "Reminded" },
@@ -25,9 +27,22 @@ export default function AbandonedCartPage() {
           <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Abandoned Carts</h2>
           <p className="text-slate-500 text-sm mt-1">Recovery analytics for incomplete customer shopping sessions.</p>
         </div>
-        <button className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
-          <Mail size={18} /> Send Batch Reminders
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => exportToCSV(
+              carts, 
+              ["ID", "User", "Items", "Value", "Last Seen", "Status"], 
+              "Abandoned_Carts_Export",
+              (c) => [c.id, c.user, c.items, c.value, c.lastSeen, c.status]
+            )}
+            className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+          >
+            <Download size={18} /> Export CSV
+          </button>
+          <button className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+            <Mail size={18} /> Send Batch Reminders
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
