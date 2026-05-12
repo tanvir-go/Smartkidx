@@ -271,10 +271,9 @@ export default function EmployeeProductsPage() {
             </div>
             
             <div className="p-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
-              <AddProductForm 
-                onSubmit={handleAddProduct} 
+              <AddProductForm onClose={() => setIsModalOpen(false)} onSuccess={handleAddProduct} 
                 initialData={viewingProduct || editingProduct} 
-                readOnly={!!viewingProduct}
+                
               />
             </div>
           </div>

@@ -153,8 +153,7 @@ export default function VendorSuppliersPage() {
             </div>
             
             <div className="p-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
-              <AddSupplierForm 
-                onSubmit={handleAddSupplier} 
+              <AddSupplierForm onClose={() => setIsModalOpen(false)} onSuccess={handleAddSupplier} 
                 initialData={editingSupplier}
               />
             </div>

@@ -204,7 +204,7 @@ export default function VendorCategoriesPage() {
               </button>
             </div>
             <div className="p-8">
-              <AddCategoryForm onSubmit={handleAddCategory} initialData={editingCat} />
+              <AddCategoryForm onClose={() => setIsCatModalOpen(false)} onSuccess={handleAddCategory} initialData={editingCat} />
             </div>
           </div>
         </div>

@@ -9,7 +9,6 @@ export interface ActivityItem {
   time: string;
   action: string;
   ip: string;
-  [key: string]: any;
 }
 
 export default function EmployeeActivityLogsPage() {
@@ -135,15 +134,15 @@ export default function EmployeeActivityLogsPage() {
                 
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Timestamp</label>
-                  <input type="text" value={formData.time} onChange={e => setFormData({...formData, time: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
+                  <input type="text" value={formData.time} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({...formData, time: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Action Taken</label>
-                  <input type="text" value={formData.action} onChange={e => setFormData({...formData, action: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
+                  <input type="text" value={formData.action} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({...formData, action: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">IP Address</label>
-                  <input type="text" value={formData.ip} onChange={e => setFormData({...formData, ip: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
+                  <input type="text" value={formData.ip} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({...formData, ip: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
                 </div>
                 <div className="pt-8 border-t border-slate-100 flex justify-end gap-4">
                   <button type="button" onClick={() => setIsModalOpen(false)} className="px-8 py-4 bg-slate-50 text-slate-500 font-black uppercase tracking-widest text-[11px] rounded-2xl hover:bg-slate-100 transition-all">Cancel</button>

@@ -318,7 +318,7 @@ export default function AddPurchaseOrderForm({ onClose, onSuccess, initialData }
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <InputWrapper label="Warehouse Selection" required icon={Warehouse}>
+                    <InputWrapper label="Warehouse Selection" required icon={Building2}>
                         <select name="warehouseId" value={formData.warehouseId} onChange={handleInputChange} className="w-full px-5 py-3.5 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-primary/20 outline-none">
                           <option>Primary Warehouse</option>
                           <option>Secondary Hub</option>

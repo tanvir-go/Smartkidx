@@ -167,7 +167,7 @@ export default function ProductsPage() {
                     <div className="space-y-1">
                       <p className="text-sm font-black text-slate-800">৳ {parseInt(product.price).toLocaleString()}</p>
                       <p className={`text-[10px] font-bold uppercase tracking-widest ${
-                        parseInt(product.stock) <= 10 ? "text-red-500" : "text-slate-400"
+                        product.stock <= 10 ? "text-red-500" : "text-slate-400"
                       }`}>{product.stock} in stock</p>
                     </div>
                   </td>
