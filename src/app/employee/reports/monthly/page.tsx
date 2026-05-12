@@ -14,10 +14,10 @@ export default function EmployeeMonthlySalesPage() {
   }
 ]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingItem, setEditingItem] = useState<any>(null);
   const [formData, setFormData] = useState({"month":"","revenue":"","growth":""});
 
-  const handleOpenModal = (item = null) => {
+  const handleOpenModal = (item: any = null) => {
     if (item) {
       setEditingItem(item.id);
       setFormData(item);
@@ -28,7 +28,7 @@ export default function EmployeeMonthlySalesPage() {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     if (editingItem) {
       setData(data.map(d => d.id === editingItem ? { ...d, ...formData } : d));
@@ -40,7 +40,7 @@ export default function EmployeeMonthlySalesPage() {
     setIsModalOpen(false);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: any) => {
     if(confirm("Are you sure you want to delete this?")) {
       setData(data.filter(d => d.id !== id));
       toast.success("Deleted successfully!");
@@ -48,7 +48,7 @@ export default function EmployeeMonthlySalesPage() {
   };
 
   const handleExport = () => {
-    exportToCSV(data, ["Month","Revenue","Growth"], "Export", (item) => [item.month, item.revenue, item.growth]);
+    exportToCSV(data, ["Month","Revenue","Growth"], "Export", (item: any) => [item.month, item.revenue, item.growth]);
   };
 
   return (

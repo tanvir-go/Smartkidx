@@ -18,10 +18,10 @@ export default function EmployeeNotificationsPage() {
   }
 ]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingItem, setEditingItem] = useState<any>(null);
   const [formData, setFormData] = useState({"message":"","date":""});
 
-  const handleOpenModal = (item = null) => {
+  const handleOpenModal = (item: any = null) => {
     if (item) {
       setEditingItem(item.id);
       setFormData(item);
@@ -32,7 +32,7 @@ export default function EmployeeNotificationsPage() {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     if (editingItem) {
       setData(data.map(d => d.id === editingItem ? { ...d, ...formData } : d));
@@ -44,7 +44,7 @@ export default function EmployeeNotificationsPage() {
     setIsModalOpen(false);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: any) => {
     if(confirm("Are you sure you want to delete this?")) {
       setData(data.filter(d => d.id !== id));
       toast.success("Deleted successfully!");
@@ -52,7 +52,7 @@ export default function EmployeeNotificationsPage() {
   };
 
   const handleExport = () => {
-    exportToCSV(data, ["Message","Date"], "Export", (item) => [item.message, item.date]);
+    exportToCSV(data, ["Message","Date"], "Export", (item: any) => [item.message, item.date]);
   };
 
   return (

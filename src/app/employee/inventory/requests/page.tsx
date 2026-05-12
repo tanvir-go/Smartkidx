@@ -15,10 +15,10 @@ export default function EmployeeInventoryRequestsPage() {
   }
 ]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingItem, setEditingItem] = useState<any>(null);
   const [formData, setFormData] = useState({"reqId":"","item":"","qty":"","status":""});
 
-  const handleOpenModal = (item = null) => {
+  const handleOpenModal = (item: any = null) => {
     if (item) {
       setEditingItem(item.id);
       setFormData(item);
@@ -29,7 +29,7 @@ export default function EmployeeInventoryRequestsPage() {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     if (editingItem) {
       setData(data.map(d => d.id === editingItem ? { ...d, ...formData } : d));
@@ -41,7 +41,7 @@ export default function EmployeeInventoryRequestsPage() {
     setIsModalOpen(false);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: any) => {
     if(confirm("Are you sure you want to delete this?")) {
       setData(data.filter(d => d.id !== id));
       toast.success("Deleted successfully!");
@@ -49,7 +49,7 @@ export default function EmployeeInventoryRequestsPage() {
   };
 
   const handleExport = () => {
-    exportToCSV(data, ["Request ID","Item","Qty","Status"], "Export", (item) => [item.reqId, item.item, item.qty, item.status]);
+    exportToCSV(data, ["Request ID","Item","Qty","Status"], "Export", (item: any) => [item.reqId, item.item, item.qty, item.status]);
   };
 
   return (

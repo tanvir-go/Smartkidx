@@ -4,8 +4,16 @@ import { Plus, Search, Filter, Eye, Edit, Trash2, Download, X, Save, FileText } 
 import { toast } from "react-toastify";
 import { exportToCSV } from "@/utils/export";
 
+export interface ActivityItem {
+  id: number | string;
+  time: string;
+  action: string;
+  ip: string;
+  [key: string]: any;
+}
+
 export default function EmployeeActivityLogsPage() {
-  const [data, setData] = useState([
+  const [data, setData] = useState<ActivityItem[]>([
   {
     "id": 1,
     "time": "10:45 AM",
@@ -14,10 +22,10 @@ export default function EmployeeActivityLogsPage() {
   }
 ]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
-  const [formData, setFormData] = useState({"time":"","action":"","ip":""});
+  const [editingItem, setEditingItem] = useState<number | string | null>(null);
+  const [formData, setFormData] = useState<Omit<ActivityItem, 'id'>>({"time":"","action":"","ip":""});
 
-  const handleOpenModal = (item = null) => {
+  const handleOpenModal = (item: ActivityItem | null = null) => {
     if (item) {
       setEditingItem(item.id);
       setFormData(item);
@@ -28,19 +36,19 @@ export default function EmployeeActivityLogsPage() {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingItem) {
       setData(data.map(d => d.id === editingItem ? { ...d, ...formData } : d));
       toast.success("Updated successfully!");
     } else {
-      setData([{ id: Date.now(), ...formData }, ...data]);
+      setData([{ id: Date.now(), ...formData } as ActivityItem, ...data]);
       toast.success("Created successfully!");
     }
     setIsModalOpen(false);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: number | string) => {
     if(confirm("Are you sure you want to delete this?")) {
       setData(data.filter(d => d.id !== id));
       toast.success("Deleted successfully!");
@@ -48,7 +56,7 @@ export default function EmployeeActivityLogsPage() {
   };
 
   const handleExport = () => {
-    exportToCSV(data, ["Timestamp","Action","IP Address"], "Export", (item) => [item.time, item.action, item.ip]);
+    exportToCSV(data, ["Timestamp","Action","IP Address"], "Export", (item: ActivityItem) => [item.time, item.action, item.ip]);
   };
 
   return (
