@@ -29,57 +29,107 @@ import {
   Receipt,
   Undo2,
   UserCircle,
-  Users
+  Users,
+  CheckSquare,
+  TrendingUp,
+  PlusCircle,
+  RefreshCw,
+  ClipboardList,
+  Edit,
+  Headphones,
+  Notebook,
+  Gift,
+  FileSpreadsheet,
+  MapPin,
+  Box,
+  Send,
+  PieChart,
+  Activity,
+  UserCheck,
+  Key,
+  History,
+  Clock,
+  CreditCard
 } from "lucide-react";
 
 const sidebarGroups = [
   {
     title: "DASHBOARD",
     items: [
-      { name: "Main Dashboard", icon: <LayoutDashboard size={18} />, href: "/vendor" },
+      { name: "Overview", icon: <LayoutDashboard size={18} />, href: "/employee" },
+      { name: "Today Sales", icon: <BadgeDollarSign size={18} />, href: "/employee/sales/today" },
+      { name: "Assigned Tasks", icon: <CheckSquare size={18} />, href: "/employee/tasks" },
+      { name: "Notifications", icon: <Bell size={18} />, href: "/employee/notifications" },
+      { name: "Recent Orders", icon: <ShoppingCart size={18} />, href: "/employee/orders/recent" },
+      { name: "Performance Summary", icon: <TrendingUp size={18} />, href: "/employee/performance" },
     ]
   },
   {
-    title: "PRODUCT MANAGEMENT",
+    title: "SALES & ORDERS",
     items: [
-      { name: "Manage Product", icon: <Package size={18} />, href: "/vendor/products" },
-      { name: "Categories & Attributes", icon: <Layers size={18} />, href: "/vendor/categories" },
-      { name: "Manage Inventory", icon: <Boxes size={18} />, href: "/vendor/inventory" },
+      { name: "Manage Orders", icon: <Package size={18} />, href: "/employee/orders" },
+      { name: "Create Orders", icon: <PlusCircle size={18} />, href: "/employee/orders/create" },
+      { name: "POS Billing", icon: <Monitor size={18} />, href: "/employee/pos" },
+      { name: "Invoices", icon: <FileText size={18} />, href: "/employee/invoices" },
+      { name: "Transactions", icon: <CreditCard size={18} />, href: "/employee/transactions" },
+      { name: "Order Status Update", icon: <RefreshCw size={18} />, href: "/employee/orders/status" },
+      { name: "Return Requests", icon: <Undo2 size={18} />, href: "/employee/returns" },
     ]
   },
   {
-    title: "ORDER MANAGEMENT",
+    title: "PRODUCT ACCESS",
     items: [
-      { name: "Orders", icon: <ShoppingCart size={18} />, href: "/vendor/orders" },
-      { name: "e POS Billing", icon: <Monitor size={18} />, href: "/vendor/pos" },
-      { name: "Invoices", icon: <FileText size={18} />, href: "/vendor/invoices" },
-      { name: "Abandoned Cart", icon: <Trash2 size={18} />, href: "/vendor/abandoned" },
-      { name: "Transactions", icon: <BadgeDollarSign size={18} />, href: "/vendor/transactions" },
+      { name: "View Products", icon: <Boxes size={18} />, href: "/employee/products" },
+      { name: "Product Stock View", icon: <Layers size={18} />, href: "/employee/inventory" },
+      { name: "Inventory Requests", icon: <ClipboardList size={18} />, href: "/employee/inventory/requests" },
     ]
   },
   {
-    title: "PROCUREMENT",
+    title: "CUSTOMER MANAGEMENT",
     items: [
-      { name: "Suppliers", icon: <Truck size={18} />, href: "/vendor/procurement/suppliers" },
-      { name: "Purchase & GRN", icon: <ScrollText size={18} />, href: "/vendor/procurement/purchase" },
-      { name: "Purchase Invoice", icon: <Receipt size={18} />, href: "/vendor/procurement/invoice" },
-      { name: "Purchase Returns", icon: <Undo2 size={18} />, href: "/vendor/procurement/returns" },
+      { name: "Customers List", icon: <Users size={18} />, href: "/employee/customers" },
+      { name: "Customer Support", icon: <Headphones size={18} />, href: "/employee/support" },
+      { name: "Customer Notes", icon: <Notebook size={18} />, href: "/employee/customers/notes" },
+      { name: "Loyalty / Rewards View", icon: <Gift size={18} />, href: "/employee/rewards" },
     ]
   },
   {
-    title: "USER MANAGEMENT",
+    title: "PROCUREMENT ACCESS",
     items: [
-      { name: "Customer", icon: <UserCircle size={18} />, href: "/vendor/customers" },
-      { name: "Manage Staff", icon: <Users size={18} />, href: "/vendor/employees" },
+      { name: "Suppliers View", icon: <Truck size={18} />, href: "/employee/procurement/suppliers" },
+      { name: "Purchase Requests", icon: <FileSpreadsheet size={18} />, href: "/employee/procurement/requests" },
+      { name: "GRN Access", icon: <ScrollText size={18} />, href: "/employee/procurement/grn" },
+      { name: "Purchase Invoice View", icon: <Receipt size={18} />, href: "/employee/procurement/invoice" },
+      { name: "Purchase Returns", icon: <Undo2 size={18} />, href: "/employee/procurement/returns" },
     ]
   },
   {
-    title: "OTHER",
+    title: "DELIVERY / OPERATIONS",
     items: [
-      { name: "Sales Reports", icon: <BarChart3 size={18} />, href: "/vendor/reports" },
-      { name: "Settings", icon: <Settings size={18} />, href: "/vendor/settings" },
+      { name: "Shipment Tracking", icon: <MapPin size={18} />, href: "/employee/delivery/tracking" },
+      { name: "Delivery Status", icon: <Truck size={18} />, href: "/employee/delivery/status" },
+      { name: "Packaging Queue", icon: <Box size={18} />, href: "/employee/delivery/packaging" },
+      { name: "Dispatch Orders", icon: <Send size={18} />, href: "/employee/delivery/dispatch" },
     ]
   },
+  {
+    title: "REPORTS",
+    items: [
+      { name: "Daily Sales Report", icon: <BarChart3 size={18} />, href: "/employee/reports/daily" },
+      { name: "Monthly Sales", icon: <PieChart size={18} />, href: "/employee/reports/monthly" },
+      { name: "Product Performance", icon: <Activity size={18} />, href: "/employee/reports/products" },
+      { name: "Employee Performance", icon: <UserCheck size={18} />, href: "/employee/reports/employee" },
+    ]
+  },
+  {
+    title: "ACCOUNT & PROFILE",
+    items: [
+      { name: "My Profile", icon: <UserCircle size={18} />, href: "/employee/profile" },
+      { name: "Change Password", icon: <Key size={18} />, href: "/employee/settings/password" },
+      { name: "Attendance", icon: <Clock size={18} />, href: "/employee/attendance" },
+      { name: "Activity Logs", icon: <History size={18} />, href: "/employee/activity" },
+    ]
+  }
 ];
 
 const branches = [
@@ -88,13 +138,14 @@ const branches = [
   { id: 3, name: "Sylhet Branch", city: "Sylhet" },
 ];
 
-export default function VendorLayout({
+export default function EmployeeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false);
+  const [activeRole, setActiveRole] = useState("Admin Employee"); // For testing RBAC
   const pathname = usePathname();
   const router = useRouter();
 
@@ -102,6 +153,49 @@ export default function VendorLayout({
     localStorage.removeItem("userRole");
     router.push("/login");
   };
+
+  const getFilteredSidebarGroups = () => {
+    if (activeRole === "Admin Employee") return sidebarGroups;
+
+    return sidebarGroups.map(group => {
+      let isGroupVisible = false;
+      
+      if (activeRole === "Manager") {
+        isGroupVisible = true;
+      } else if (activeRole === "Sales Executive") {
+        isGroupVisible = ["SALES & ORDERS", "CUSTOMER MANAGEMENT", "DASHBOARD", "REPORTS", "ACCOUNT & PROFILE"].includes(group.title);
+      } else if (activeRole === "Inventory Manager") {
+        isGroupVisible = ["PRODUCT ACCESS", "DASHBOARD", "REPORTS", "ACCOUNT & PROFILE"].includes(group.title);
+      } else if (activeRole === "Procurement Officer") {
+        isGroupVisible = ["PROCUREMENT ACCESS", "DASHBOARD", "REPORTS", "ACCOUNT & PROFILE"].includes(group.title);
+      } else if (activeRole === "Delivery Staff") {
+        isGroupVisible = ["DELIVERY / OPERATIONS", "DASHBOARD", "ACCOUNT & PROFILE"].includes(group.title);
+      } else {
+        isGroupVisible = ["DASHBOARD", "ACCOUNT & PROFILE"].includes(group.title);
+      }
+
+      if (!isGroupVisible) return null;
+
+      const filteredItems = group.items.filter(item => {
+        if (item.name === "Performance Summary" && activeRole !== "Manager") return false;
+        if (["Invoices", "Transactions", "Return Requests"].includes(item.name) && activeRole !== "Manager") return false;
+        if (["Add Products", "Edit Products", "Inventory Requests"].includes(item.name) && !["Inventory Manager", "Manager"].includes(activeRole)) return false;
+        if (["Customer Support", "Customer Notes", "Loyalty / Rewards View"].includes(item.name) && activeRole !== "Manager") return false;
+        if (["Monthly Sales", "Product Performance", "Employee Performance"].includes(item.name) && activeRole !== "Manager") return false;
+        if (item.name === "Activity Logs" && activeRole !== "Manager") return false;
+        return true;
+      });
+
+      if (filteredItems.length === 0) return null;
+
+      return {
+        ...group,
+        items: filteredItems
+      };
+    }).filter(Boolean) as typeof sidebarGroups;
+  };
+
+  const filteredSidebarGroups = getFilteredSidebarGroups();
 
   return (
     <div className="h-screen bg-slate-50 flex flex-col lg:flex-row overflow-hidden">
@@ -124,9 +218,9 @@ export default function VendorLayout({
       >
         <div className="p-6 flex items-center justify-between border-b border-slate-50">
           <div className={`${!isSidebarOpen && "lg:hidden"} transition-all`}>
-            <Link href="/vendor">
+            <Link href="/employee">
               <span className="text-xl font-black tracking-tighter text-slate-800">SMART<span className="text-primary">KIDS</span></span>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest -mt-1">Vendor Portal</p>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest -mt-1">Employee Portal</p>
             </Link>
           </div>
           <button 
@@ -162,7 +256,7 @@ export default function VendorLayout({
                   {branches.map((branch) => (
                     <Link
                       key={branch.id}
-                      href={`/vendor/branch/${branch.id}`}
+                      href={`/employee/branch/${branch.id}`}
                       onClick={() => setIsBranchDropdownOpen(false)}
                       className="flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors group"
                     >
@@ -184,7 +278,7 @@ export default function VendorLayout({
         )}
 
         <div className="flex-grow overflow-y-auto px-4 py-6 custom-scrollbar space-y-6">
-          {sidebarGroups.map((group) => (
+          {filteredSidebarGroups.map((group) => (
             <div key={group.title}>
               {isSidebarOpen && (
                 <p className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{group.title}</p>
@@ -242,7 +336,7 @@ export default function VendorLayout({
               <Menu size={24} />
             </button>
             <div className="hidden sm:block">
-              <h1 className="text-sm font-semibold text-slate-800 uppercase tracking-widest leading-none">Vendor Console</h1>
+              <h1 className="text-sm font-semibold text-slate-800 uppercase tracking-widest leading-none">Employee Console</h1>
               <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-tighter mt-1">Global Tech • {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
             </div>
 
@@ -271,8 +365,19 @@ export default function VendorLayout({
 
             <div className="flex items-center gap-3 pl-2 group cursor-pointer">
               <div className="text-right hidden sm:block">
-                <p className="text-[11px] font-semibold text-slate-800 uppercase leading-none">Global Tech</p>
-                <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest mt-1.5">Verified Vendor</p>
+                <select 
+                  value={activeRole} 
+                  onChange={(e) => setActiveRole(e.target.value)}
+                  className="text-[11px] font-semibold text-slate-800 uppercase leading-none bg-transparent outline-none cursor-pointer hover:text-primary transition-colors appearance-none"
+                >
+                  <option value="Admin Employee">Admin Employee</option>
+                  <option value="Manager">Manager</option>
+                  <option value="Sales Executive">Sales Executive</option>
+                  <option value="Inventory Manager">Inventory Manager</option>
+                  <option value="Procurement Officer">Procurement Officer</option>
+                  <option value="Delivery Staff">Delivery Staff</option>
+                </select>
+                <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest mt-1.5 flex items-center justify-end gap-1">Simulate Role <ChevronDown size={10}/></p>
               </div>
               <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white text-xs font-black shadow-lg shadow-primary/20 group-hover:scale-105 transition-all">
                 GT

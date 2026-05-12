@@ -12,6 +12,7 @@ export default function ConditionalLayout({
   const pathname = usePathname();
   const isPortal = pathname.startsWith("/super-admin") || 
                    pathname.startsWith("/vendor") || 
+                   pathname.startsWith("/employee") ||
                    pathname.startsWith("/customer");
 
   if (isPortal) {

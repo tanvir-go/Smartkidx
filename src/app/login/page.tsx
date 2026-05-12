@@ -25,11 +25,14 @@ export default function LoginPage() {
       } else if (username === "vendor" && password === "vendor123") {
         localStorage.setItem("userRole", "vendor");
         router.push("/vendor");
+      } else if (username === "employee" && password === "employee123") {
+        localStorage.setItem("userRole", "employee");
+        router.push("/employee");
       } else if (username === "customer" && password === "customer123") {
         localStorage.setItem("userRole", "customer");
         router.push("/customer");
       } else {
-        toast.error("Invalid credentials. Try superadmin/admin123, vendor/vendor123, or customer/customer123");
+        toast.error("Invalid credentials. Try superadmin/admin123, vendor/vendor123, employee/employee123, or customer/customer123");
         setIsLoading(false);
       }
     }, 1000);
@@ -76,6 +79,13 @@ export default function LoginPage() {
               >
                 <span className="text-slate-400 group-hover:text-slate-300">VENDOR:</span>
                 <span className="text-white">vendor / vendor123</span>
+              </button>
+              <button 
+                onClick={() => { setUsername("employee"); setPassword("employee123"); }}
+                className="w-full flex justify-between text-[10px] font-bold group hover:text-primary transition-colors"
+              >
+                <span className="text-slate-400 group-hover:text-slate-300">EMPLOYEE:</span>
+                <span className="text-white">employee / employee123</span>
               </button>
               <button 
                 onClick={() => { setUsername("customer"); setPassword("customer123"); }}

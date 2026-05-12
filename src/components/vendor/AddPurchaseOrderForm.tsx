@@ -33,12 +33,36 @@ const TABS = [
   { id: "approval", label: "Docs & Approval", icon: ShieldCheck },
 ];
 
-// Mock Products for selection
+// Mock Products for selection with Warehouse stock data
 const MOCK_PRODUCTS = [
-  { id: 1, name: "Arduino Uno R3", sku: "ARD-001", price: 1200 },
-  { id: 2, name: "Raspberry Pi 4", sku: "RPI-004", price: 4500 },
-  { id: 3, name: "Ultrasonic Sensor", sku: "SEN-012", price: 150 },
-  { id: 4, name: "MG995 Servo Motor", sku: "MOT-045", price: 350 },
+  { 
+    id: 1, 
+    name: "Arduino Uno R3", 
+    sku: "ARD-001", 
+    price: 1200,
+    availability: { "Primary Warehouse": 450, "Secondary Hub": 50, "Dhaka Outlet": 12 }
+  },
+  { 
+    id: 2, 
+    name: "Raspberry Pi 4", 
+    sku: "RPI-004", 
+    price: 4500,
+    availability: { "Primary Warehouse": 25, "Secondary Hub": 10, "Dhaka Outlet": 0 }
+  },
+  { 
+    id: 3, 
+    name: "Ultrasonic Sensor", 
+    sku: "SEN-012", 
+    price: 150,
+    availability: { "Primary Warehouse": 1000, "Secondary Hub": 200, "Dhaka Outlet": 85 }
+  },
+  { 
+    id: 4, 
+    name: "MG995 Servo Motor", 
+    sku: "MOT-045", 
+    price: 350,
+    availability: { "Primary Warehouse": 150, "Secondary Hub": 30, "Dhaka Outlet": 45 }
+  },
 ];
 
 export default function AddPurchaseOrderForm({ onClose, onSuccess, initialData }: { onClose: () => void; onSuccess: (data: any) => void; initialData?: any }) {
@@ -66,7 +90,7 @@ export default function AddPurchaseOrderForm({ onClose, onSuccess, initialData }
     receivingPerson: "Jamal Uddin",
     // 4. Product Info
     items: [
-      { id: Date.now(), name: "Arduino Uno R3", sku: "ARD-001", variant: "Blue", qty: 10, unitPrice: 1200, discount: 0, tax: 5, subtotal: 12000 }
+      { id: Date.now(), name: "Arduino Uno R3", sku: "ARD-001", variant: "Blue", qty: 10, unitPrice: 1200, discount: 0, tax: 5, subtotal: 12000, currentStock: 450 }
     ],
     // 5. Order Summary (Calculated)
     totalQty: 0,
@@ -120,6 +144,18 @@ export default function AddPurchaseOrderForm({ onClose, onSuccess, initialData }
     }));
   }, [formData.items, formData.shippingCost, formData.discountAmount, formData.paidAmount]);
 
+  // Sync item stock when warehouse changes
+  useEffect(() => {
+    const updatedItems = formData.items.map((item: any) => {
+      const prod = MOCK_PRODUCTS.find(p => p.name === item.name);
+      if (prod) {
+        return { ...item, currentStock: (prod.availability as any)[formData.warehouseId] || 0 };
+      }
+      return item;
+    });
+    setFormData((prev: any) => ({ ...prev, items: updatedItems }));
+  }, [formData.warehouseId]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev: any) => ({ ...prev, [name]: value }));
@@ -128,7 +164,7 @@ export default function AddPurchaseOrderForm({ onClose, onSuccess, initialData }
   const addItem = () => {
     setFormData((prev: any) => ({
       ...prev,
-      items: [...prev.items, { id: Date.now(), name: "", sku: "", variant: "", qty: 1, unitPrice: 0, discount: 0, tax: 0, subtotal: 0 }]
+      items: [...prev.items, { id: Date.now(), name: "", sku: "", variant: "", qty: 1, unitPrice: 0, discount: 0, tax: 0, subtotal: 0, currentStock: 0 }]
     }));
   };
 
@@ -282,10 +318,11 @@ export default function AddPurchaseOrderForm({ onClose, onSuccess, initialData }
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                     <InputWrapper label="Warehouse Selection" required icon={Building2}>
+                    <InputWrapper label="Warehouse Selection" required icon={Warehouse}>
                         <select name="warehouseId" value={formData.warehouseId} onChange={handleInputChange} className="w-full px-5 py-3.5 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-primary/20 outline-none">
                           <option>Primary Warehouse</option>
                           <option>Secondary Hub</option>
+                          <option>Dhaka Outlet</option>
                         </select>
                       </InputWrapper>
                       <InputWrapper label="Receiving Person" icon={User}>
@@ -339,7 +376,15 @@ export default function AddPurchaseOrderForm({ onClose, onSuccess, initialData }
                                 <option value="">Select Product...</option>
                                 {MOCK_PRODUCTS.map((p: any) => <option key={p.id}>{p.name}</option>)}
                               </select>
-                              <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-2 ml-1">{item.sku || "NO SKU"}</p>
+                                <div className="flex items-center justify-between mt-2 ml-1">
+                                  <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">{item.sku || "NO SKU"}</p>
+                                  <div className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-tighter ${
+                                    item.currentStock > 10 ? "bg-emerald-50 text-emerald-600" : 
+                                    item.currentStock > 0 ? "bg-orange-50 text-orange-600" : "bg-rose-50 text-rose-600"
+                                  }`}>
+                                    {item.currentStock} in {formData.warehouseId}
+                                  </div>
+                                </div>
                             </td>
                             <td className="px-4 py-5">
                                <input value={item.variant} onChange={(e) => updateItem(item.id, "variant", e.target.value)} placeholder="e.g. XL" className="w-20 bg-slate-50 border-none rounded-xl px-4 py-2.5 text-[11px] font-bold focus:ring-1 focus:ring-primary outline-none" />
