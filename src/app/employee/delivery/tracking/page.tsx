@@ -1,158 +1,214 @@
 "use client";
+
 import React, { useState } from "react";
-import { Plus, Search, Filter, Eye, Edit, Trash2, Download, X, Save, FileText } from "lucide-react";
-import { toast } from "react-toastify";
-import { exportToCSV } from "@/utils/export";
+import { 
+  Search, 
+  MapPin, 
+  Navigation, 
+  Truck, 
+  Clock, 
+  AlertCircle,
+  CheckCircle2,
+  Phone
+} from "lucide-react";
+
+interface Vehicle {
+  id: string;
+  driver: string;
+  phone: string;
+  status: "In Transit" | "Delivering" | "Delayed" | "Completed";
+  currentLocation: string;
+  destination: string;
+  eta: string;
+  progress: number; // 0-100
+}
+
+const MOCK_VEHICLES: Vehicle[] = [
+  { id: "VAN-001", driver: "Kashem Ali", phone: "01711-223344", status: "In Transit", currentLocation: "Mirpur 10", destination: "Uttara Sector 7", eta: "45 mins", progress: 65 },
+  { id: "VAN-002", driver: "Rafiqul Islam", phone: "01822-334455", status: "Delivering", currentLocation: "Gulshan 1", destination: "Banani Supermarket", eta: "10 mins", progress: 90 },
+  { id: "MOTO-04", driver: "Hasan Tariq", phone: "01933-445566", status: "Delayed", currentLocation: "Mohakhali Flyover (Traffic)", destination: "Badda Link Road", eta: "1 hr 20 mins", progress: 30 },
+  { id: "VAN-003", driver: "Shafiq Ahmed", phone: "01644-556677", status: "Completed", currentLocation: "Warehouse Hub", destination: "Warehouse Hub", eta: "-", progress: 100 },
+];
 
 export default function EmployeeShipmentTrackingPage() {
-  const [data, setData] = useState([
-  {
-    "id": 1,
-    "waybill": "WB-998877",
-    "courier": "Pathao",
-    "dest": "Dhaka",
-    "status": "Out for Delivery"
-  }
-]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<any>(null);
-  const [formData, setFormData] = useState({"waybill":"","courier":"","dest":"","status":""});
+  const [vehicles] = useState<Vehicle[]>(MOCK_VEHICLES);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(MOCK_VEHICLES[0]);
 
-  const handleOpenModal = (item: any = null) => {
-    if (item) {
-      setEditingItem(item.id);
-      setFormData(item);
-    } else {
-      setEditingItem(null);
-      setFormData({"waybill":"","courier":"","dest":"","status":""});
-    }
-    setIsModalOpen(true);
-  };
+  const filteredVehicles = vehicles.filter(v => 
+    v.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    v.driver.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    v.destination.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    if (editingItem) {
-      setData(data.map(d => d.id === editingItem ? { ...d, ...formData } : d));
-      toast.success("Updated successfully!");
-    } else {
-      setData([{ id: Date.now(), ...formData }, ...data]);
-      toast.success("Created successfully!");
-    }
-    setIsModalOpen(false);
-  };
-
-  const handleDelete = (id: any) => {
-    if(confirm("Are you sure you want to delete this?")) {
-      setData(data.filter(d => d.id !== id));
-      toast.success("Deleted successfully!");
+  const getStatusColor = (status: Vehicle['status']) => {
+    switch(status) {
+      case "In Transit": return "text-blue-500 bg-blue-50 border-blue-200";
+      case "Delivering": return "text-emerald-500 bg-emerald-50 border-emerald-200";
+      case "Delayed": return "text-red-500 bg-red-50 border-red-200";
+      case "Completed": return "text-slate-500 bg-slate-100 border-slate-200";
     }
   };
 
-  const handleExport = () => {
-    exportToCSV(data, ["Waybill","Courier","Destination","Status"], "Export", (item: any) => [item.waybill, item.courier, item.dest, item.status]);
+  const getStatusIcon = (status: Vehicle['status']) => {
+    switch(status) {
+      case "In Transit": return <Truck size={14} />;
+      case "Delivering": return <Navigation size={14} />;
+      case "Delayed": return <AlertCircle size={14} />;
+      case "Completed": return <CheckCircle2 size={14} />;
+    }
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Shipment Tracking</h2>
-          <p className="text-slate-500 text-sm mt-1 font-medium tracking-tight">Monitor active deliveries.</p>
-        </div>
-        <div className="flex gap-3">
-          <button onClick={handleExport} className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
-            <Download size={16} /> Export
-          </button>
-          <button onClick={() => handleOpenModal()} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-800 transition-all shadow-2xl shadow-slate-200 flex items-center gap-3">
-            <Plus size={16} /> Add New
-          </button>
-        </div>
+    <div className="space-y-8 animate-in fade-in duration-500 pb-20 h-[calc(100vh-120px)] flex flex-col">
+      
+      {/* Header */}
+      <div className="shrink-0">
+        <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Live Fleet Tracking</h2>
+        <p className="text-slate-500 text-sm mt-1 font-medium tracking-tight">Monitor real-time delivery vehicle locations and ETA.</p>
       </div>
 
-      <div className="bg-white rounded-[48px] border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/20">
-          <div className="relative max-w-md w-full">
-            <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input type="text" placeholder="Search..." className="w-full pl-14 pr-6 py-4 bg-white border border-slate-100 rounded-[28px] text-sm focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold shadow-sm" />
+      <div className="flex-1 bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden flex flex-col lg:flex-row min-h-0">
+        
+        {/* Left Panel: Vehicle List */}
+        <div className="w-full lg:w-96 border-r border-slate-100 flex flex-col shrink-0 bg-slate-50/50">
+          <div className="p-6 border-b border-slate-100 shrink-0">
+            <div className="relative">
+              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input 
+                type="text" 
+                placeholder="Search fleet, driver, destination..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-xs focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold shadow-sm" 
+              />
+            </div>
           </div>
-          <button className="p-4 bg-white border border-slate-100 rounded-2xl text-slate-400 hover:text-primary transition-all shadow-sm">
-            <Filter size={20} />
-          </button>
+
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
+            {filteredVehicles.map(vehicle => (
+              <button
+                key={vehicle.id}
+                onClick={() => setSelectedVehicle(vehicle)}
+                className={`w-full text-left p-4 rounded-2xl transition-all border ${
+                  selectedVehicle?.id === vehicle.id 
+                    ? "bg-white border-primary shadow-md shadow-primary/5 ring-4 ring-primary/5" 
+                    : "bg-white border-slate-100 hover:border-slate-300 hover:shadow-sm"
+                }`}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-1.5"><Truck size={12}/> {vehicle.id}</span>
+                  <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest flex items-center gap-1 border ${getStatusColor(vehicle.status)}`}>
+                    {getStatusIcon(vehicle.status)} {vehicle.status}
+                  </span>
+                </div>
+                <h4 className="text-sm font-bold text-slate-700 mb-1">{vehicle.driver}</h4>
+                <div className="w-full h-1.5 bg-slate-100 rounded-full mt-3 overflow-hidden">
+                  <div 
+                    className={`h-full rounded-full transition-all duration-1000 ${vehicle.status === 'Delayed' ? 'bg-red-500' : vehicle.status === 'Completed' ? 'bg-slate-400' : 'bg-primary'}`} 
+                    style={{ width: `${vehicle.progress}%` }}
+                  />
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50/30">
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Waybill</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Courier</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Destination</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Status</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {data.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50/40 transition-colors">
-                  <td className="px-8 py-6 text-sm font-bold text-slate-700">{item.waybill}</td>
-                  <td className="px-8 py-6 text-sm font-bold text-slate-700">{item.courier}</td>
-                  <td className="px-8 py-6 text-sm font-bold text-slate-700">{item.dest}</td>
-                  <td className="px-8 py-6 text-sm font-bold text-slate-700">{item.status}</td>
-                  <td className="px-8 py-6 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"><Edit size={18} /></button>
-                      <button onClick={() => handleDelete(item.id)} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={18} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        {/* Right Panel: Simulated Map View */}
+        <div className="flex-1 bg-slate-100 relative overflow-hidden flex flex-col">
+          
+          {/* Simulated Map Background Overlay */}
+          <div className="absolute inset-0 opacity-20" style={{
+            backgroundImage: `radial-gradient(circle at 2px 2px, #cbd5e1 1px, transparent 0)`,
+            backgroundSize: `24px 24px`
+          }}></div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setIsModalOpen(false)} />
-          <div className="relative bg-white w-full max-w-2xl rounded-[48px] shadow-2xl overflow-hidden flex flex-col">
-            <div className="px-10 py-8 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
-              <div className="flex items-center gap-5">
-                <div className="w-14 h-14 rounded-3xl bg-primary flex items-center justify-center text-white shadow-xl shadow-primary/20"><FileText size={28} /></div>
+          <div className="absolute inset-0 flex items-center justify-center p-8 pointer-events-none">
+             {/* Map Graphic Simulation */}
+             <div className="w-full max-w-2xl h-96 border-2 border-dashed border-slate-300 rounded-[40px] relative">
+               
+               {selectedVehicle && selectedVehicle.status !== "Completed" && (
+                 <>
+                   {/* Start Point */}
+                   <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-slate-800 rounded-full flex items-center justify-center shadow-lg -translate-x-1/2 -translate-y-1/2 z-10">
+                     <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                     <span className="absolute top-full mt-2 text-[10px] font-black text-slate-800 bg-white px-2 py-1 rounded shadow-sm w-max uppercase tracking-widest">Warehouse</span>
+                   </div>
+                   
+                   {/* Destination Point */}
+                   <div className="absolute bottom-1/4 right-1/4 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/30 -translate-x-1/2 -translate-y-1/2 z-10 animate-pulse">
+                     <MapPin size={12} className="text-white" />
+                     <span className="absolute top-full mt-2 text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-1 rounded shadow-sm w-max uppercase tracking-widest">{selectedVehicle.destination}</span>
+                   </div>
+
+                   {/* Path Line */}
+                   <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }}>
+                     <path 
+                       d="M 25% 25% C 40% 25%, 60% 75%, 75% 75%" 
+                       fill="none" 
+                       stroke="#cbd5e1" 
+                       strokeWidth="4" 
+                       strokeDasharray="8 8"
+                     />
+                   </svg>
+
+                   {/* Active Vehicle Marker on Path (Simulated based on progress) */}
+                   <div 
+                     className="absolute w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-xl shadow-primary/30 z-20 transition-all duration-1000 -translate-x-1/2 -translate-y-1/2"
+                     style={{ 
+                       // Rough simulation of moving along the curve based on progress
+                       left: `${25 + (50 * (selectedVehicle.progress / 100))}%`, 
+                       top: `${25 + (50 * (selectedVehicle.progress / 100))}%` 
+                     }}
+                   >
+                     <Navigation size={14} className="text-white" />
+                     <span className="absolute bottom-full mb-2 text-[10px] font-black text-white bg-slate-900 px-2 py-1 rounded shadow-lg w-max uppercase tracking-widest">{selectedVehicle.id}</span>
+                   </div>
+                 </>
+               )}
+
+               {selectedVehicle?.status === "Completed" && (
+                 <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+                    <CheckCircle2 size={48} className="mb-4 text-emerald-500 opacity-50" />
+                    <p className="font-bold text-sm">Vehicle has returned to base.</p>
+                 </div>
+               )}
+
+             </div>
+          </div>
+
+          {/* Floating Details Card */}
+          {selectedVehicle && (
+            <div className="mt-auto m-6 relative z-30">
+              <div className="bg-white/90 backdrop-blur-xl p-6 rounded-3xl border border-white shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                 <div>
-                  <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tighter">{editingItem ? "Edit Entry" : "Create New Entry"}</h3>
-                  <p className="text-slate-400 text-xs font-medium mt-1">Fill out the details below.</p>
+                  <h3 className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                    <Truck size={20} className="text-primary"/> {selectedVehicle.id}
+                  </h3>
+                  <div className="flex items-center gap-4 mt-2">
+                    <span className="text-sm font-bold text-slate-600">{selectedVehicle.driver}</span>
+                    <span className="text-xs font-bold text-slate-400 flex items-center gap-1"><Phone size={12}/> {selectedVehicle.phone}</span>
+                  </div>
+                </div>
+
+                <div className="flex gap-6 text-right">
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Current Location</p>
+                    <p className="text-sm font-bold text-slate-800 flex items-center justify-end gap-1"><MapPin size={14} className="text-slate-400"/> {selectedVehicle.currentLocation}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Est. Time</p>
+                    <p className={`text-xl font-black ${selectedVehicle.status === 'Delayed' ? 'text-red-500' : 'text-primary'} flex items-center justify-end gap-1`}>
+                      <Clock size={16} /> {selectedVehicle.eta}
+                    </p>
+                  </div>
                 </div>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="p-4 hover:bg-slate-100 rounded-3xl transition-colors"><X size={24} className="text-slate-400" /></button>
             </div>
-            <div className="flex-1 overflow-y-auto p-12 custom-scrollbar">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Waybill</label>
-                  <input type="text" value={formData.waybill} onChange={e => setFormData({...formData, waybill: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Courier</label>
-                  <input type="text" value={formData.courier} onChange={e => setFormData({...formData, courier: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Destination</label>
-                  <input type="text" value={formData.dest} onChange={e => setFormData({...formData, dest: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Status</label>
-                  <input type="text" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
-                </div>
-                <div className="pt-8 border-t border-slate-100 flex justify-end gap-4">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-8 py-4 bg-slate-50 text-slate-500 font-black uppercase tracking-widest text-[11px] rounded-2xl hover:bg-slate-100 transition-all">Cancel</button>
-                  <button type="submit" className="px-10 py-4 bg-slate-900 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl hover:bg-slate-800 transition-all flex items-center gap-2"><Save size={16} /> Save</button>
-                </div>
-              </form>
-            </div>
-          </div>
+          )}
+
         </div>
-      )}
+      </div>
     </div>
   );
 }

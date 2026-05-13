@@ -1,149 +1,355 @@
 "use client";
+
 import React, { useState } from "react";
-import { Plus, Search, Filter, Eye, Edit, Trash2, Download, X, Save, FileText } from "lucide-react";
+import { UserCircle, Key, Mail, Phone, MapPin, Building, Briefcase, Calendar, Save, Camera, Lock, CheckCircle2 } from "lucide-react";
 import { toast } from "react-toastify";
-import { exportToCSV } from "@/utils/export";
 
 export default function EmployeeMyProfilePage() {
-  const [data, setData] = useState([
-  {
-    "id": 1,
-    "field": "Full Name",
-    "value": "Admin Employee"
-  },
-  {
-    "id": 2,
-    "field": "Role",
-    "value": "Administrator"
-  }
-]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<any>(null);
-  const [formData, setFormData] = useState({"field":"","value":""});
+  const [activeTab, setActiveTab] = useState<"personal" | "work" | "security">("personal");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
-  const handleOpenModal = (item: any = null) => {
-    if (item) {
-      setEditingItem(item.id);
-      setFormData(item);
-    } else {
-      setEditingItem(null);
-      setFormData({"field":"","value":""});
-    }
-    setIsModalOpen(true);
-  };
+  // Mock Data
+  const [personalInfo, setPersonalInfo] = useState({
+    firstName: "Arif",
+    lastName: "Hossain",
+    email: "arif.hossain@smartkids.com",
+    phone: "+880 1711 223344",
+    address: "House 12, Road 5, Dhanmondi, Dhaka",
+    bio: "Passionate sales executive with 5 years of experience in e-commerce and retail management."
+  });
 
-  const handleSubmit = (e: any) => {
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+
+  const handlePersonalInfoUpdate = (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingItem) {
-      setData(data.map(d => d.id === editingItem ? { ...d, ...formData } : d));
-      toast.success("Updated successfully!");
-    } else {
-      setData([{ id: Date.now(), ...formData }, ...data]);
-      toast.success("Created successfully!");
-    }
-    setIsModalOpen(false);
+    toast.success("Personal information updated successfully!");
   };
 
-  const handleDelete = (id: any) => {
-    if(confirm("Are you sure you want to delete this?")) {
-      setData(data.filter(d => d.id !== id));
-      toast.success("Deleted successfully!");
+  const handlePasswordUpdate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error("New passwords do not match!");
+      return;
     }
-  };
-
-  const handleExport = () => {
-    exportToCSV(data, ["Field","Value"], "Export", (item: any) => [item.field, item.value]);
+    toast.success("Password changed successfully!");
+    setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
   };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">My Profile</h2>
-          <p className="text-slate-500 text-sm mt-1 font-medium tracking-tight">Personal information.</p>
-        </div>
-        <div className="flex gap-3">
-          <button onClick={handleExport} className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
-            <Download size={16} /> Export
-          </button>
-          <button onClick={() => handleOpenModal()} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-800 transition-all shadow-2xl shadow-slate-200 flex items-center gap-3">
-            <Plus size={16} /> Add New
-          </button>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-[48px] border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/20">
-          <div className="relative max-w-md w-full">
-            <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input type="text" placeholder="Search..." className="w-full pl-14 pr-6 py-4 bg-white border border-slate-100 rounded-[28px] text-sm focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold shadow-sm" />
-          </div>
-          <button className="p-4 bg-white border border-slate-100 rounded-2xl text-slate-400 hover:text-primary transition-all shadow-sm">
-            <Filter size={20} />
-          </button>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50/30">
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Field</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Value</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {data.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50/40 transition-colors">
-                  <td className="px-8 py-6 text-sm font-bold text-slate-700">{item.field}</td>
-                  <td className="px-8 py-6 text-sm font-bold text-slate-700">{item.value}</td>
-                  <td className="px-8 py-6 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"><Edit size={18} /></button>
-                      <button onClick={() => handleDelete(item.id)} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={18} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setIsModalOpen(false)} />
-          <div className="relative bg-white w-full max-w-2xl rounded-[48px] shadow-2xl overflow-hidden flex flex-col">
-            <div className="px-10 py-8 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
-              <div className="flex items-center gap-5">
-                <div className="w-14 h-14 rounded-3xl bg-primary flex items-center justify-center text-white shadow-xl shadow-primary/20"><FileText size={28} /></div>
-                <div>
-                  <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tighter">{editingItem ? "Edit Entry" : "Create New Entry"}</h3>
-                  <p className="text-slate-400 text-xs font-medium mt-1">Fill out the details below.</p>
+      
+      {/* Header Banner */}
+      <div className="relative rounded-[40px] bg-white border border-slate-100 overflow-hidden shadow-sm">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+        
+        <div className="relative p-10 md:p-12 flex flex-col md:flex-row items-center md:items-start gap-8">
+          <div className="relative group">
+            <input 
+              type="file" 
+              accept="image/*" 
+              className="hidden" 
+              id="avatar-upload"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const url = URL.createObjectURL(file);
+                  setAvatarUrl(url);
+                  toast.success("Profile picture updated successfully!");
+                }
+              }}
+            />
+            <label htmlFor="avatar-upload" className="block cursor-pointer">
+              <div className="w-32 h-32 rounded-full bg-slate-50 border-4 border-white flex items-center justify-center text-5xl font-black text-primary shadow-xl overflow-hidden relative z-10">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover group-hover:opacity-50 transition-opacity duration-300" />
+                ) : (
+                  <span className="group-hover:opacity-0 transition-opacity duration-300">AH</span>
+                )}
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Camera size={32} className="text-white" />
                 </div>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="p-4 hover:bg-slate-100 rounded-3xl transition-colors"><X size={24} className="text-slate-400" /></button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-12 custom-scrollbar">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Field Name</label>
-                  <input type="text" value={formData.field} onChange={e => setFormData({...formData, field: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Value</label>
-                  <input type="text" value={formData.value} onChange={e => setFormData({...formData, value: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
-                </div>
-                <div className="pt-8 border-t border-slate-100 flex justify-end gap-4">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-8 py-4 bg-slate-50 text-slate-500 font-black uppercase tracking-widest text-[11px] rounded-2xl hover:bg-slate-100 transition-all">Cancel</button>
-                  <button type="submit" className="px-10 py-4 bg-slate-900 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl hover:bg-slate-800 transition-all flex items-center gap-2"><Save size={16} /> Save</button>
-                </div>
-              </form>
+            </label>
+            <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-500 border-4 border-white rounded-full z-20 flex items-center justify-center">
+              <CheckCircle2 size={16} className="text-white" />
             </div>
           </div>
+          
+          <div className="text-center md:text-left flex-1 mt-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 mb-4">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Active Employee</span>
+            </div>
+            <h1 className="text-4xl font-black text-slate-800 tracking-tight mb-2">Arif Hossain</h1>
+            <p className="text-slate-500 font-medium text-lg flex items-center justify-center md:justify-start gap-2">
+              <Briefcase size={18} className="text-primary" /> Sales Executive
+            </p>
+          </div>
         </div>
-      )}
+      </div>
+
+      {/* Main Content Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* Sidebar Navigation */}
+        <div className="lg:col-span-3">
+          <div className="bg-white rounded-3xl p-3 border border-slate-100 shadow-sm sticky top-28">
+            <nav className="flex flex-col gap-1">
+              <button 
+                onClick={() => setActiveTab("personal")}
+                className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl font-bold transition-all text-sm ${
+                  activeTab === "personal" 
+                    ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+                }`}
+              >
+                <UserCircle size={20} /> Personal Info
+              </button>
+              <button 
+                onClick={() => setActiveTab("work")}
+                className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl font-bold transition-all text-sm ${
+                  activeTab === "work" 
+                    ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+                }`}
+              >
+                <Briefcase size={20} /> Work Details
+              </button>
+              <button 
+                onClick={() => setActiveTab("security")}
+                className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl font-bold transition-all text-sm ${
+                  activeTab === "security" 
+                    ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20" 
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+                }`}
+              >
+                <Key size={20} /> Change Password
+              </button>
+            </nav>
+          </div>
+        </div>
+
+        {/* Form Area */}
+        <div className="lg:col-span-9">
+          <div className="bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden min-h-[500px]">
+            
+            {/* Personal Info Tab */}
+            {activeTab === "personal" && (
+              <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                <div className="p-8 md:p-10 border-b border-slate-50 bg-slate-50/30">
+                  <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Personal Information</h3>
+                  <p className="text-slate-400 text-sm mt-1 font-medium">Update your contact details and basic information.</p>
+                </div>
+                
+                <form onSubmit={handlePersonalInfoUpdate} className="p-8 md:p-10 space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">First Name</label>
+                      <input 
+                        type="text" 
+                        value={personalInfo.firstName}
+                        onChange={(e) => setPersonalInfo({...personalInfo, firstName: e.target.value})}
+                        className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary/30 outline-none transition-all" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Last Name</label>
+                      <input 
+                        type="text" 
+                        value={personalInfo.lastName}
+                        onChange={(e) => setPersonalInfo({...personalInfo, lastName: e.target.value})}
+                        className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary/30 outline-none transition-all" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                      <div className="relative">
+                        <Mail size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input 
+                          type="email" 
+                          value={personalInfo.email}
+                          onChange={(e) => setPersonalInfo({...personalInfo, email: e.target.value})}
+                          className="w-full pl-14 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary/30 outline-none transition-all" 
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                      <div className="relative">
+                        <Phone size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input 
+                          type="tel" 
+                          value={personalInfo.phone}
+                          onChange={(e) => setPersonalInfo({...personalInfo, phone: e.target.value})}
+                          className="w-full pl-14 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary/30 outline-none transition-all" 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Home Address</label>
+                    <div className="relative">
+                      <MapPin size={18} className="absolute left-6 top-6 text-slate-400" />
+                      <textarea 
+                        value={personalInfo.address}
+                        onChange={(e) => setPersonalInfo({...personalInfo, address: e.target.value})}
+                        rows={3}
+                        className="w-full pl-14 pr-6 py-5 bg-slate-50 border border-slate-100 rounded-3xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary/30 outline-none transition-all resize-none" 
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-6 flex justify-end">
+                    <button type="submit" className="px-8 py-4 bg-primary text-white font-black uppercase tracking-widest text-[11px] rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-xl shadow-primary/20">
+                      <Save size={16} /> Save Changes
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Work Details Tab */}
+            {activeTab === "work" && (
+              <div className="animate-in fade-in slide-in-from-right-4 duration-500 h-full flex flex-col">
+                <div className="p-8 md:p-10 border-b border-slate-50 bg-slate-50/30">
+                  <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Work Details</h3>
+                  <p className="text-slate-400 text-sm mt-1 font-medium">Read-only employment information configured by HR.</p>
+                </div>
+                
+                <div className="p-8 md:p-10 space-y-8 flex-1 bg-slate-50/10">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex gap-5 items-start">
+                      <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                        <Briefcase size={24} />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Job Title / Role</p>
+                        <p className="text-lg font-black text-slate-800">Sales Executive</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex gap-5 items-start">
+                      <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
+                        <Building size={24} />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Department</p>
+                        <p className="text-lg font-black text-slate-800">Retail & Operations</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex gap-5 items-start">
+                      <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 shrink-0">
+                        <Calendar size={24} />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Join Date</p>
+                        <p className="text-lg font-black text-slate-800">October 15, 2021</p>
+                        <p className="text-xs font-bold text-slate-400 mt-1">2 Years, 1 Month</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex gap-5 items-start">
+                      <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 shrink-0">
+                        <MapPin size={24} />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Branch / Location</p>
+                        <p className="text-lg font-black text-slate-800">Dhaka HQ</p>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div className="bg-amber-50 border border-amber-100 rounded-3xl p-6 mt-8">
+                    <p className="text-sm font-bold text-amber-800">
+                      <span className="font-black uppercase tracking-widest text-[10px] block mb-1">Note</span>
+                      To request changes to your official work details, please contact your vendor administrator or HR department directly.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Security Tab */}
+            {activeTab === "security" && (
+              <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                <div className="p-8 md:p-10 border-b border-slate-50 bg-slate-50/30">
+                  <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Security & Password</h3>
+                  <p className="text-slate-400 text-sm mt-1 font-medium">Ensure your account uses a strong and secure password.</p>
+                </div>
+                
+                <form onSubmit={handlePasswordUpdate} className="p-8 md:p-10 space-y-8 max-w-2xl">
+                  
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Current Password</label>
+                      <div className="relative">
+                        <Lock size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input 
+                          type="password" 
+                          value={passwordForm.currentPassword}
+                          onChange={(e) => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
+                          placeholder="Enter your current password"
+                          className="w-full pl-14 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900/20 outline-none transition-all" 
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-100 space-y-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">New Password</label>
+                        <div className="relative">
+                          <Key size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary" />
+                          <input 
+                            type="password" 
+                            value={passwordForm.newPassword}
+                            onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                            placeholder="Enter new password"
+                            className="w-full pl-14 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary/30 outline-none transition-all" 
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Confirm New Password</label>
+                        <div className="relative">
+                          <CheckCircle2 size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary" />
+                          <input 
+                            type="password" 
+                            value={passwordForm.confirmPassword}
+                            onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                            placeholder="Re-type new password"
+                            className="w-full pl-14 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-800 focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary/30 outline-none transition-all" 
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-6">
+                    <button type="submit" className="px-8 py-4 bg-slate-900 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl hover:bg-slate-800 transition-all flex items-center gap-2 shadow-xl shadow-slate-900/20">
+                      <Key size={16} /> Update Password
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+          </div>
+        </div>
+        
+      </div>
     </div>
   );
 }

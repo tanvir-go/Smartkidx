@@ -129,7 +129,7 @@ export default function CustomerLayout({
                 <span className={isActive ? "text-white" : "text-slate-400 group-hover:text-primary"}>
                   {item.icon}
                 </span>
-                <span className="text-[13px] font-semibold">{item.name}</span>
+                <span className="text-[13px] font-semibold whitespace-nowrap truncate">{item.name}</span>
               </Link>
             );
           })}

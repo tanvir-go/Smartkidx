@@ -58,7 +58,6 @@ const sidebarGroups = [
     items: [
       { name: "Overview", icon: <LayoutDashboard size={18} />, href: "/employee" },
       { name: "Today Sales", icon: <BadgeDollarSign size={18} />, href: "/employee/sales/today" },
-      { name: "Assigned Tasks", icon: <CheckSquare size={18} />, href: "/employee/tasks" },
       { name: "Notifications", icon: <Bell size={18} />, href: "/employee/notifications" },
       { name: "Recent Orders", icon: <ShoppingCart size={18} />, href: "/employee/orders/recent" },
       { name: "Performance Summary", icon: <TrendingUp size={18} />, href: "/employee/performance" },
@@ -117,17 +116,12 @@ const sidebarGroups = [
     items: [
       { name: "Daily Sales Report", icon: <BarChart3 size={18} />, href: "/employee/reports/daily" },
       { name: "Monthly Sales", icon: <PieChart size={18} />, href: "/employee/reports/monthly" },
-      { name: "Product Performance", icon: <Activity size={18} />, href: "/employee/reports/products" },
-      { name: "Employee Performance", icon: <UserCheck size={18} />, href: "/employee/reports/employee" },
     ]
   },
   {
     title: "ACCOUNT & PROFILE",
     items: [
       { name: "My Profile", icon: <UserCircle size={18} />, href: "/employee/profile" },
-      { name: "Change Password", icon: <Key size={18} />, href: "/employee/settings/password" },
-      { name: "Attendance", icon: <Clock size={18} />, href: "/employee/attendance" },
-      { name: "Activity Logs", icon: <History size={18} />, href: "/employee/activity" },
     ]
   }
 ];
@@ -303,7 +297,7 @@ export default function EmployeeLayout({
                         {item.icon}
                       </span>
                       {isSidebarOpen && (
-                        <span className="text-[13px] font-semibold">{item.name}</span>
+                        <span className="text-[13px] font-semibold whitespace-nowrap truncate">{item.name}</span>
                       )}
                     </Link>
                   );

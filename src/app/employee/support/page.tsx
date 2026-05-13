@@ -1,158 +1,320 @@
 "use client";
-import React, { useState } from "react";
-import { Plus, Search, Filter, Eye, Edit, Trash2, Download, X, Save, FileText } from "lucide-react";
+
+import React, { useState, useRef, useEffect } from "react";
+import { 
+  Search, 
+  Filter,
+  Send,
+  User,
+  Paperclip,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  MessageSquare
+} from "lucide-react";
 import { toast } from "react-toastify";
-import { exportToCSV } from "@/utils/export";
 
-export default function EmployeeCustomerSupportPage() {
-  const [data, setData] = useState([
+type TicketPriority = "High" | "Normal" | "Low";
+type TicketStatus = "Open" | "In Progress" | "Resolved";
+
+interface TicketMessage {
+  id: string;
+  sender: "Customer" | "Agent";
+  text: string;
+  timestamp: string;
+}
+
+interface SupportTicket {
+  id: string;
+  customerName: string;
+  subject: string;
+  priority: TicketPriority;
+  status: TicketStatus;
+  lastUpdated: string;
+  messages: TicketMessage[];
+}
+
+const MOCK_TICKETS: SupportTicket[] = [
   {
-    "id": 1,
-    "ticket": "TCK-551",
-    "customer": "Alice Brown",
-    "issue": "Late delivery",
-    "status": "Open"
+    id: "TCK-8812",
+    customerName: "Arif Hossain",
+    subject: "Missing part in Robotics Kit",
+    priority: "High",
+    status: "Open",
+    lastUpdated: "10 mins ago",
+    messages: [
+      { id: "m1", sender: "Customer", text: "Hello, I just received my Advanced Robotics Kit V2 (Order #9930) but it seems to be missing the servo motor. Can you help?", timestamp: "Today, 10:15 AM" }
+    ]
+  },
+  {
+    id: "TCK-8811",
+    customerName: "Sabrina Rahman",
+    subject: "How to assemble the Solar Car?",
+    priority: "Normal",
+    status: "In Progress",
+    lastUpdated: "1 hour ago",
+    messages: [
+      { id: "m1", sender: "Customer", text: "I am having trouble assembling the wheels on the solar car model.", timestamp: "Yesterday, 04:00 PM" },
+      { id: "m2", sender: "Agent", text: "Hi Sabrina! I'd be happy to help. Have you checked page 4 of the manual? The axle needs to click firmly into place.", timestamp: "Yesterday, 04:30 PM" },
+      { id: "m3", sender: "Customer", text: "Oh I see. Let me try that now.", timestamp: "Yesterday, 04:45 PM" }
+    ]
+  },
+  {
+    id: "TCK-8810",
+    customerName: "Nusrat Jahan",
+    subject: "Return accepted?",
+    priority: "Low",
+    status: "Resolved",
+    lastUpdated: "2 days ago",
+    messages: [
+      { id: "m1", sender: "Customer", text: "Has my return been processed yet?", timestamp: "Oct 22, 11:00 AM" },
+      { id: "m2", sender: "Agent", text: "Hi Nusrat, yes your return was processed and refunded today.", timestamp: "Oct 22, 02:00 PM" }
+    ]
   }
-]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<any>(null);
-  const [formData, setFormData] = useState({"ticket":"","customer":"","issue":"","status":"Open"});
+];
 
-  const handleOpenModal = (item: any = null) => {
-    if (item) {
-      setEditingItem(item.id);
-      setFormData(item);
-    } else {
-      setEditingItem(null);
-      setFormData({"ticket":"","customer":"","issue":"","status":"Open"});
-    }
-    setIsModalOpen(true);
-  };
+export default function EmployeeSupportPage() {
+  const [tickets, setTickets] = useState<SupportTicket[]>(MOCK_TICKETS);
+  const [activeTicket, setActiveTicket] = useState<SupportTicket | null>(MOCK_TICKETS[0]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [replyText, setReplyText] = useState("");
+  
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = (e: any) => {
+  // Auto-scroll to bottom of chat
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [activeTicket?.messages]);
+
+  const filteredTickets = tickets.filter(t => 
+    t.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.subject.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSendReply = (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingItem) {
-      setData(data.map(d => d.id === editingItem ? { ...d, ...formData } : d));
-      toast.success("Updated successfully!");
-    } else {
-      setData([{ id: Date.now(), ...formData }, ...data]);
-      toast.success("Created successfully!");
-    }
-    setIsModalOpen(false);
+    if (!replyText.trim() || !activeTicket) return;
+
+    const newMessage: TicketMessage = {
+      id: `m${Date.now()}`,
+      sender: "Agent",
+      text: replyText,
+      timestamp: "Just now"
+    };
+
+    const updatedTickets = tickets.map(t => {
+      if (t.id === activeTicket.id) {
+        return {
+          ...t,
+          status: "In Progress" as TicketStatus,
+          lastUpdated: "Just now",
+          messages: [...t.messages, newMessage]
+        };
+      }
+      return t;
+    });
+
+    setTickets(updatedTickets);
+    setActiveTicket(updatedTickets.find(t => t.id === activeTicket.id) || null);
+    setReplyText("");
+    toast.success("Reply sent successfully.");
   };
 
-  const handleDelete = (id: any) => {
-    if(confirm("Are you sure you want to delete this?")) {
-      setData(data.filter(d => d.id !== id));
-      toast.success("Deleted successfully!");
+  const handleResolveTicket = () => {
+    if (!activeTicket) return;
+
+    const updatedTickets = tickets.map(t => {
+      if (t.id === activeTicket.id) {
+        return { ...t, status: "Resolved" as TicketStatus, lastUpdated: "Just now" };
+      }
+      return t;
+    });
+
+    setTickets(updatedTickets);
+    setActiveTicket(updatedTickets.find(t => t.id === activeTicket.id) || null);
+    toast.success("Ticket marked as resolved.");
+  };
+
+  const getPriorityColor = (priority: TicketPriority) => {
+    switch(priority) {
+      case "High": return "text-red-500 bg-red-50";
+      case "Normal": return "text-blue-500 bg-blue-50";
+      case "Low": return "text-slate-500 bg-slate-100";
     }
   };
 
-  const handleExport = () => {
-    exportToCSV(data, ["Ticket","Customer","Issue","Status"], "Export", (item: any) => [item.ticket, item.customer, item.issue, item.status]);
+  const getStatusIcon = (status: TicketStatus) => {
+    switch(status) {
+      case "Open": return <AlertCircle size={14} className="text-amber-500" />;
+      case "In Progress": return <Clock size={14} className="text-blue-500" />;
+      case "Resolved": return <CheckCircle2 size={14} className="text-emerald-500" />;
+    }
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Customer Support</h2>
-          <p className="text-slate-500 text-sm mt-1 font-medium tracking-tight">Ticketing and resolution.</p>
-        </div>
-        <div className="flex gap-3">
-          <button onClick={handleExport} className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
-            <Download size={16} /> Export
-          </button>
-          <button onClick={() => handleOpenModal()} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-800 transition-all shadow-2xl shadow-slate-200 flex items-center gap-3">
-            <Plus size={16} /> Add New
-          </button>
-        </div>
+    <div className="space-y-8 animate-in fade-in duration-500 pb-20 h-[calc(100vh-120px)] flex flex-col">
+      
+      {/* Header */}
+      <div className="shrink-0">
+        <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Customer Support</h2>
+        <p className="text-slate-500 text-sm mt-1 font-medium tracking-tight">Manage and reply to customer inquiries.</p>
       </div>
 
-      <div className="bg-white rounded-[48px] border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/20">
-          <div className="relative max-w-md w-full">
-            <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input type="text" placeholder="Search..." className="w-full pl-14 pr-6 py-4 bg-white border border-slate-100 rounded-[28px] text-sm focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold shadow-sm" />
+      {/* Main App Layout */}
+      <div className="flex-1 bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden flex flex-col md:flex-row min-h-0">
+        
+        {/* Left Sidebar: Ticket List */}
+        <div className="w-full md:w-80 border-r border-slate-100 flex flex-col shrink-0 bg-slate-50/50">
+          
+          <div className="p-6 border-b border-slate-100 shrink-0">
+            <div className="relative">
+              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input 
+                type="text" 
+                placeholder="Search tickets..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-xs focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold shadow-sm" 
+              />
+            </div>
+            <div className="flex items-center gap-2 mt-4">
+              <button className="flex-1 py-2 bg-white border border-slate-200 rounded-lg text-[10px] font-black text-slate-600 uppercase tracking-widest hover:bg-slate-50">Open</button>
+              <button className="flex-1 py-2 bg-white border border-slate-200 rounded-lg text-[10px] font-black text-slate-600 uppercase tracking-widest hover:bg-slate-50">Resolved</button>
+            </div>
           </div>
-          <button className="p-4 bg-white border border-slate-100 rounded-2xl text-slate-400 hover:text-primary transition-all shadow-sm">
-            <Filter size={20} />
-          </button>
+
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
+            {filteredTickets.map(ticket => (
+              <button
+                key={ticket.id}
+                onClick={() => setActiveTicket(ticket)}
+                className={`w-full text-left p-4 rounded-2xl transition-all border ${
+                  activeTicket?.id === ticket.id 
+                    ? "bg-white border-primary shadow-md shadow-primary/5 ring-4 ring-primary/5" 
+                    : "bg-white border-slate-100 hover:border-slate-300 hover:shadow-sm"
+                }`}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{ticket.id}</span>
+                  <span className="text-[10px] font-bold text-slate-400">{ticket.lastUpdated}</span>
+                </div>
+                <h4 className="text-sm font-bold text-slate-800 line-clamp-1 mb-1">{ticket.subject}</h4>
+                <p className="text-xs font-medium text-slate-500 flex items-center gap-1.5 mb-3">
+                  <User size={12} /> {ticket.customerName}
+                </p>
+                <div className="flex items-center justify-between">
+                  <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest ${getPriorityColor(ticket.priority)}`}>
+                    {ticket.priority} Priority
+                  </span>
+                  <div className="flex items-center gap-1 text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                    {getStatusIcon(ticket.status)} {ticket.status}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50/30">
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Ticket</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Customer</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Issue</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Status</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {data.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50/40 transition-colors">
-                  <td className="px-8 py-6 text-sm font-bold text-slate-700">{item.ticket}</td>
-                  <td className="px-8 py-6 text-sm font-bold text-slate-700">{item.customer}</td>
-                  <td className="px-8 py-6 text-sm font-bold text-slate-700">{item.issue}</td>
-                  <td className="px-8 py-6 text-sm font-bold text-slate-700">{item.status}</td>
-                  <td className="px-8 py-6 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"><Edit size={18} /></button>
-                      <button onClick={() => handleDelete(item.id)} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={18} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setIsModalOpen(false)} />
-          <div className="relative bg-white w-full max-w-2xl rounded-[48px] shadow-2xl overflow-hidden flex flex-col">
-            <div className="px-10 py-8 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
-              <div className="flex items-center gap-5">
-                <div className="w-14 h-14 rounded-3xl bg-primary flex items-center justify-center text-white shadow-xl shadow-primary/20"><FileText size={28} /></div>
+        {/* Right Content: Chat Interface */}
+        <div className="flex-1 flex flex-col min-w-0 bg-white">
+          {activeTicket ? (
+            <>
+              {/* Chat Header */}
+              <div className="p-6 md:px-10 py-6 border-b border-slate-100 shrink-0 flex items-center justify-between bg-white z-10">
                 <div>
-                  <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tighter">{editingItem ? "Edit Entry" : "Create New Entry"}</h3>
-                  <p className="text-slate-400 text-xs font-medium mt-1">Fill out the details below.</p>
+                  <h3 className="text-xl font-black text-slate-800 tracking-tight">{activeTicket.subject}</h3>
+                  <p className="text-xs font-bold text-slate-500 mt-1 flex items-center gap-2">
+                    <User size={14} /> {activeTicket.customerName} • 
+                    <span className="text-slate-400 font-medium">Ticket ID: {activeTicket.id}</span>
+                  </p>
                 </div>
-              </div>
-              <button onClick={() => setIsModalOpen(false)} className="p-4 hover:bg-slate-100 rounded-3xl transition-colors"><X size={24} className="text-slate-400" /></button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-12 custom-scrollbar">
-              <form onSubmit={handleSubmit} className="space-y-6">
                 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Ticket ID</label>
-                  <input type="text" value={formData.ticket} onChange={e => setFormData({...formData, ticket: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
+                {activeTicket.status !== "Resolved" && (
+                  <button 
+                    onClick={handleResolveTicket}
+                    className="hidden sm:flex px-4 py-2 bg-slate-50 text-slate-600 border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-all items-center gap-2"
+                  >
+                    <CheckCircle2 size={14} /> Mark Resolved
+                  </button>
+                )}
+              </div>
+
+              {/* Chat Messages */}
+              <div className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar space-y-6 bg-slate-50/30">
+                {activeTicket.messages.map((msg, i) => {
+                  const isAgent = msg.sender === "Agent";
+                  return (
+                    <div key={msg.id} className={`flex flex-col max-w-[80%] ${isAgent ? "ml-auto items-end" : "mr-auto items-start"}`}>
+                      <div className={`flex items-center gap-2 mb-1.5 ${isAgent ? "flex-row-reverse" : "flex-row"}`}>
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${isAgent ? "bg-primary text-white" : "bg-slate-200 text-slate-500"}`}>
+                          {isAgent ? <MessageSquare size={10} /> : <User size={10} />}
+                        </div>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{msg.sender}</span>
+                        <span className="text-[10px] font-bold text-slate-300">•</span>
+                        <span className="text-[10px] font-bold text-slate-400">{msg.timestamp}</span>
+                      </div>
+                      
+                      <div className={`p-4 rounded-2xl text-sm font-medium leading-relaxed ${
+                        isAgent 
+                          ? "bg-primary text-white rounded-tr-none shadow-lg shadow-primary/20" 
+                          : "bg-white text-slate-700 border border-slate-100 rounded-tl-none shadow-sm"
+                      }`}>
+                        {msg.text}
+                      </div>
+                    </div>
+                  );
+                })}
+                <div ref={chatEndRef} />
+              </div>
+
+              {/* Chat Input */}
+              {activeTicket.status !== "Resolved" ? (
+                <div className="p-6 bg-white border-t border-slate-100 shrink-0">
+                  <form onSubmit={handleSendReply} className="relative flex items-end gap-4">
+                    <button type="button" className="p-4 text-slate-400 hover:text-primary transition-colors shrink-0 bg-slate-50 rounded-2xl">
+                      <Paperclip size={20} />
+                    </button>
+                    <textarea 
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      placeholder="Type your reply here..."
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-medium focus:ring-4 focus:ring-primary/5 outline-none resize-none max-h-32 min-h-[56px] custom-scrollbar"
+                      rows={1}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendReply(e);
+                        }
+                      }}
+                    />
+                    <button 
+                      type="submit"
+                      disabled={!replyText.trim()}
+                      className="p-4 bg-primary text-white rounded-2xl hover:bg-primary/90 transition-colors shrink-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20"
+                    >
+                      <Send size={20} className={replyText.trim() ? "translate-x-0.5 -translate-y-0.5" : ""} />
+                    </button>
+                  </form>
+                  <p className="text-[10px] font-bold text-slate-400 text-center mt-3 uppercase tracking-widest">Press Enter to send, Shift + Enter for new line</p>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Customer</label>
-                  <input type="text" value={formData.customer} onChange={e => setFormData({...formData, customer: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
+              ) : (
+                <div className="p-8 bg-slate-50 border-t border-slate-100 shrink-0 text-center">
+                  <p className="text-sm font-bold text-slate-500 flex items-center justify-center gap-2">
+                    <CheckCircle2 size={16} className="text-emerald-500" /> This ticket has been resolved and closed.
+                  </p>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Issue</label>
-                  <input type="text" value={formData.issue} onChange={e => setFormData({...formData, issue: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Status</label>
-                  <input type="text" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
-                </div>
-                <div className="pt-8 border-t border-slate-100 flex justify-end gap-4">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-8 py-4 bg-slate-50 text-slate-500 font-black uppercase tracking-widest text-[11px] rounded-2xl hover:bg-slate-100 transition-all">Cancel</button>
-                  <button type="submit" className="px-10 py-4 bg-slate-900 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl hover:bg-slate-800 transition-all flex items-center gap-2"><Save size={16} /> Save</button>
-                </div>
-              </form>
+              )}
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-slate-400 bg-slate-50/30">
+              <MessageSquare size={48} className="mb-4 opacity-20" />
+              <p className="text-sm font-bold">Select a ticket to view conversation</p>
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

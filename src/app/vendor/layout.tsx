@@ -29,7 +29,8 @@ import {
   Receipt,
   Undo2,
   UserCircle,
-  Users
+  Users,
+  Clock
 } from "lucide-react";
 
 const sidebarGroups = [
@@ -71,6 +72,7 @@ const sidebarGroups = [
     items: [
       { name: "Customer", icon: <UserCircle size={18} />, href: "/vendor/customers" },
       { name: "Manage Staff", icon: <Users size={18} />, href: "/vendor/employees" },
+      { name: "Attendance", icon: <Clock size={18} />, href: "/vendor/attendance" },
     ]
   },
   {
@@ -209,7 +211,7 @@ export default function VendorLayout({
                         {item.icon}
                       </span>
                       {isSidebarOpen && (
-                        <span className="text-[13px] font-semibold">{item.name}</span>
+                        <span className="text-[13px] font-semibold whitespace-nowrap truncate">{item.name}</span>
                       )}
                     </Link>
                   );

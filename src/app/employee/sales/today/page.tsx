@@ -1,157 +1,196 @@
 "use client";
-import React, { useState } from "react";
-import { Plus, Search, Filter, Eye, Edit, Trash2, Download, X, Save, FileText } from "lucide-react";
-import { toast } from "react-toastify";
-import { exportToCSV } from "@/utils/export";
+
+import React, { useState, useEffect } from "react";
+import { 
+  TrendingUp, 
+  ShoppingCart, 
+  DollarSign, 
+  CreditCard,
+  ArrowUpRight,
+  PackageCheck,
+  Clock,
+  MapPin,
+  RefreshCcw,
+  Zap
+} from "lucide-react";
+
+// Mock automated data representing live website sales
+const MOCK_LIVE_ORDERS = [
+  { id: "#ORD-9921", time: "Just now", customer: "Sabrina Rahman", amount: 4500, status: "Processing", payment: "bKash", location: "Dhaka" },
+  { id: "#ORD-9920", time: "5 mins ago", customer: "Kamrul Hasan", amount: 1250, status: "Packed", payment: "Cash on Delivery", location: "Chittagong" },
+  { id: "#ORD-9919", time: "12 mins ago", customer: "Nusrat Jahan", amount: 8900, status: "Shipped", payment: "Credit Card", location: "Sylhet" },
+  { id: "#ORD-9918", time: "28 mins ago", customer: "Fahim Ahmed", amount: 3200, status: "Processing", payment: "Nagad", location: "Dhaka" },
+  { id: "#ORD-9917", time: "45 mins ago", customer: "Sadia Islam", amount: 1550, status: "Delivered", payment: "bKash", location: "Rajshahi" },
+  { id: "#ORD-9916", time: "1 hour ago", customer: "Tanvir Rahman", amount: 6700, status: "Packed", payment: "Credit Card", location: "Khulna" },
+];
 
 export default function EmployeeTodaySalesPage() {
-  const [data, setData] = useState([
-  {
-    "id": 1,
-    "orderId": "#ORD-123",
-    "amount": "৳ 1,200",
-    "status": "Completed"
-  },
-  {
-    "id": 2,
-    "orderId": "#ORD-124",
-    "amount": "৳ 3,450",
-    "status": "Pending"
-  }
-]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<any>(null);
-  const [formData, setFormData] = useState({"orderId":"","amount":"","status":"Completed"});
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [progress, setProgress] = useState(65);
 
-  const handleOpenModal = (item: any = null) => {
-    if (item) {
-      setEditingItem(item.id);
-      setFormData(item);
-    } else {
-      setEditingItem(null);
-      setFormData({"orderId":"","amount":"","status":"Completed"});
-    }
-    setIsModalOpen(true);
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      setIsRefreshing(false);
+      setProgress(Math.min(100, progress + 2));
+    }, 1000);
   };
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    if (editingItem) {
-      setData(data.map(d => d.id === editingItem ? { ...d, ...formData } : d));
-      toast.success("Updated successfully!");
-    } else {
-      setData([{ id: Date.now(), ...formData }, ...data]);
-      toast.success("Created successfully!");
-    }
-    setIsModalOpen(false);
-  };
-
-  const handleDelete = (id: any) => {
-    if(confirm("Are you sure you want to delete this?")) {
-      setData(data.filter(d => d.id !== id));
-      toast.success("Deleted successfully!");
-    }
-  };
-
-  const handleExport = () => {
-    exportToCSV(data, ["Order ID","Amount","Status"], "Export", (item: any) => [item.orderId, item.amount, item.status]);
-  };
+  // Simulate progress bar movement to make it look "live"
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress(p => Math.min(100, p + 0.5));
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-20">
+      
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 mb-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Live Auto-Sync</span>
+          </div>
           <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Today's Sales</h2>
-          <p className="text-slate-500 text-sm mt-1 font-medium tracking-tight">Monitor daily sales performance.</p>
+          <p className="text-slate-500 text-sm mt-1 font-medium tracking-tight">Real-time metrics generated from website traffic.</p>
         </div>
         <div className="flex gap-3">
-          <button onClick={handleExport} className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2">
-            <Download size={16} /> Export
-          </button>
-          <button onClick={() => handleOpenModal()} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-800 transition-all shadow-2xl shadow-slate-200 flex items-center gap-3">
-            <Plus size={16} /> Add New
+          <button 
+            onClick={handleRefresh}
+            className="bg-white border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2"
+          >
+            <RefreshCcw size={16} className={isRefreshing ? "animate-spin" : ""} /> 
+            {isRefreshing ? "Syncing..." : "Sync Now"}
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-[48px] border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/20">
-          <div className="relative max-w-md w-full">
-            <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input type="text" placeholder="Search..." className="w-full pl-14 pr-6 py-4 bg-white border border-slate-100 rounded-[28px] text-sm focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold shadow-sm" />
+      {/* Target Progress Bar */}
+      <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+        <div className="relative z-10">
+          <div className="flex items-end justify-between mb-4">
+            <div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Daily Sales Target</p>
+              <h3 className="text-3xl font-black text-slate-800 tracking-tighter">৳ 85,450 <span className="text-sm text-slate-400 font-bold tracking-normal">/ ৳ 120,000</span></h3>
+            </div>
+            <div className="text-right">
+              <span className="text-2xl font-black text-primary">{Math.floor(progress)}%</span>
+            </div>
           </div>
-          <button className="p-4 bg-white border border-slate-100 rounded-2xl text-slate-400 hover:text-primary transition-all shadow-sm">
-            <Filter size={20} />
-          </button>
+          <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-primary to-blue-500 rounded-full transition-all duration-1000 ease-out relative"
+              style={{ width: `${progress}%` }}
+            >
+              <div className="absolute inset-0 bg-white/20 w-full h-full animate-[shimmer_2s_infinite]"></div>
+            </div>
+          </div>
+          <p className="text-xs font-bold text-slate-400 mt-3 flex items-center gap-1.5">
+            <Zap size={14} className="text-amber-500" />
+            Trending higher than yesterday's average at this time.
+          </p>
         </div>
+      </div>
 
+      {/* Real-time Metrics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { label: "Total Revenue", value: "৳ 85,450", trend: "+12%", icon: <DollarSign size={20} />, color: "text-emerald-500", bg: "bg-emerald-50" },
+          { label: "Orders Today", value: "142", trend: "+5%", icon: <ShoppingCart size={20} />, color: "text-blue-500", bg: "bg-blue-50" },
+          { label: "Avg. Order Value", value: "৳ 601", trend: "+2%", icon: <TrendingUp size={20} />, color: "text-purple-500", bg: "bg-purple-50" },
+          { label: "Conversion Rate", value: "3.2%", trend: "-0.5%", icon: <PackageCheck size={20} />, color: "text-amber-500", bg: "bg-amber-50" },
+        ].map((metric, i) => (
+          <div key={i} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between h-40">
+            <div className="flex justify-between items-start">
+              <div className={`w-12 h-12 rounded-2xl ${metric.bg} ${metric.color} flex items-center justify-center`}>
+                {metric.icon}
+              </div>
+              <span className={`flex items-center gap-0.5 text-[11px] font-black ${metric.trend.startsWith('+') ? 'text-emerald-500' : 'text-red-500'}`}>
+                <ArrowUpRight size={14} className={metric.trend.startsWith('+') ? '' : 'rotate-90'} /> {metric.trend}
+              </span>
+            </div>
+            <div>
+              <h4 className="text-2xl font-black text-slate-800 tracking-tight">{metric.value}</h4>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{metric.label}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Live Sales Feed */}
+      <div className="bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+          <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
+            <Clock size={18} className="text-primary" /> Live Transaction Feed
+          </h3>
+          <span className="text-xs font-bold text-slate-400">Auto-updates every 30s</span>
+        </div>
+        
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
-              <tr className="bg-slate-50/30">
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Order ID</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Amount</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Status</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 text-right">Action</th>
+              <tr className="bg-white">
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Order & Time</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Customer</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Amount</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Payment</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {data.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50/40 transition-colors">
-                  <td className="px-8 py-6 text-sm font-bold text-slate-700">{item.orderId}</td>
-                  <td className="px-8 py-6 text-sm font-bold text-slate-700">{item.amount}</td>
-                  <td className="px-8 py-6 text-sm font-bold text-slate-700">{item.status}</td>
-                  <td className="px-8 py-6 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"><Edit size={18} /></button>
-                      <button onClick={() => handleDelete(item.id)} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={18} /></button>
+              {MOCK_LIVE_ORDERS.map((order, i) => (
+                <tr key={i} className="hover:bg-slate-50/40 transition-colors group">
+                  <td className="px-8 py-5">
+                    <div>
+                      <p className="text-sm font-black text-slate-800 group-hover:text-primary transition-colors cursor-pointer">{order.id}</p>
+                      <p className="text-[10px] font-bold text-slate-400 flex items-center gap-1 mt-1">
+                        <Clock size={10} /> {order.time}
+                      </p>
                     </div>
+                  </td>
+                  <td className="px-8 py-5">
+                    <div>
+                      <p className="text-sm font-bold text-slate-700">{order.customer}</p>
+                      <p className="text-[10px] font-bold text-slate-400 flex items-center gap-1 mt-1">
+                        <MapPin size={10} /> {order.location}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="px-8 py-5">
+                    <p className="text-sm font-black text-slate-800">৳ {order.amount.toLocaleString()}</p>
+                  </td>
+                  <td className="px-8 py-5">
+                    <div className="flex items-center gap-2">
+                      <CreditCard size={14} className="text-slate-400" />
+                      <span className="text-xs font-bold text-slate-600">{order.payment}</span>
+                    </div>
+                  </td>
+                  <td className="px-8 py-5">
+                    <span className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest ${
+                      order.status === "Processing" ? "bg-amber-50 text-amber-600 border border-amber-100" :
+                      order.status === "Packed" ? "bg-blue-50 text-blue-600 border border-blue-100" :
+                      order.status === "Shipped" ? "bg-purple-50 text-purple-600 border border-purple-100" :
+                      "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                    }`}>
+                      {order.status}
+                    </span>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        <div className="p-4 bg-slate-50/50 border-t border-slate-50 text-center">
+          <button className="text-xs font-black text-primary uppercase tracking-widest hover:text-primary/80 transition-colors">
+            View All Today's Orders
+          </button>
+        </div>
       </div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setIsModalOpen(false)} />
-          <div className="relative bg-white w-full max-w-2xl rounded-[48px] shadow-2xl overflow-hidden flex flex-col">
-            <div className="px-10 py-8 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
-              <div className="flex items-center gap-5">
-                <div className="w-14 h-14 rounded-3xl bg-primary flex items-center justify-center text-white shadow-xl shadow-primary/20"><FileText size={28} /></div>
-                <div>
-                  <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tighter">{editingItem ? "Edit Entry" : "Create New Entry"}</h3>
-                  <p className="text-slate-400 text-xs font-medium mt-1">Fill out the details below.</p>
-                </div>
-              </div>
-              <button onClick={() => setIsModalOpen(false)} className="p-4 hover:bg-slate-100 rounded-3xl transition-colors"><X size={24} className="text-slate-400" /></button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-12 custom-scrollbar">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Order ID</label>
-                  <input type="text" value={formData.orderId} onChange={e => setFormData({...formData, orderId: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Amount</label>
-                  <input type="text" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Status</label>
-                  <input type="text" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 outline-none" required />
-                </div>
-                <div className="pt-8 border-t border-slate-100 flex justify-end gap-4">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-8 py-4 bg-slate-50 text-slate-500 font-black uppercase tracking-widest text-[11px] rounded-2xl hover:bg-slate-100 transition-all">Cancel</button>
-                  <button type="submit" className="px-10 py-4 bg-slate-900 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl hover:bg-slate-800 transition-all flex items-center gap-2"><Save size={16} /> Save</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

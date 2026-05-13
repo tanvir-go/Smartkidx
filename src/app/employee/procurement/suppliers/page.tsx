@@ -1,165 +1,234 @@
 "use client";
 
 import React, { useState } from "react";
-import { Truck, Plus, Search, Filter, MoreHorizontal, FileDown, X, User, Phone, MapPin, Pencil, Trash2 } from "lucide-react";
-import { toast } from "react-toastify";
-import AddSupplierForm from "@/components/vendor/AddSupplierForm";
-import DeleteModal from "@/components/vendor/DeleteModal";
+import { 
+  Search, 
+  Filter, 
+  Building2, 
+  Star, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  PackageSearch,
+  CheckCircle2,
+  TrendingUp,
+  AlertCircle,
+  User
+} from "lucide-react";
+
+interface Supplier {
+  id: string;
+  name: string;
+  category: string;
+  rating: number;
+  contactPerson: string;
+  phone: string;
+  email: string;
+  address: string;
+  activeOrders: number;
+  onTimeDelivery: string;
+  defectRate: string;
+}
+
+const MOCK_SUPPLIERS: Supplier[] = [
+  {
+    id: "SUP-001",
+    name: "TechTron Electronics Ltd.",
+    category: "Electronics Components",
+    rating: 4.8,
+    contactPerson: "Rahim Ali",
+    phone: "+880 1711-001122",
+    email: "sales@techtron.bd",
+    address: "Mirpur 10, Dhaka",
+    activeOrders: 3,
+    onTimeDelivery: "98%",
+    defectRate: "1.2%"
+  },
+  {
+    id: "SUP-002",
+    name: "Future Robotics Supply",
+    category: "Robotics Kits",
+    rating: 4.9,
+    contactPerson: "Sadia Islam",
+    phone: "+880 1822-112233",
+    email: "contact@futurerobotics.bd",
+    address: "Agrabad, Chittagong",
+    activeOrders: 1,
+    onTimeDelivery: "100%",
+    defectRate: "0.5%"
+  },
+  {
+    id: "SUP-003",
+    name: "EduPlastics BD",
+    category: "Plastic Enclosures",
+    rating: 3.5,
+    contactPerson: "Karim Uddin",
+    phone: "+880 1933-223344",
+    email: "info@eduplastics.bd",
+    address: "Tongi Industrial Area",
+    activeOrders: 0,
+    onTimeDelivery: "85%",
+    defectRate: "4.5%"
+  }
+];
 
 export default function EmployeeSuppliersPage() {
-  const [suppliers, setSuppliers] = useState<any[]>([
-    { supplierName: "Global Tech Solutions", phone: "+880 1612-345678", city: "Dhaka", status: "Active" },
-    { supplierName: "RoboMaster Spares", phone: "+880 1712-445566", city: "Chittagong", status: "Active" },
-  ]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>(MOCK_SUPPLIERS);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingSupplier, setEditingSupplier] = useState<any>(null);
-  
-  // Delete Modal State
-  const [deleteModal, setDeleteModal] = useState({ isOpen: false, name: "" });
-
-  const handleAddSupplier = (data: any) => {
-    if (editingSupplier) {
-      setSuppliers(suppliers.map((s: any) => s.supplierName === editingSupplier.supplierName ? data : s));
-    } else {
-      setSuppliers([data, ...suppliers]);
-    }
-    setIsModalOpen(false);
-    setEditingSupplier(null);
-  };
-
-  const handleEdit = (supplier: any) => {
-    setEditingSupplier(supplier);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = (name: string) => {
-    setDeleteModal({ isOpen: true, name });
-  };
-
-  const confirmDelete = () => {
-    setSuppliers(prev => prev.filter(s => s.supplierName !== deleteModal.name));
-    toast.success(`Supplier "${deleteModal.name}" has been removed.`);
-    setDeleteModal({ isOpen: false, name: "" });
-  };
+  const filteredSuppliers = suppliers.filter(s => 
+    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-500 pb-20">
+      
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold text-slate-800 uppercase tracking-tight">Suppliers</h2>
-          <p className="text-slate-500 text-sm mt-1">Manage your supply chain partners.</p>
+          <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Suppliers Directory</h2>
+          <p className="text-slate-500 text-sm mt-1 font-medium tracking-tight">Manage vendor relationships and track performance.</p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-primary text-white px-6 py-3 rounded-xl font-semibold uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 w-fit"
-        >
-          <Plus size={18} /> Add New Supplier
-        </button>
       </div>
 
-      <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
-          <div className="relative flex-grow max-w-md">
-            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input type="text" placeholder="Search suppliers..." className="w-full pl-12 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all" />
-          </div>
-        </div>
+      <div className="flex flex-col xl:flex-row gap-8 items-start">
+        
+        {/* Left Side: Supplier List */}
+        <div className="w-full xl:w-1/2 space-y-6">
+          <div className="bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+            <div className="p-8 border-b border-slate-50 bg-slate-50/30">
+              <div className="relative w-full">
+                <Search size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input 
+                  type="text" 
+                  placeholder="Search suppliers by name or category..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-6 py-4 bg-white border border-slate-100 rounded-2xl text-sm focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold shadow-sm" 
+                />
+              </div>
+            </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-slate-50/50">
-                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Supplier Name</th>
-                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Contact</th>
-                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {suppliers.map((supplier: any, i: number) => (
-                <tr key={i} className="hover:bg-slate-50/50 transition-colors animate-in fade-in slide-in-from-top-1">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-primary font-black text-xs">
-                        {supplier.supplierName.charAt(0)}
+            <div className="p-4 space-y-3">
+              {filteredSuppliers.map(supplier => (
+                <button
+                  key={supplier.id}
+                  onClick={() => setSelectedSupplier(supplier)}
+                  className={`w-full text-left p-6 rounded-3xl transition-all border ${
+                    selectedSupplier?.id === supplier.id 
+                      ? "bg-primary/5 border-primary shadow-md shadow-primary/5" 
+                      : "bg-white border-slate-100 hover:border-slate-300 hover:shadow-sm"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
+                        selectedSupplier?.id === supplier.id ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-slate-50 text-slate-400"
+                      }`}>
+                        <Building2 size={20} />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-slate-800">{supplier.supplierName}</p>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{supplier.city}</p>
+                        <h4 className="text-sm font-black text-slate-800 tracking-tight">{supplier.name}</h4>
+                        <p className="text-[11px] font-bold text-slate-500 mt-1">{supplier.category}</p>
                       </div>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-slate-600">{supplier.phone}</td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">{supplier.status}</span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button 
-                        onClick={() => handleEdit(supplier)}
-                        className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all" 
-                        title="Edit Supplier"
-                      >
-                        <Pencil size={16} />
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(supplier.supplierName)}
-                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" 
-                        title="Delete"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                    <div className="flex flex-col items-end gap-2">
+                      <span className="flex items-center gap-1 text-xs font-black text-amber-500 bg-amber-50 px-2 py-1 rounded-lg">
+                        <Star size={12} className="fill-current" /> {supplier.rating}
+                      </span>
+                      {supplier.activeOrders > 0 && (
+                        <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded">
+                          {supplier.activeOrders} Active POs
+                        </span>
+                      )}
                     </div>
-                  </td>
-                </tr>
+                  </div>
+                </button>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <DeleteModal 
-        isOpen={deleteModal.isOpen} 
-        onClose={() => setDeleteModal({ ...deleteModal, isOpen: false })} 
-        onConfirm={confirmDelete} 
-        itemName={deleteModal.name} 
-        itemType="Supplier"
-      />
-
-      {/* Add Supplier Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => { setIsModalOpen(false); setEditingSupplier(null); }}></div>
-          <div className="relative bg-white w-full max-w-4xl rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="px-8 py-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
-                  <Truck size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">
-                    {editingSupplier ? "Update Partner" : "Establish New Partnership"}
-                  </h3>
-                  <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-0.5">Procurement Control System</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => { setIsModalOpen(false); setEditingSupplier(null); }}
-                className="p-3 hover:bg-slate-100 rounded-2xl transition-colors group"
-              >
-                <X size={24} className="text-slate-400 group-hover:rotate-90 transition-transform duration-300" />
-              </button>
-            </div>
-            
-            <div className="p-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
-              <AddSupplierForm onClose={() => setIsModalOpen(false)} onSuccess={handleAddSupplier} 
-                initialData={editingSupplier}
-              />
             </div>
           </div>
         </div>
-      )}
+
+        {/* Right Side: Supplier Details (Scorecard) */}
+        <div className="w-full xl:w-1/2 sticky top-28">
+          {selectedSupplier ? (
+            <div className="bg-slate-900 text-white rounded-[40px] shadow-2xl overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl translate-x-1/3 -translate-y-1/3"></div>
+              
+              <div className="p-10 relative z-10 border-b border-slate-800">
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <h3 className="text-2xl font-black tracking-tight">{selectedSupplier.name}</h3>
+                    <p className="text-[10px] font-black text-primary uppercase tracking-widest mt-2">{selectedSupplier.id} • {selectedSupplier.category}</p>
+                  </div>
+                  <div className="w-16 h-16 rounded-3xl bg-white/10 flex items-center justify-center backdrop-blur-md">
+                    <Building2 size={28} className="text-white" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6 mt-8">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-sm font-medium text-slate-300">
+                      <User size={16} className="text-slate-400" /> {selectedSupplier.contactPerson}
+                    </div>
+                    <div className="flex items-center gap-3 text-sm font-medium text-slate-300">
+                      <Phone size={16} className="text-slate-400" /> {selectedSupplier.phone}
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-sm font-medium text-slate-300">
+                      <Mail size={16} className="text-slate-400" /> {selectedSupplier.email}
+                    </div>
+                    <div className="flex items-center gap-3 text-sm font-medium text-slate-300">
+                      <MapPin size={16} className="text-slate-400" /> {selectedSupplier.address}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-10 relative z-10 bg-slate-800/50">
+                <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <TrendingUp size={16} className="text-primary" /> Vendor Scorecard
+                </h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-slate-800 p-5 rounded-3xl border border-slate-700">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-2"><CheckCircle2 size={12}/> On-Time Delivery</span>
+                    <span className={`text-2xl font-black ${parseFloat(selectedSupplier.onTimeDelivery) > 90 ? 'text-emerald-400' : 'text-amber-400'}`}>{selectedSupplier.onTimeDelivery}</span>
+                  </div>
+                  <div className="bg-slate-800 p-5 rounded-3xl border border-slate-700">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-2"><AlertCircle size={12}/> Defect Rate</span>
+                    <span className={`text-2xl font-black ${parseFloat(selectedSupplier.defectRate) < 2 ? 'text-emerald-400' : 'text-red-400'}`}>{selectedSupplier.defectRate}</span>
+                  </div>
+                  <div className="bg-slate-800 p-5 rounded-3xl border border-slate-700">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-2"><PackageSearch size={12}/> Active POs</span>
+                    <span className="text-2xl font-black text-white">{selectedSupplier.activeOrders}</span>
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-8 border-t border-slate-700 flex gap-4">
+                  <button className="flex-1 py-4 bg-white text-slate-900 rounded-2xl font-black uppercase tracking-widest text-[11px] hover:bg-slate-100 transition-all text-center">
+                    View Purchase History
+                  </button>
+                  <button className="flex-1 py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-[11px] hover:bg-primary/90 transition-all text-center shadow-lg shadow-primary/20">
+                    Create New PO
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          ) : (
+            <div className="bg-slate-50 rounded-[40px] border-2 border-dashed border-slate-200 h-[600px] flex flex-col items-center justify-center text-slate-400 p-10 text-center">
+              <Building2 size={48} className="mb-4 opacity-20" />
+              <h3 className="text-lg font-black text-slate-600 tracking-tight">Select a Supplier</h3>
+              <p className="text-sm font-medium mt-2">Click on any supplier from the list to view their full scorecard, contact details, and performance metrics.</p>
+            </div>
+          )}
+        </div>
+
+      </div>
     </div>
   );
 }

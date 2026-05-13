@@ -46,8 +46,9 @@ import {
   Search,
   ChevronDown,
   Plus,
-  LogOut,
-  Truck
+  Truck,
+  Clock,
+  LogOut
 } from "lucide-react";
 import { toast } from "react-toastify";
 import CreateOrderModal from "@/components/super-admin/CreateOrderForm";
@@ -87,6 +88,7 @@ const sidebarGroups = [
       { name: "Admin", icon: <ShieldCheck size={18} />, href: "/super-admin/admins" },
       { name: "Sellers", icon: <Store size={18} />, href: "/super-admin/sellers" },
       { name: "Customer", icon: <UserCircle size={18} />, href: "/super-admin/customers" },
+      { name: "Global Attendance", icon: <Clock size={18} />, href: "/super-admin/attendance" },
     ]
   },
   {
@@ -242,7 +244,7 @@ export default function SuperAdminLayout({
                         {item.icon}
                       </span>
                       {isSidebarOpen && (
-                        <span className="text-[13px] font-semibold">{item.name}</span>
+                        <span className="text-[13px] font-semibold whitespace-nowrap truncate">{item.name}</span>
                       )}
                     </Link>
                   );
