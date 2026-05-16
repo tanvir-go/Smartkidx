@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { 
@@ -95,10 +95,16 @@ export default function VendorLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+
+  useEffect(() => {
+    if (window.innerWidth >= 1024) {
+      setIsSidebarOpen(true);
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("userRole");
@@ -121,7 +127,7 @@ export default function VendorLayout({
           fixed lg:relative top-0 bottom-0 left-0 z-50
           bg-white border-r border-slate-100 flex flex-col h-full
           transition-all duration-300 ease-in-out
-          ${isSidebarOpen ? "w-64 translate-x-0" : "w-20 -translate-x-full lg:translate-x-0"}
+          ${isSidebarOpen ? "w-64 translate-x-0" : "-translate-x-full lg:translate-x-0 lg:w-20"}
         `}
       >
         <div className="p-6 flex items-center justify-between border-b border-slate-50">
@@ -233,16 +239,22 @@ export default function VendorLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col h-full overflow-hidden">
+      <main className="flex-grow flex flex-col h-full overflow-hidden max-w-full">
         {/* Header */}
-        <header className="bg-white/80 backdrop-blur-md min-h-[80px] py-4 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
-          <div className="flex items-center gap-4 md:gap-8 flex-grow">
+        <header className="bg-white/80 backdrop-blur-md min-h-[70px] md:min-h-[80px] py-2 md:py-4 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40 w-full">
+          <div className="flex items-center gap-2 md:gap-8 flex-grow">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="lg:hidden p-2 text-slate-400 hover:text-primary transition-colors"
+              className="lg:hidden p-2 text-slate-400 hover:text-primary transition-colors shrink-0"
             >
-              <Menu size={24} />
+              {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
+            
+            {/* Mobile Logo */}
+            <Link href="/vendor" className="lg:hidden shrink-0">
+              <span className="text-lg font-black tracking-tighter text-slate-800 uppercase">Smart<span className="text-primary">Kids</span></span>
+            </Link>
+
             <div className="hidden sm:block">
               <h1 className="text-sm font-semibold text-slate-800 uppercase tracking-widest leading-none">Vendor Console</h1>
               <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-tighter mt-1">Global Tech • {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
@@ -258,7 +270,7 @@ export default function VendorLayout({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-6">
+          <div className="flex items-center gap-3 md:gap-6">
             <div className="hidden lg:flex flex-col items-end">
               <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Active Sales</p>
               <p className="text-xs font-black text-slate-800">৳ 95,500.00</p>
@@ -283,7 +295,7 @@ export default function VendorLayout({
           </div>
         </header>
 
-        <div className="flex-grow overflow-y-auto p-4 md:p-8 custom-scrollbar">
+        <div className="flex-grow overflow-auto p-4 md:p-8 custom-scrollbar">
           {children}
         </div>
       </main>
